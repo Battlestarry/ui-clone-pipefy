@@ -21,4 +21,19 @@
         <!-- The official NuGet package source (https://www.nuget.org/api/v2/) will be excluded if package sources are specified and it does not appear in the list -->
         <!--
             <PackageSource Include="https://www.nuget.org/api/v2/" />
-            <PackageSource Include="https://my-nuget-sour
+            <PackageSource Include="https://my-nuget-source/nuget/" />
+        -->
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(OS)' == 'Windows_NT'">
+        <!-- Windows specific commands -->
+        <NuGetToolsPath>$([System.IO.Path]::Combine($(SolutionDir), ".nuget"))</NuGetToolsPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(OS)' != 'Windows_NT'">
+        <!-- We need to launch nuget.exe with the mono command if we're not on windows -->
+        <NuGetToolsPath>$(SolutionDir).nuget</NuGetToolsPath>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        
