@@ -41,4 +41,13 @@
     </PropertyGroup>
 
     <PropertyGroup>
-      <PackagesConfig Condition="Exists('$(MSBuildProjectDirectory)\packages.co
+      <PackagesConfig Condition="Exists('$(MSBuildProjectDirectory)\packages.config')">$(MSBuildProjectDirectory)\packages.config</PackagesConfig>
+      <PackagesConfig Condition="Exists('$(PackagesProjectConfig)')">$(PackagesProjectConfig)</PackagesConfig>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <!-- NuGet command -->
+        <NuGetExePath Condition=" '$(NuGetExePath)' == '' ">$(NuGetToolsPath)\NuGet.exe</NuGetExePath>
+        <PackageSources Condition=" $(PackageSources) == '' ">@(PackageSource)</PackageSources>
+
+        <NuGetComma
