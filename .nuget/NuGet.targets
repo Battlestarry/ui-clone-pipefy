@@ -99,4 +99,16 @@
 
         <Exec Command="$(RestoreCommand)"
               LogStandardErrorAsError="true"
-              Condition="
+              Condition="'$(OS)' == 'Windows_NT' And Exists('$(PackagesConfig)')" />
+    </Target>
+
+    <Target Name="BuildPackage" DependsOnTargets="CheckPrerequisites">
+        <Exec Command="$(BuildCommand)"
+              Condition=" '$(OS)' != 'Windows_NT' " />
+
+        <Exec Command="$(BuildCommand)"
+              LogStandardErrorAsError="true"
+              Condition=" '$(OS)' == 'Windows_NT' " />
+    </Target>
+
+    <UsingTask TaskName="DownloadNuGet" TaskFactory="CodeTaskFactory" Assembly
