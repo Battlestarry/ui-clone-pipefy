@@ -7,4 +7,7 @@ namespace Mvc4MusicStore
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            filters.Add(new HandleErrorA
+            filters.Add(new HandleErrorAttribute());
+        }
+    }
+}
