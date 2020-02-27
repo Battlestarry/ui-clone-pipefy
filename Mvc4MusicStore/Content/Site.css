@@ -7,4 +7,40 @@
 
 body
 {
-	font-family: Arial, Hel
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	background-color: #FBF9EF;
+	padding: 0px 6%;
+}
+
+#container
+{
+	float: left;
+}
+
+#header
+{
+	float: left;
+	width: 100%;
+	border-bottom: 1px dotted #5D5A53;
+	margin-bottom: 10px;
+}
+
+#header h1
+{
+	font-size: 18px;
+	float: left;
+	background: url(/content/Images/logo.png) no-repeat;
+	padding: 45px 0px 5px 0px;
+}
+
+#promotion
+{
+	height: 300px; 
+	width: 700px; 
+	background: url(/content/Images/home-showcase.png) no-repeat;
+}
+
+ul li a
+{
+	font-size: 16p
