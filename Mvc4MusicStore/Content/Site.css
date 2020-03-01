@@ -128,4 +128,47 @@ ul#album-list li a span
 /******************** Top Navigation ************************/
 ul#navlist
 {
-	float: r
+	float: right;
+}
+
+ul#navlist li
+{
+	display: inline;
+}
+
+ul#navlist li a
+{
+	border-left: 1px dotted #8A8575;
+	padding: 10px;
+	margin-top: 10px;
+	color: #8A8575;
+	text-decoration: none;
+	float: left;
+}
+
+ul#navlist li:first-child a
+{
+	border: none;
+}
+
+ul#navlist li a:hover
+{
+	color: #F6855E;
+}
+
+/********************* End top navigation ***************************/
+
+p
+{
+	margin-bottom: 15px;
+	margin-top: 0px;
+}
+
+h2
+{
+	color: #5e5b54;
+}
+
+h2, h3
+{
+	margin-bottom:
