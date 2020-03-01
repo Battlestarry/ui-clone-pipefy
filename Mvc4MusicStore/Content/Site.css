@@ -94,4 +94,38 @@ ul#album-list li a span
 
 #update-message
 {
-	color: #
+	color: #F6855E;
+	font-weight: bold;
+}
+
+.button, input[type=submit]
+{
+	clear: both;
+	display: inline-block;
+	padding: 5px;
+	margin-top: 10px; 
+	border: 1px;
+	background: #5e5b54;
+	color: #fff;
+	font-weight: bold;
+}
+
+.button a
+{
+	color: #fff !important;
+}
+
+#footer
+{
+	clear: both;
+	padding: 10px;
+	text-align: right;
+	border-top: 1px dotted #8A8575;
+	border-bottom: 1px dotted #8A8575;
+	font-family: Constantia, Georgia, serif;
+}
+
+/******************** Top Navigation ************************/
+ul#navlist
+{
+	float: r
