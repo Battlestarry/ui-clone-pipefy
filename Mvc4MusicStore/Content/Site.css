@@ -212,4 +212,44 @@ a:active
 
 #categories
 {
-	font-family: 
+	font-family: Constantia, Georgia, serif;
+	list-style-type: none;
+	border-right: #5d5a53 1px dotted;
+	padding-right: 10px;
+	margin: 0 25px 0 0;
+	float: left;
+}
+
+#categories a:link, #categories a:visited
+{
+	color: #9B9993;
+	text-decoration: none;
+}
+
+#categories a:hover
+{
+	color: #F46739;
+}
+
+div#album-details p
+{
+	margin-bottom: 5px;
+	color: #5e5b54;
+	font-weight: bold;
+}
+
+p em
+{
+	color: #9b9993;
+}
+
+/* Form styles */
+legend
+{
+	padding: 10px;
+	font-weight: bold;
+}
+
+fieldset
+{
+	border: #9b9993 1px solid;
