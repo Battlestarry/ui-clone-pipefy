@@ -253,3 +253,35 @@ legend
 fieldset
 {
 	border: #9b9993 1px solid;
+	padding: 0 10px;
+	margin-bottom: 10px;
+	clear: left;
+}
+
+div.editor-field
+{
+	margin-bottom: 10px;
+}
+
+input[type=text], input[type=password], select
+{
+	border: 1px solid #8A8575;
+	width: 300px;
+}
+
+/* Styles for validation helpers */
+.field-validation-error {
+    color: #ff0000;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+.input-validation-error {
+    border: 1px solid #ff0000;
+    background-color: #ffeeee;
+}
+
+.validation-summary-errors {
+    font-w
