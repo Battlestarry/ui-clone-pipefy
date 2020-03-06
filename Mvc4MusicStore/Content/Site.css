@@ -171,4 +171,45 @@ h2
 
 h2, h3
 {
-	margin-bottom:
+	margin-bottom: 10px;
+	font-size: 16px;
+	font-style: italic;
+	font-weight: bold;
+}
+
+h3
+{
+	color: #9B9993;
+}
+
+#header h1 a, h3 em
+{
+	color: #5E5B54;
+}
+
+a:link, a:visited
+{
+	color: #F6855E;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+a:hover
+{
+	color: #333333;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+a:active
+{
+	color: #006633;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+/***************************** sidebar navigation ****************************/
+
+#categories
+{
+	font-family: 
