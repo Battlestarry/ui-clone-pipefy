@@ -284,4 +284,53 @@ input[type=text], input[type=password], select
 }
 
 .validation-summary-errors {
-    font-w
+    font-weight: bold;
+    color: #ff0000;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+/* Tables */
+table
+{
+	border: 1px solid #000;
+	border-collapse: collapse;
+	color: #666666;
+	min-width: 500px;
+	width: 100%;
+}
+
+tr
+{
+	border: 1px solid #000;
+	line-height: 25px;
+}
+
+th
+{
+	background-color: #9b9993;
+	color: #000;
+	font-size: 13px;
+	text-align: left;
+}
+
+th, td
+{
+	padding-left: 5px;
+}
+
+tr:hover
+{
+	background-color: #fff;
+}
+
+/* This removes the numbers on the Login page */
+
+fieldset ol
+{
+    list-style-type: none;
+}
+
+fieldset label
