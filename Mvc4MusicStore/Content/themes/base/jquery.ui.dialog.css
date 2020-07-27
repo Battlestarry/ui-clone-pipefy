@@ -1,0 +1,13 @@
+/*!
+ * jQuery UI Dialog 1.8.24
+ *
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Licensed under the MIT license.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Dialog#theming
+ */
+.ui-dialog { position: absolute; padding: .2em; width: 300px; overflow: hidden; }
+.ui-dialog .ui-dialog-titlebar { padding: .4em 1em; position: relative;  }
+.ui-dialog .ui-dialog-title { float: left; margin: .1em 16px .1em 0; } 
+.ui-dialog .ui-dialog-titlebar-close { position: absolute; right: .3em; top: 50
