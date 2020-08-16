@@ -2,4 +2,17 @@
  * jQuery UI CSS Framework 1.8.24
  *
  * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Licensed under the MIT 
+ * Licensed under the MIT license.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Theming/API
+ *
+ * To view and modify this theme, visit http://jqueryui.com/themeroller/
+ */
+
+
+/* Component containers
+----------------------------------*/
+.ui-widget { font-family: Verdana,Arial,sans-serif/*{ffDefault}*/; font-size: 1.1em/*{fsDefault}*/; }
+.ui-widget .ui-widget { font-size: 1em; }
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family: Verdan
