@@ -33,4 +33,17 @@ namespace Mvc4MusicStore.Controllers
                 }
                 else
                 {
-                    order.Username =
+                    order.Username = User.Identity.Name;
+                    order.OrderDate = DateTime.Now;
+
+                    //Save Order
+                    storeDB.Orders.Add(order);
+                    storeDB.SaveChanges();
+                    //Process the order
+                    var cart = ShoppingCart.GetCart(this.HttpContext);
+                    cart.CreateOrder(order);
+
+                    return RedirectToAction("Complete",
+                        new { id = order.OrderId });
+                }
+     
