@@ -46,4 +46,22 @@ namespace Mvc4MusicStore.Controllers
                     return RedirectToAction("Complete",
                         new { id = order.OrderId });
                 }
-     
+            }
+            catch
+            {
+                //Invalid - redisplay with errors
+                return View(order);
+            }
+        }
+        //
+        // GET: /Checkout/Complete
+        public ActionResult Complete(int id)
+        {
+            // Validate customer owns this order
+            bool isValid = storeDB.Orders.Any(
+                o => o.OrderId == id &&
+                o.Username == User.Identity.Name);
+
+            if (isValid)
+            {
+         
