@@ -64,4 +64,12 @@ namespace Mvc4MusicStore.Controllers
 
             if (isValid)
             {
-         
+                return View(id);
+            }
+            else
+            {
+                return View("Error");
+            }
+        }
+    }
+}
