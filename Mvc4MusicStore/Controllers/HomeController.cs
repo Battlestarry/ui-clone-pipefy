@@ -23,4 +23,10 @@ namespace Mvc4MusicStore.Controllers
         {
             // Group the order details by album and return
             // the albums with the highest count
-            retu
+            return storeDB.Albums
+                .OrderByDescending(a => a.OrderDetails.Count())
+                .Take(count)
+                .ToList();
+        }
+    }
+}
