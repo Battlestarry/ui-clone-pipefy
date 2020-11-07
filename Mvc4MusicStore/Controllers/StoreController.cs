@@ -9,4 +9,19 @@ namespace Mvc4MusicStore.Controllers
 {
     public class StoreController : Controller
     {
-        MusicStoreEntities storeDB = new MusicSt
+        MusicStoreEntities storeDB = new MusicStoreEntities();
+
+        //
+        // GET: /Store/
+        public ActionResult Index()
+        {
+            var genres = storeDB.Genres.ToList();
+            return View(genres);
+        }
+        //
+        // GET: /Store/Browse?genre=Disco
+        public ActionResult Browse(string genre)
+        {
+            // Retrieve Genre and its Associated Albums from database
+            var genreModel = storeDB.Genres.Include("Albums")
+               
