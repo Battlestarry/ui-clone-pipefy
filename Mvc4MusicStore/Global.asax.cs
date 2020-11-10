@@ -16,4 +16,14 @@ namespace Mvc4MusicStore
 
     public class MvcApplication : System.Web.HttpApplication
     {
-        protected voi
+        protected void Application_Start()
+        {
+            System.Data.Entity.Database.SetInitializer(new Mvc4MusicStore.Models.SampleData());
+
+            AreaRegistration.RegisterAllAreas();
+
+            WebApiConfig.Register(GlobalConfiguration.Configuration);
+            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
+            AuthConfig.Regis
