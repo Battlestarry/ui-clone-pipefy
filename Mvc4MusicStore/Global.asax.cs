@@ -26,4 +26,15 @@ namespace Mvc4MusicStore
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            AuthConfig.Regis
+            AuthConfig.RegisterAuth();
+        }
+        protected void Application_AuthenticateRequest(object sender, EventArgs e)
+        {
+            if (Request.IsAuthenticated)
+            {
+                string loggedUser = HttpContext.Current.User.Identity.Name;
+                var memberUser = (OktaMembershipUser)Membership.GetUser(loggedUser);
+                var roles = Roles.GetRolesForUser(loggedUser);
+                var identity = new OktaIdentity(memberUser.UserName, true)
+                {
+             
