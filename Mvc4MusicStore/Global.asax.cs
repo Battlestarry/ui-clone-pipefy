@@ -37,4 +37,14 @@ namespace Mvc4MusicStore
                 var roles = Roles.GetRolesForUser(loggedUser);
                 var identity = new OktaIdentity(memberUser.UserName, true)
                 {
-             
+                    FirstName = memberUser.FirstName,
+                    LastName = memberUser.LastName,
+                    PhoneNumber = memberUser.PhoneNumber,
+                    Apps = memberUser.apps,
+                };
+                var principal = new System.Security.Principal.GenericPrincipal(identity, roles);
+                HttpContext.Current.User = principal;
+            }
+        }
+    }
+}
