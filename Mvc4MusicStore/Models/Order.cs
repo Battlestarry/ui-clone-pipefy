@@ -21,4 +21,15 @@ namespace Mvc4MusicStore.Models
         [Required(ErrorMessage = "Last Name is required")]
         [DisplayName("Last Name")]
         [StringLength(160)]
-        public string LastName { 
+        public string LastName { get; set; }
+        [Required(ErrorMessage = "Address is required")]
+        [StringLength(70)]
+        public string Address { get; set; }
+        [Required(ErrorMessage = "City is required")]
+        [StringLength(40)]
+        public string City { get; set; }
+        [Required(ErrorMessage = "State is required")]
+        [StringLength(40)]
+        public string State { get; set; }
+        [Required(ErrorMessage = "Postal Code is required")]
+        [Displ
