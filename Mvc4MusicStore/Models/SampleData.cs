@@ -18,4 +18,16 @@ namespace Mvc4MusicStore.Models
                 new Genre { Name = "Alternative" },
                 new Genre { Name = "Disco" },
                 new Genre { Name = "Blues" },
-                new Genre { Name = "La
+                new Genre { Name = "Latin" },
+                new Genre { Name = "Reggae" },
+                new Genre { Name = "Pop" },
+                new Genre { Name = "Classical" }
+            };
+
+            var artists = new List<Artist>
+            {
+                new Artist { Name = "Aaron Copland & London Symphony Orchestra" },
+                new Artist { Name = "Aaron Goldberg" },
+                new Artist { Name = "AC/DC" },
+                new Artist { Name = "Accept" },
+    
