@@ -30,4 +30,12 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "Aaron Goldberg" },
                 new Artist { Name = "AC/DC" },
                 new Artist { Name = "Accept" },
-    
+                new Artist { Name = "Adrian Leaper & Doreen de Feis" },
+                new Artist { Name = "Aerosmith" },
+                new Artist { Name = "Aisha Duo" },
+                new Artist { Name = "Alanis Morissette" },
+                new Artist { Name = "Alberto Turco & Nova Schola Gregoriana" },
+                new Artist { Name = "Alice In Chains" },
+                new Artist { Name = "Amy Winehouse" },
+                new Artist { Name = "Anita Ward" },
+                new Art
