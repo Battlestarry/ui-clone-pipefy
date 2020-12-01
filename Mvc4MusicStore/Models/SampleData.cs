@@ -38,4 +38,11 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "Alice In Chains" },
                 new Artist { Name = "Amy Winehouse" },
                 new Artist { Name = "Anita Ward" },
-                new Art
+                new Artist { Name = "Antônio Carlos Jobim" },
+                new Artist { Name = "Apocalyptica" },
+                new Artist { Name = "Audioslave" },
+                new Artist { Name = "Barry Wordsworth & BBC Concert Orchestra" },
+                new Artist { Name = "Berliner Philharmoniker & Hans Rosbaud" },
+                new Artist { Name = "Berliner Philharmoniker & Herbert Von Karajan" },
+                new Artist { Name = "Billy Cobham" },
+                new Artist { Name = "Black Label Society" },
