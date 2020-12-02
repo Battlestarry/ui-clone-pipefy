@@ -46,3 +46,12 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "Berliner Philharmoniker & Herbert Von Karajan" },
                 new Artist { Name = "Billy Cobham" },
                 new Artist { Name = "Black Label Society" },
+                new Artist { Name = "Black Sabbath" },
+                new Artist { Name = "Boston Symphony Orchestra & Seiji Ozawa" },
+                new Artist { Name = "Britten Sinfonia, Ivor Bolton & Lesley Garrett" },
+                new Artist { Name = "Bruce Dickinson" },
+                new Artist { Name = "Buddy Guy" },
+                new Artist { Name = "Caetano Veloso" },
+                new Artist { Name = "Cake" },
+                new Artist { Name = "Calexico" },
+      
