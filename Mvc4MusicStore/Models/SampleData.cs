@@ -54,4 +54,11 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "Caetano Veloso" },
                 new Artist { Name = "Cake" },
                 new Artist { Name = "Calexico" },
-      
+                new Artist { Name = "Cássia Eller" },
+                new Artist { Name = "Chic" },
+                new Artist { Name = "Chicago Symphony Orchestra & Fritz Reiner" },
+                new Artist { Name = "Chico Buarque" },
+                new Artist { Name = "Chico Science & Nação Zumbi" },
+                new Artist { Name = "Choir Of Westminster Abbey & Simon Preston" },
+                new Artist { Name = "Chris Cornell" },
+                new Artist { Name = "Christophe
