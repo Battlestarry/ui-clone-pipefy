@@ -61,4 +61,13 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "Chico Science & Nação Zumbi" },
                 new Artist { Name = "Choir Of Westminster Abbey & Simon Preston" },
                 new Artist { Name = "Chris Cornell" },
-                new Artist { Name = "Christophe
+                new Artist { Name = "Christopher O'Riley" },
+                new Artist { Name = "Cidade Negra" },
+                new Artist { Name = "Cláudio Zoli" },
+                new Artist { Name = "Creedence Clearwater Revival" },
+                new Artist { Name = "David Coverdale" },
+                new Artist { Name = "Deep Purple" },
+                new Artist { Name = "Dennis Chambers" },
+                new Artist { Name = "Djavan" },
+                new Artist { Name = "Donna Summer" },
+                new Artist { Name = "Drea
