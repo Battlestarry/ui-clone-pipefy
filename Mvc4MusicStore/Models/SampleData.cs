@@ -70,4 +70,12 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "Dennis Chambers" },
                 new Artist { Name = "Djavan" },
                 new Artist { Name = "Donna Summer" },
-                new Artist { Name = "Drea
+                new Artist { Name = "Dread Zeppelin" },
+                new Artist { Name = "Ed Motta" },
+                new Artist { Name = "Edo de Waart & San Francisco Symphony" },
+                new Artist { Name = "Elis Regina" },
+                new Artist { Name = "English Concert & Trevor Pinnock" },
+                new Artist { Name = "Eric Clapton" },
+                new Artist { Name = "Eugene Ormandy" },
+                new Artist { Name = "Faith No More" },
+                new Arti
