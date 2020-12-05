@@ -78,4 +78,12 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "Eric Clapton" },
                 new Artist { Name = "Eugene Ormandy" },
                 new Artist { Name = "Faith No More" },
-                new Arti
+                new Artist { Name = "Falamansa" },
+                new Artist { Name = "Foo Fighters" },
+                new Artist { Name = "Frank Zappa & Captain Beefheart" },
+                new Artist { Name = "Fretwork" },
+                new Artist { Name = "Funk Como Le Gusta" },
+                new Artist { Name = "Gerald Moore" },
+                new Artist { Name = "Gilberto Gil" },
+                new Artist { Name = "Godsmack" },
+                new Artist { Name = "Gonzaguinha" },
