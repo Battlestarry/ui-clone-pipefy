@@ -87,3 +87,12 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "Gilberto Gil" },
                 new Artist { Name = "Godsmack" },
                 new Artist { Name = "Gonzaguinha" },
+                new Artist { Name = "Göteborgs Symfoniker & Neeme Järvi" },
+                new Artist { Name = "Guns N' Roses" },
+                new Artist { Name = "Gustav Mahler" },
+                new Artist { Name = "Incognito" },
+                new Artist { Name = "Iron Maiden" },
+                new Artist { Name = "James Levine" },
+                new Artist { Name = "Jamiroquai" },
+                new Artist { Name = "Jimi Hendrix" },
+               
