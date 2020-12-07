@@ -95,4 +95,12 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "James Levine" },
                 new Artist { Name = "Jamiroquai" },
                 new Artist { Name = "Jimi Hendrix" },
-               
+                new Artist { Name = "Joe Satriani" },
+                new Artist { Name = "Jorge Ben" },
+                new Artist { Name = "Jota Quest" },
+                new Artist { Name = "Judas Priest" },
+                new Artist { Name = "Julian Bream" },
+                new Artist { Name = "Kent Nagano and Orchestre de l'Opéra de Lyon" },
+                new Artist { Name = "Kiss" },
+                new Artist { Name = "Led Zeppelin" },
+                new Artist { Name = "Legião Ur
