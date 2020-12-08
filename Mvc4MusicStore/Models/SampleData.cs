@@ -112,4 +112,12 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "Marcos Valle" },
                 new Artist { Name = "Marillion" },
                 new Artist { Name = "Marisa Monte" },
-                new Artist { Name
+                new Artist { Name = "Martin Roscoe" },
+                new Artist { Name = "Maurizio Pollini" },
+                new Artist { Name = "Mela Tenenbaum, Pro Musica Prague & Richard Kapp" },
+                new Artist { Name = "Men At Work" },
+                new Artist { Name = "Metallica" },
+                new Artist { Name = "Michael Tilson Thomas & San Francisco Symphony" },
+                new Artist { Name = "Miles Davis" },
+                new Artist { Name = "Milton Nascimento" },
+                new A
