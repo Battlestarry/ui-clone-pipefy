@@ -103,4 +103,13 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "Kent Nagano and Orchestre de l'Opéra de Lyon" },
                 new Artist { Name = "Kiss" },
                 new Artist { Name = "Led Zeppelin" },
-                new Artist { Name = "Legião Ur
+                new Artist { Name = "Legião Urbana" },
+                new Artist { Name = "Lenny Kravitz" },
+                new Artist { Name = "Les Arts Florissants & William Christie" },
+                new Artist { Name = "London Symphony Orchestra & Sir Charles Mackerras" },
+                new Artist { Name = "Luciana Souza/Romero Lubambo" },
+                new Artist { Name = "Lulu Santos" },
+                new Artist { Name = "Marcos Valle" },
+                new Artist { Name = "Marillion" },
+                new Artist { Name = "Marisa Monte" },
+                new Artist { Name
