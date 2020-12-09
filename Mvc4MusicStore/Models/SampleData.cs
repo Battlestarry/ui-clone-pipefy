@@ -120,4 +120,12 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "Michael Tilson Thomas & San Francisco Symphony" },
                 new Artist { Name = "Miles Davis" },
                 new Artist { Name = "Milton Nascimento" },
-                new A
+                new Artist { Name = "Mötley Crüe" },
+                new Artist { Name = "Motörhead" },
+                new Artist { Name = "Nash Ensemble" },
+                new Artist { Name = "Nicolaus Esterhazy Sinfonia" },
+                new Artist { Name = "Nirvana" },
+                new Artist { Name = "O Terço" },
+                new Artist { Name = "Olodum" },
+                new Artist { Name = "Orchestra of The Age of Enlightenment" },
+                new Artist { Name = "Os Paral
