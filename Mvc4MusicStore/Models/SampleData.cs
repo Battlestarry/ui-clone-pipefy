@@ -128,4 +128,14 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "O Terço" },
                 new Artist { Name = "Olodum" },
                 new Artist { Name = "Orchestra of The Age of Enlightenment" },
-                new Artist { Name = "Os Paral
+                new Artist { Name = "Os Paralamas Do Sucesso" },
+                new Artist { Name = "Ozzy Osbourne" },
+                new Artist { Name = "Page & Plant" },
+                new Artist { Name = "Paul D'Ianno" },
+                new Artist { Name = "Pearl Jam" },
+                new Artist { Name = "Pink Floyd" },
+                new Artist { Name = "Queen" },
+                new Artist { Name = "R.E.M." },
+                new Artist { Name = "Raul Seixas" },
+                new Artist { Name = "Red Hot Chili Peppers" },
+         
