@@ -145,4 +145,12 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "Scholars Baroque Ensemble" },
                 new Artist { Name = "Scorpions" },
                 new Artist { Name = "Sergei Prokofiev & Yuri Temirkanov" },
-                new Artist 
+                new Artist { Name = "Sir Georg Solti & Wiener Philharmoniker" },
+                new Artist { Name = "Skank" },
+                new Artist { Name = "Soundgarden" },
+                new Artist { Name = "Spyro Gyra" },
+                new Artist { Name = "Stevie Ray Vaughan & Double Trouble" },
+                new Artist { Name = "Stone Temple Pilots" },
+                new Artist { Name = "System Of A Down" },
+                new Artist { Name = "Temple of the Dog" },
+                ne
