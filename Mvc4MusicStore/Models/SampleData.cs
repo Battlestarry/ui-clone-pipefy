@@ -138,4 +138,11 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "R.E.M." },
                 new Artist { Name = "Raul Seixas" },
                 new Artist { Name = "Red Hot Chili Peppers" },
-         
+                new Artist { Name = "Roger Norrington, London Classical Players" },
+                new Artist { Name = "Royal Philharmonic Orchestra & Sir Thomas Beecham" },
+                new Artist { Name = "Rush" },
+                new Artist { Name = "Santana" },
+                new Artist { Name = "Scholars Baroque Ensemble" },
+                new Artist { Name = "Scorpions" },
+                new Artist { Name = "Sergei Prokofiev & Yuri Temirkanov" },
+                new Artist 
