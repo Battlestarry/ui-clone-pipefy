@@ -161,4 +161,13 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "The King's Singers" },
                 new Artist { Name = "The Police" },
                 new Artist { Name = "The Posies" },
-                new Ar
+                new Artist { Name = "The Rolling Stones" },
+                new Artist { Name = "The Who" },
+                new Artist { Name = "Tim Maia" },
+                new Artist { Name = "Ton Koopman" },
+                new Artist { Name = "U2" },
+                new Artist { Name = "UB40" },
+                new Artist { Name = "Van Halen" },
+                new Artist { Name = "Various Artists" },
+                new Artist { Name = "Velvet Revolver" },
+                new Artist { N
