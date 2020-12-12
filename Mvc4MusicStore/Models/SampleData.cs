@@ -153,4 +153,12 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "Stone Temple Pilots" },
                 new Artist { Name = "System Of A Down" },
                 new Artist { Name = "Temple of the Dog" },
-                ne
+                new Artist { Name = "Terry Bozzio, Tony Levin & Steve Stevens" },
+                new Artist { Name = "The 12 Cellists of The Berlin Philharmonic" },
+                new Artist { Name = "The Black Crowes" },
+                new Artist { Name = "The Cult" },
+                new Artist { Name = "The Doors" },
+                new Artist { Name = "The King's Singers" },
+                new Artist { Name = "The Police" },
+                new Artist { Name = "The Posies" },
+                new Ar
