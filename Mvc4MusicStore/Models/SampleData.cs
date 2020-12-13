@@ -170,4 +170,13 @@ namespace Mvc4MusicStore.Models
                 new Artist { Name = "Van Halen" },
                 new Artist { Name = "Various Artists" },
                 new Artist { Name = "Velvet Revolver" },
-                new Artist { N
+                new Artist { Name = "Vinícius De Moraes" },
+                new Artist { Name = "Wilhelm Kempff" },
+                new Artist { Name = "Yehudi Menuhin" },
+                new Artist { Name = "Yo-Yo Ma" },
+                new Artist { Name = "Zeca Pagodinho" }
+            };
+
+            new List<Album>
+            {
+                new Album { Title = "A Copland Celebration, Vol. I", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Aaron 
