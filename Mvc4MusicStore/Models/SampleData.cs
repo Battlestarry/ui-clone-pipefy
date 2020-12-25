@@ -206,4 +206,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Black Sabbath Vol. 4 (Remaster)", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Black Sabbath"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Black Sabbath", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Black Sabbath"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Carmina Burana", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Boston Symphony Orchestra & Seiji Ozawa"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "A Soprano Inspired", Genre = genres.S
+                new Album { Title = "A Soprano Inspired", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Britten Sinfonia, Ivor Bolton & Lesley Garrett"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Chemical Wedding", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Bruce Dickinson"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Prenda Minha", Genre = genres.Single
