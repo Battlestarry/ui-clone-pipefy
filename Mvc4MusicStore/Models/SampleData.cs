@@ -210,4 +210,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Chemical Wedding", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Bruce Dickinson"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Prenda Minha", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Caetano Veloso"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Sozinho Remix Ao Vivo", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Caetano Veloso"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Cake: B-Sides and
+                new Album { Title = "Cake: B-Sides and Rarities", Genre = genres.Single(g => g.Name == "Alternative"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Cake"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Carried to Dust (Bonus Track Version)", Genre = genres.Single(g => g.Name == "Alternative"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Calexico"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Cássia Eller - Sem Limite [Disc 1]", Genre =
