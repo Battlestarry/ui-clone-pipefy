@@ -214,4 +214,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Carried to Dust (Bonus Track Version)", Genre = genres.Single(g => g.Name == "Alternative"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Calexico"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Cássia Eller - Sem Limite [Disc 1]", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Cássia Eller"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Le Freak", Genre = genres.Single(g => g.Name == "Disco"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Chic"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Scheherazade", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a
+                new Album { Title = "Scheherazade", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Chicago Symphony Orchestra & Fritz Reiner"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Minha Historia", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Chico Buarque"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Afrociberdelia", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "
