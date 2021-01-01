@@ -220,4 +220,7 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Da Lama Ao Caos", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Chico Science & Nação Zumbi"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Carry On", Genre = genres.Single(g => g.Name == "Alternative"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Chris Cornell"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "SCRIABIN: Vers la flamme", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Christopher O'Riley"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Acústico MTV [Live]", Genre = genres.Single(g => g.Name == "Reggae"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Cidade Negra"), AlbumArtUrl = "/Content/Images/place
+                new Album { Title = "Acústico MTV [Live]", Genre = genres.Single(g => g.Name == "Reggae"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Cidade Negra"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Cidade Negra - Hits", Genre = genres.Single(g => g.Name == "Reggae"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Cidade Negra"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Na Pista", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Cláudio Zoli"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Alb
