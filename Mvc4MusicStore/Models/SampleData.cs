@@ -225,4 +225,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Na Pista", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Cláudio Zoli"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Chronicle, Vol. 1", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Creedence Clearwater Revival"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Chronicle, Vol. 2", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Creedence Clearwater Revival"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Titl
+                new Album { Title = "Into The Light", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "David Coverdale"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Come Taste The Band", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Deep Purple"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Deep Purple In Rock", G
