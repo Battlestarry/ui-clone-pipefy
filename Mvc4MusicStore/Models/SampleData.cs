@@ -235,4 +235,7 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Slaves And Masters", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Deep Purple"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Stormbringer", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Deep Purple"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "The Battle Rages On", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Deep Purple"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "The Final Concerts (Disc 2)", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Deep Purple"), AlbumArtUrl = "/Content/Image
+                new Album { Title = "The Final Concerts (Disc 2)", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Deep Purple"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Outbreak", Genre = genres.Single(g => g.Name == "Jazz"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Dennis Chambers"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Djavan Ao Vivo - Vol. 02", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Djavan"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                n
