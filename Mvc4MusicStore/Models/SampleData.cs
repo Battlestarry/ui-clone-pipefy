@@ -242,4 +242,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "MacArthur Park Suite", Genre = genres.Single(g => g.Name == "Disco"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Donna Summer"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Un-Led-Ed", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Dread Zeppelin"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "The Best of Ed Motta", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Ed Motta"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = 
+                new Album { Title = "Adams, John: The Chairman Dances", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Edo de Waart & San Francisco Symphony"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Elis Regina-Minha História", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Elis Regina"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+            
