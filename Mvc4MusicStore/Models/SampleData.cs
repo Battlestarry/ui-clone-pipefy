@@ -248,4 +248,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Unplugged", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Eric Clapton"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "The Cream Of Clapton", Genre = genres.Single(g => g.Name == "Blues"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Eric Clapton"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Unplugged", Genre = genres.Single(g => g.Name == "Blues"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Eric Clapton"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Respighi:Pines of Rome", Genre = 
+                new Album { Title = "Respighi:Pines of Rome", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Eugene Ormandy"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Strauss: Waltzes", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Eugene Ormandy"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "King For A Day Fool For A Lifetime", Genre = genres.Single(g 
