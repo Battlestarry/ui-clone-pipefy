@@ -252,4 +252,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Strauss: Waltzes", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Eugene Ormandy"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "King For A Day Fool For A Lifetime", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Faith No More"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Deixa Entrar", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Falamansa"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "In Your Honor [Disc 1]", Genre = genres.Single(g => g.Name == "Rock")
+                new Album { Title = "In Your Honor [Disc 1]", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Foo Fighters"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "In Your Honor [Disc 2]", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Foo Fighters"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "The Colour And The Shape", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single
