@@ -258,4 +258,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Bongo Fury", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Frank Zappa & Captain Beefheart"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Roda De Funk", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Funk Como Le Gusta"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Quanta Gente Veio Ver (Live)", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Gilberto Gil"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Quanta Gente Veio ver--Bônus De Carnaval", Genre = genres.Single(g => g.Name == "Jazz"), Price = 8.99M, Artist = ar
+                new Album { Title = "Quanta Gente Veio ver--Bônus De Carnaval", Genre = genres.Single(g => g.Name == "Jazz"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Gilberto Gil"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Faceless", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Godsmack"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Meus Momentos", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Gonzaguinha"), AlbumArt
