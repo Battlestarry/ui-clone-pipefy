@@ -264,4 +264,7 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Nielsen: The Six Symphonies", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Göteborgs Symfoniker & Neeme Järvi"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Appetite for Destruction", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Guns N' Roses"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Use Your Illusion I", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Guns N' Roses"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Use Your Illusion II", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Guns N' Roses"), AlbumArtUrl = "/Content/Image
+                new Album { Title = "Use Your Illusion II", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Guns N' Roses"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Blue Moods", Genre = genres.Single(g => g.Name == "Jazz"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Incognito"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "A Matter of Life and Death", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Iron Maiden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+       
