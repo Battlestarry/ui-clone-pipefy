@@ -273,4 +273,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Live At Donington 1992 (Disc 2)", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Iron Maiden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Rock In Rio [CD2]", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Iron Maiden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "The Number of The Beast", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Iron Maiden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-   
+                new Album { Title = "The X Factor", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Iron Maiden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Virtual XI", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Iron Maiden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "A Real Dead One", Genre = genres.Single(g 
