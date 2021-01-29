@@ -277,4 +277,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Virtual XI", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Iron Maiden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "A Real Dead One", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Iron Maiden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "A Real Live One", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Iron Maiden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Live After Death", Genre = genres.Single(g => g.Name == "Metal"), Pr
+                new Album { Title = "Live After Death", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Iron Maiden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "No Prayer For The Dying", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Iron Maiden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Piece Of Mind", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single
