@@ -287,4 +287,7 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Somewhere in Time", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Iron Maiden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "The Number of The Beast", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Iron Maiden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Iron Maiden", Genre = genres.Single(g => g.Name == "Blues"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Iron Maiden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Mascagni: Cavalleria Rusticana", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "James Levine"), AlbumArtUrl = "/Content/Images/placeh
+                new Album { Title = "Mascagni: Cavalleria Rusticana", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "James Levine"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Emergency On Planet Earth", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Jamiroquai"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Are You Experienced?", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Jimi Hendrix"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+           
