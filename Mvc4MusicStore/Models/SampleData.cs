@@ -290,4 +290,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Mascagni: Cavalleria Rusticana", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "James Levine"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Emergency On Planet Earth", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Jamiroquai"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Are You Experienced?", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Jimi Hendrix"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-           
+                new Album { Title = "Surfing with the Alien (Remastered)", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Joe Satriani"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Jorge Ben Jor 25 Anos", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Jorge Ben"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album 
