@@ -292,4 +292,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Are You Experienced?", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Jimi Hendrix"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Surfing with the Alien (Remastered)", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Joe Satriani"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Jorge Ben Jor 25 Anos", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Jorge Ben"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album 
+                new Album { Title = "Jota Quest-1995", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Jota Quest"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Living After Midnight", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Judas Priest"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Weill: The Se
