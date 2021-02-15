@@ -296,4 +296,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Living After Midnight", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Judas Priest"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Weill: The Seven Deadly Sins", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Kent Nagano and Orchestre de l'Opéra de Lyon"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Greatest Kiss", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Kiss"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Unplugged [Live]", 
+                new Album { Title = "Unplugged [Live]", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Kiss"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "BBC Sessions [Disc 1] [Live]", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Led Zeppelin"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "BBC Sessions [Disc 2] [Live]", Ge
