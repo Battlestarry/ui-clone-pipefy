@@ -307,4 +307,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Led Zeppelin II", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Led Zeppelin"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Led Zeppelin III", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Led Zeppelin"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Physical Graffiti [Disc 1]", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Led Zeppelin"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Phys
+                new Album { Title = "Physical Graffiti [Disc 2]", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Led Zeppelin"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Presence", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Led Zeppelin"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "The Song Remains The Same (Disc 1)", Genre =
