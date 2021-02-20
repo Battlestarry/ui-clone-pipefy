@@ -313,4 +313,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "The Song Remains The Same (Disc 2)", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Led Zeppelin"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Mais Do Mesmo", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Legião Urbana"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Greatest Hits", Genre = genres.Single(g => g.Name == "Reggae"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Lenny Kravitz"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Greatest Hits", Genre = genres.Single(g => g.
+                new Album { Title = "Greatest Hits", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Lenny Kravitz"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Greatest Hits", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Lenny Kravitz"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Tchaikovsky: The Nutcracker", Genre = genres.Single(g => g.Name == "Classical")
