@@ -317,4 +317,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Greatest Hits", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Lenny Kravitz"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Tchaikovsky: The Nutcracker", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "London Symphony Orchestra & Sir Charles Mackerras"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Duos II", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Luciana Souza/Romero Lubambo"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Chill: Brazil (Disc 1)", Genre = genres.Single(g => g.Name =
+                new Album { Title = "Chill: Brazil (Disc 1)", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Marcos Valle"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Misplaced Childhood", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Marillion"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Barulhinho Bom", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = ar
