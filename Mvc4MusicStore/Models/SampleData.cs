@@ -319,4 +319,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Duos II", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Luciana Souza/Romero Lubambo"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Chill: Brazil (Disc 1)", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Marcos Valle"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Misplaced Childhood", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Marillion"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Barulhinho Bom", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = ar
+                new Album { Title = "Barulhinho Bom", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Marisa Monte"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Szymanowski: Piano Works, Vol. 1", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Martin Roscoe"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "The Best Of Men At Work", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Art
