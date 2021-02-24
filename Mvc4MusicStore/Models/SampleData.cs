@@ -327,4 +327,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Garage Inc. (Disc 1)", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Metallica"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Garage Inc. (Disc 2)", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Metallica"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Load", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Metallica"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Master Of Puppets", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Metall
+                new Album { Title = "Master Of Puppets", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Metallica"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "ReLoad", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Metallica"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Ride The Lightning", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Metallica"), AlbumArtUrl = "/Conte
