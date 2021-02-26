@@ -331,4 +331,7 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "ReLoad", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Metallica"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Ride The Lightning", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Metallica"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "St. Anger", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Metallica"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Berlioz: Symphonie Fantastique", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Michael Tilson Thomas & San Francisco Symphony"), AlbumArtUrl = "/Content/Images/p
+                new Album { Title = "Berlioz: Symphonie Fantastique", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Michael Tilson Thomas & San Francisco Symphony"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Prokofiev: Romeo & Juliet", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Michael Tilson Thomas & San Francisco Symphony"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Miles Ahead", Genre = genres.Single(g => g.Name == "Jazz"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Miles Davis"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title 
