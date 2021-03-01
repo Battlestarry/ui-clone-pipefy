@@ -334,4 +334,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Berlioz: Symphonie Fantastique", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Michael Tilson Thomas & San Francisco Symphony"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Prokofiev: Romeo & Juliet", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Michael Tilson Thomas & San Francisco Symphony"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Miles Ahead", Genre = genres.Single(g => g.Name == "Jazz"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Miles Davis"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title 
+                new Album { Title = "The Essential Miles Davis [Disc 1]", Genre = genres.Single(g => g.Name == "Jazz"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Miles Davis"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "The Essential Miles Davis [Disc 2]", Genre = genres.Single(g => g.Name == "Jazz"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Miles Davis"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Milton 
