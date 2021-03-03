@@ -338,4 +338,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "The Essential Miles Davis [Disc 2]", Genre = genres.Single(g => g.Name == "Jazz"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Miles Davis"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Milton Nascimento Ao Vivo", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Milton Nascimento"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Minas", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Milton Nascimento"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Motley Crue Greatest Hits", Genre = genres.Single(g => g.Name == "Metal"), Price = 8
+                new Album { Title = "Motley Crue Greatest Hits", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Mötley Crüe"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Ace Of Spades", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Motörhead"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Mozart: Chamber Music", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Nash Ensemble"), AlbumArtUr
