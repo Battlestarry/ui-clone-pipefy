@@ -342,4 +342,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Ace Of Spades", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Motörhead"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Mozart: Chamber Music", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Nash Ensemble"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "The Best of Beethoven", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Nicolaus Esterhazy Sinfonia"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Nevermind", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a
+                new Album { Title = "Nevermind", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Nirvana"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Compositores", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "O Terço"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Olodum", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Olodum"), AlbumArtUrl = "/Content/Images/placeholde
