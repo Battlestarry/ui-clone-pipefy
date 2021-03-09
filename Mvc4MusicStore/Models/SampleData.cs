@@ -348,4 +348,7 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Bach: The Brandenburg Concertos", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Orchestra of The Age of Enlightenment"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Acústico MTV", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Os Paralamas Do Sucesso"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Arquivo II", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Os Paralamas Do Sucesso"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Arquivo Os Paralamas Do Sucesso", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Os Paralamas Do Sucesso"), AlbumArtUrl = "
+                new Album { Title = "Arquivo Os Paralamas Do Sucesso", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Os Paralamas Do Sucesso"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Tribute", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Ozzy Osbourne"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Bark at the Moon (Remastered)", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Ozzy Osbourne"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+      
