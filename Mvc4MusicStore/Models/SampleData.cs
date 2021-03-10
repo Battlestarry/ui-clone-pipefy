@@ -351,4 +351,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Arquivo Os Paralamas Do Sucesso", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Os Paralamas Do Sucesso"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Tribute", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Ozzy Osbourne"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Bark at the Moon (Remastered)", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Ozzy Osbourne"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-      
+                new Album { Title = "Blizzard of Ozz", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Ozzy Osbourne"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Diary of a Madman (Remastered)", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Ozzy Osbourne"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+       
