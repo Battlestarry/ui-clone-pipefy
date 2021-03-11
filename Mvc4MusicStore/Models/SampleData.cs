@@ -357,4 +357,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Speak of the Devil", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Ozzy Osbourne"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Walking Into Clarksdale", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Page & Plant"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "The Beast Live", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Paul D'Ianno"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Liv
+                new Album { Title = "Live On Two Legs [Live]", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Pearl Jam"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Riot Act", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Pearl Jam"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Ten", Genre = genres.Single(g => g.Name == "Rock"), P
