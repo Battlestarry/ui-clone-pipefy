@@ -363,4 +363,7 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Vs.", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Pearl Jam"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Dark Side Of The Moon", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Pink Floyd"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Greatest Hits I", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Queen"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Greatest Hits II", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Queen"), AlbumArtUrl = "/Content/Images/placeholder.gif" }
+                new Album { Title = "Greatest Hits II", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Queen"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "News Of The World", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Queen"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "New Adventures In Hi-Fi", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "R.E.M."), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Raul 
