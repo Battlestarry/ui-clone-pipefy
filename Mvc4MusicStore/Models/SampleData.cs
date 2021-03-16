@@ -370,4 +370,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "By The Way", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Red Hot Chili Peppers"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Californication", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Red Hot Chili Peppers"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Purcell: The Fairy Queen", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Roger Norrington, London Classical Players"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Haydn: Symphonies 99 - 104
+                new Album { Title = "Haydn: Symphonies 99 - 104", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Royal Philharmonic Orchestra & Sir Thomas Beecham"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Retrospective I (1974-1980)", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Rush"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Tit
