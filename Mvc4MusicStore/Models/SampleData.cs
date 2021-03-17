@@ -374,4 +374,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Retrospective I (1974-1980)", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Rush"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Santana - As Years Go By", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Santana"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Santana Live", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Santana"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Supernatural", Genre = genres.Single(g => 
+                new Album { Title = "Supernatural", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Santana"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Handel: The Messiah (Highlights)", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Scholars Baroque Ensemble"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Prokofiev: Symphony No.1", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.9
