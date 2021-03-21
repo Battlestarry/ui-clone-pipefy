@@ -380,4 +380,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Wagner: Favourite Overtures", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Sir Georg Solti & Wiener Philharmoniker"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Maquinarama", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Skank"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "O Samba Poconé", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Skank"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "A-Sides", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Soun
+                new Album { Title = "A-Sides", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Soundgarden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Heart of the Night", Genre = genres.Single(g => g.Name == "Jazz"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Spyro Gyra"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Morning Dance", Genre = genres.Single(g => g.Name == "Jazz"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Spyro Gyra"), AlbumArtUrl = "/Content/I
