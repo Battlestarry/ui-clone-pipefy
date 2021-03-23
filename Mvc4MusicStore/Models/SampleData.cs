@@ -382,4 +382,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "O Samba Poconé", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Skank"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "A-Sides", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Soundgarden"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Heart of the Night", Genre = genres.Single(g => g.Name == "Jazz"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Spyro Gyra"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Morning Dance", Genre = genres.Single(g => g.Name == "Jazz"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Spyro Gyra"), AlbumArtUrl = "/Content/I
+                new Album { Title = "Morning Dance", Genre = genres.Single(g => g.Name == "Jazz"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Spyro Gyra"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "In Step", Genre = genres.Single(g => g.Name == "Blues"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Stevie Ray Vaughan & Double Trouble"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Core", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Stone Temple Pilots"), AlbumArtUrl = "/Con
