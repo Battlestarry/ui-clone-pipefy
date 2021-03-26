@@ -388,4 +388,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Mezmerize", Genre = genres.Single(g => g.Name == "Metal"), Price = 8.99M, Artist = artists.Single(a => a.Name == "System Of A Down"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Temple of the Dog", Genre = genres.Single(g => g.Name == "Alternative"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Temple of the Dog"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "[1997] Black Light Syndrome", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Terry Bozzio, Tony Levin & Steve Stevens"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "South American Getaway", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "
+                new Album { Title = "South American Getaway", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The 12 Cellists of The Berlin Philharmonic"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Live [Disc 1]", Genre = genres.Single(g => g.Name == "Blues"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Black Crowes"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Live [Disc 2]", Genre = genres.Single(g => g.Name == "Blues"), Price = 8.99M, Artist = artists.Single(a => a.Nam
