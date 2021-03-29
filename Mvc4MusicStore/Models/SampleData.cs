@@ -394,4 +394,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Beyond Good And Evil", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Cult"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "The Doors", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Doors"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "English Renaissance", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The King's Singers"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "The Police Greatest Hits", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Police"), AlbumArtUrl = "/Con
+                new Album { Title = "The Police Greatest Hits", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Police"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Every Kind of Light", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Posies"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Hot Rocks, 1964-1971 (Disc 1)", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Rolling Stones"), AlbumArtUrl
