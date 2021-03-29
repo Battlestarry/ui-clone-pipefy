@@ -392,4 +392,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Live [Disc 1]", Genre = genres.Single(g => g.Name == "Blues"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Black Crowes"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Live [Disc 2]", Genre = genres.Single(g => g.Name == "Blues"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Black Crowes"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Beyond Good And Evil", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Cult"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "The Doors", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Doors"), AlbumArtUrl = "/Content/Images/pla
+                new Album { Title = "The Doors", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Doors"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "English Renaissance", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The King's Singers"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "The Police Greatest Hits", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Police"), AlbumArtUrl = "/Con
