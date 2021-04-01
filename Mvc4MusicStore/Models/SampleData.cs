@@ -401,4 +401,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Voodoo Lounge", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Rolling Stones"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "My Generation - The Very Best Of The Who", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "The Who"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Serie Sem Limite (Disc 1)", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Tim Maia"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Alb
+                new Album { Title = "Serie Sem Limite (Disc 2)", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Tim Maia"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Bach: Toccata & Fugue in D Minor", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Ton Koopman"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new A
