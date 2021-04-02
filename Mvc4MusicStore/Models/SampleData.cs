@@ -403,4 +403,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Serie Sem Limite (Disc 1)", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Tim Maia"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Serie Sem Limite (Disc 2)", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Tim Maia"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Bach: Toccata & Fugue in D Minor", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Ton Koopman"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new A
+                new Album { Title = "Achtung Baby", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "U2"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "B-Sides 1980-1990", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "U2"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "How To Dismantle An Atomic Bom
