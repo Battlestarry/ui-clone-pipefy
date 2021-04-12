@@ -410,4 +410,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Rattle And Hum", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "U2"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "The Best Of 1980-1990", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "U2"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "War", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "U2"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-   
+                new Album { Title = "Zooropa", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "U2"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "UB40 The Best Of - Volume Two [UK]", Genre = genres.Single(g => g.Name == "Reggae"), Price = 8.99M, Artist = artists.Single(a => a.Name == "UB40"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album 
