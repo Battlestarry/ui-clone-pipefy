@@ -416,4 +416,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "The Best Of Van Halen, Vol. I", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Van Halen"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Van Halen III", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Van Halen"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Van Halen", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Van Halen"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Axé Bahia 2001", Genre = genres.Single(g => g.Name == "Pop"), Price = 8
+                new Album { Title = "Axé Bahia 2001", Genre = genres.Single(g => g.Name == "Pop"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Various Artists"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Sambas De Enredo 2001", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Various Artists"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Vozes do MPB", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artis
