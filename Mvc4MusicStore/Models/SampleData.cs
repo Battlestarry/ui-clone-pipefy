@@ -422,4 +422,6 @@ namespace Mvc4MusicStore.Models
                 new Album { Title = "Contraband", Genre = genres.Single(g => g.Name == "Rock"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Velvet Revolver"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Vinicius De Moraes", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Vinícius De Moraes"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
                 new Album { Title = "Bach: Goldberg Variations", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Wilhelm Kempff"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
-                new Album { Title = "Bartok: Violin & Viola Concertos", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(
+                new Album { Title = "Bartok: Violin & Viola Concertos", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Yehudi Menuhin"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Bach: The Cello Suites", Genre = genres.Single(g => g.Name == "Classical"), Price = 8.99M, Artist = artists.Single(a => a.Name == "Yo-Yo Ma"), AlbumArtUrl = "/Content/Images/placeholder.gif" },
+                new Album { Title = "Ao Vivo [IMPORT]", Genre = genres.Single(g => g.Name == "Latin"), Price = 8.99M, Artist = artists.Single(a => a.Name == 
