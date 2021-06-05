@@ -209,4 +209,11 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CheckoutController.cs" />
- 
+    <Compile Include="Controllers\GroupManagerController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ShoppingCartController.cs" />
+    <Compile Include="Controllers\StoreController.cs" />
+    <Compile Include="Controllers\StoreManagerController.cs" />
+    <Compile Include="Controllers\UserManagerController.cs" />
+    <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
+    
