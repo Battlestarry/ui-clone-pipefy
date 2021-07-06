@@ -365,3 +365,16 @@
     <Content Include="Views\Store\GenreMenu.cshtml" />
     <Content Include="Views\UserManager\Details.cshtml" />
     <Content Include="Views\UserManager\Edit.cshtml" />
+    <Content Include="Views\UserManager\Index.cshtml" />
+    <Content Include="Views\GroupManager\Create.cshtml" />
+    <Content Include="Views\GroupManager\Details.cshtml" />
+    <Content Include="Views\GroupManager\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OktaProviders\OktaProviders.cspro
