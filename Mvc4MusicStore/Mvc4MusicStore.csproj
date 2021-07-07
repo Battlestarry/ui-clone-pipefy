@@ -377,4 +377,13 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OktaProviders\OktaProviders.cspro
+    <ProjectReference Include="..\OktaProviders\OktaProviders.csproj">
+      <Project>{458606b8-dc0d-461a-ad58-d5e390f44d34}</Project>
+      <Name>OktaProviders</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinP
