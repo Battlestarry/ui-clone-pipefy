@@ -1142,3 +1142,445 @@
         return { fragment: fragment, cacheable: cacheable };
     };
     jQuery.cache = {};
+    jQuery.camelCase = function (string) {
+
+        return string.replace(rmsPrefix, "ms-").replace(rdashAlpha, fcamelCase);
+    };
+    jQuery.clean = function (elems, context, fragment, scripts) {
+
+        var i, j, elem, tag, wrap, depth, div, hasBody, tbody, len, handleScript, jsTags,
+			safe = context === document && safeFragment,
+			ret = [];
+
+        // Ensure that context is a document
+        if (!context || typeof context.createDocumentFragment === "undefined") {
+            context = document;
+        }
+
+        // Use the already-created safe fragment if context permits
+        for (i = 0; (elem = elems[i]) != null; i++) {
+            if (typeof elem === "number") {
+                elem += "";
+            }
+
+            if (!elem) {
+                continue;
+            }
+
+            // Convert html string into DOM nodes
+            if (typeof elem === "string") {
+                if (!rhtml.test(elem)) {
+                    elem = context.createTextNode(elem);
+                } else {
+                    // Ensure a safe container in which to render the html
+                    safe = safe || createSafeFragment(context);
+                    div = context.createElement("div");
+                    safe.appendChild(div);
+
+                    // Fix "XHTML"-style tags in all browsers
+                    elem = elem.replace(rxhtmlTag, "<$1></$2>");
+
+                    // Go to html and back, then peel off extra wrappers
+                    tag = (rtagName.exec(elem) || ["", ""])[1].toLowerCase();
+                    wrap = wrapMap[tag] || wrapMap._default;
+                    depth = wrap[0];
+                    div.innerHTML = wrap[1] + elem + wrap[2];
+
+                    // Move to the right depth
+                    while (depth--) {
+                        div = div.lastChild;
+                    }
+
+                    // Remove IE's autoinserted <tbody> from table fragments
+                    if (!jQuery.support.tbody) {
+
+                        // String was a <table>, *may* have spurious <tbody>
+                        hasBody = rtbody.test(elem);
+                        tbody = tag === "table" && !hasBody ?
+                            div.firstChild && div.firstChild.childNodes :
+
+                            // String was a bare <thead> or <tfoot>
+                            wrap[1] === "<table>" && !hasBody ?
+                                div.childNodes :
+                                [];
+
+                        for (j = tbody.length - 1; j >= 0 ; --j) {
+                            if (jQuery.nodeName(tbody[j], "tbody") && !tbody[j].childNodes.length) {
+                                tbody[j].parentNode.removeChild(tbody[j]);
+                            }
+                        }
+                    }
+
+                    // IE completely kills leading whitespace when innerHTML is used
+                    if (!jQuery.support.leadingWhitespace && rleadingWhitespace.test(elem)) {
+                        div.insertBefore(context.createTextNode(rleadingWhitespace.exec(elem)[0]), div.firstChild);
+                    }
+
+                    elem = div.childNodes;
+
+                    // Take out of fragment container (we need a fresh div each time)
+                    div.parentNode.removeChild(div);
+                }
+            }
+
+            if (elem.nodeType) {
+                ret.push(elem);
+            } else {
+                jQuery.merge(ret, elem);
+            }
+        }
+
+        // Fix #11356: Clear elements from safeFragment
+        if (div) {
+            elem = div = safe = null;
+        }
+
+        // Reset defaultChecked for any radios and checkboxes
+        // about to be appended to the DOM in IE 6/7 (#8060)
+        if (!jQuery.support.appendChecked) {
+            for (i = 0; (elem = ret[i]) != null; i++) {
+                if (jQuery.nodeName(elem, "input")) {
+                    fixDefaultChecked(elem);
+                } else if (typeof elem.getElementsByTagName !== "undefined") {
+                    jQuery.grep(elem.getElementsByTagName("input"), fixDefaultChecked);
+                }
+            }
+        }
+
+        // Append elements to a provided document fragment
+        if (fragment) {
+            // Special handling of each script element
+            handleScript = function (elem) {
+                // Check if we consider it executable
+                if (!elem.type || rscriptType.test(elem.type)) {
+                    // Detach the script and store it in the scripts array (if provided) or the fragment
+                    // Return truthy to indicate that it has been handled
+                    return scripts ?
+						scripts.push(elem.parentNode ? elem.parentNode.removeChild(elem) : elem) :
+						fragment.appendChild(elem);
+                }
+            };
+
+            for (i = 0; (elem = ret[i]) != null; i++) {
+                // Check if we're done after handling an executable script
+                if (!(jQuery.nodeName(elem, "script") && handleScript(elem))) {
+                    // Append to fragment and handle embedded scripts
+                    fragment.appendChild(elem);
+                    if (typeof elem.getElementsByTagName !== "undefined") {
+                        // handleScript alters the DOM, so use jQuery.merge to ensure snapshot iteration
+                        jsTags = jQuery.grep(jQuery.merge([], elem.getElementsByTagName("script")), handleScript);
+
+                        // Splice the scripts into ret after their former ancestor and advance our index beyond them
+                        ret.splice.apply(ret, [i + 1, 0].concat(jsTags));
+                        i += jsTags.length;
+                    }
+                }
+            }
+        }
+
+        return ret;
+    };
+    jQuery.cleanData = function (elems, /* internal */ acceptData) {
+
+        var data, id, elem, type,
+			i = 0,
+			internalKey = jQuery.expando,
+			cache = jQuery.cache,
+			deleteExpando = jQuery.support.deleteExpando,
+			special = jQuery.event.special;
+
+        for (; (elem = elems[i]) != null; i++) {
+
+            if (acceptData || jQuery.acceptData(elem)) {
+
+                id = elem[internalKey];
+                data = id && cache[id];
+
+                if (data) {
+                    if (data.events) {
+                        for (type in data.events) {
+                            if (special[type]) {
+                                jQuery.event.remove(elem, type);
+
+                                // This is a shortcut to avoid jQuery.event.remove's overhead
+                            } else {
+                                jQuery.removeEvent(elem, type, data.handle);
+                            }
+                        }
+                    }
+
+                    // Remove cache only if it was not already removed by jQuery.event.remove
+                    if (cache[id]) {
+
+                        delete cache[id];
+
+                        // IE does not allow us to delete expando properties from nodes,
+                        // nor does it have a removeAttribute function on Document nodes;
+                        // we must handle all of these cases
+                        if (deleteExpando) {
+                            delete elem[internalKey];
+
+                        } else if (elem.removeAttribute) {
+                            elem.removeAttribute(internalKey);
+
+                        } else {
+                            elem[internalKey] = null;
+                        }
+
+                        jQuery.deletedIds.push(id);
+                    }
+                }
+            }
+        }
+    };
+    jQuery.clone = function (elem, dataAndEvents, deepDataAndEvents) {
+
+        var srcElements,
+			destElements,
+			i,
+			clone;
+
+        if (jQuery.support.html5Clone || jQuery.isXMLDoc(elem) || !rnoshimcache.test("<" + elem.nodeName + ">")) {
+            clone = elem.cloneNode(true);
+
+            // IE<=8 does not properly clone detached, unknown element nodes
+        } else {
+            fragmentDiv.innerHTML = elem.outerHTML;
+            fragmentDiv.removeChild(clone = fragmentDiv.firstChild);
+        }
+
+        if ((!jQuery.support.noCloneEvent || !jQuery.support.noCloneChecked) &&
+				(elem.nodeType === 1 || elem.nodeType === 11) && !jQuery.isXMLDoc(elem)) {
+            // IE copies events bound via attachEvent when using cloneNode.
+            // Calling detachEvent on the clone will also remove the events
+            // from the original. In order to get around this, we use some
+            // proprietary methods to clear the events. Thanks to MooTools
+            // guys for this hotness.
+
+            cloneFixAttributes(elem, clone);
+
+            // Using Sizzle here is crazy slow, so we use getElementsByTagName instead
+            srcElements = getAll(elem);
+            destElements = getAll(clone);
+
+            // Weird iteration because IE will replace the length property
+            // with an element if you are cloning the body and one of the
+            // elements on the page has a name or id of "length"
+            for (i = 0; srcElements[i]; ++i) {
+                // Ensure that the destination node is not null; Fixes #9587
+                if (destElements[i]) {
+                    cloneFixAttributes(srcElements[i], destElements[i]);
+                }
+            }
+        }
+
+        // Copy the events from the original to the clone
+        if (dataAndEvents) {
+            cloneCopyEvent(elem, clone);
+
+            if (deepDataAndEvents) {
+                srcElements = getAll(elem);
+                destElements = getAll(clone);
+
+                for (i = 0; srcElements[i]; ++i) {
+                    cloneCopyEvent(srcElements[i], destElements[i]);
+                }
+            }
+        }
+
+        srcElements = destElements = null;
+
+        // Return the cloned set
+        return clone;
+    };
+    jQuery.contains = function (a, b) {
+        /// <summary>
+        ///     Check to see if a DOM element is within another DOM element.
+        /// </summary>
+        /// <param name="a" domElement="true">
+        ///     The DOM element that may contain the other element.
+        /// </param>
+        /// <param name="b" domElement="true">
+        ///     The DOM element that may be contained by the other element.
+        /// </param>
+        /// <returns type="Boolean" />
+
+        var adown = a.nodeType === 9 ? a.documentElement : a,
+			bup = b && b.parentNode;
+        return a === bup || !!(bup && bup.nodeType === 1 && adown.contains && adown.contains(bup));
+    };
+    jQuery.css = function (elem, name, numeric, extra) {
+
+        var val, num, hooks,
+			origName = jQuery.camelCase(name);
+
+        // Make sure that we're working with the right name
+        name = jQuery.cssProps[origName] || (jQuery.cssProps[origName] = vendorPropName(elem.style, origName));
+
+        // gets hook for the prefixed version
+        // followed by the unprefixed version
+        hooks = jQuery.cssHooks[name] || jQuery.cssHooks[origName];
+
+        // If a hook was provided get the computed value from there
+        if (hooks && "get" in hooks) {
+            val = hooks.get(elem, true, extra);
+        }
+
+        // Otherwise, if a way to get the computed value exists, use that
+        if (val === undefined) {
+            val = curCSS(elem, name);
+        }
+
+        //convert "normal" to computed value
+        if (val === "normal" && name in cssNormalTransform) {
+            val = cssNormalTransform[name];
+        }
+
+        // Return, converting to number if forced or a qualifier was provided and val looks numeric
+        if (numeric || extra !== undefined) {
+            num = parseFloat(val);
+            return numeric || jQuery.isNumeric(num) ? num || 0 : val;
+        }
+        return val;
+    };
+    jQuery.cssHooks = {
+        "opacity": {},
+        "height": {},
+        "width": {},
+        "margin": {},
+        "padding": {},
+        "borderWidth": {},
+        "top": {},
+        "left": {}
+    };
+    jQuery.cssNumber = {
+        "fillOpacity": true,
+        "fontWeight": true,
+        "lineHeight": true,
+        "opacity": true,
+        "orphans": true,
+        "widows": true,
+        "zIndex": true,
+        "zoom": true
+    };
+    jQuery.cssProps = {
+        "float": 'cssFloat',
+        "display": 'display',
+        "visibility": 'visibility',
+        "opacity": 'opacity'
+    };
+    jQuery.data = function (elem, name, data, pvt /* Internal Use Only */) {
+        /// <summary>
+        ///     1: Store arbitrary data associated with the specified element. Returns the value that was set.
+        ///     &#10;    1.1 - jQuery.data(element, key, value)
+        ///     &#10;2: Returns value at named data store for the element, as set by jQuery.data(element, name, value), or the full data store for the element.
+        ///     &#10;    2.1 - jQuery.data(element, key) 
+        ///     &#10;    2.2 - jQuery.data(element)
+        /// </summary>
+        /// <param name="elem" domElement="true">
+        ///     The DOM element to associate with the data.
+        /// </param>
+        /// <param name="name" type="String">
+        ///     A string naming the piece of data to set.
+        /// </param>
+        /// <param name="data" type="Object">
+        ///     The new data value.
+        /// </param>
+        /// <returns type="Object" />
+
+        if (!jQuery.acceptData(elem)) {
+            return;
+        }
+
+        var thisCache, ret,
+			internalKey = jQuery.expando,
+			getByName = typeof name === "string",
+
+			// We have to handle DOM nodes and JS objects differently because IE6-7
+			// can't GC object references properly across the DOM-JS boundary
+			isNode = elem.nodeType,
+
+			// Only DOM nodes need the global jQuery cache; JS object data is
+			// attached directly to the object so GC can occur automatically
+			cache = isNode ? jQuery.cache : elem,
+
+			// Only defining an ID for JS objects if its cache already exists allows
+			// the code to shortcut on the same path as a DOM node with no cache
+			id = isNode ? elem[internalKey] : elem[internalKey] && internalKey;
+
+        // Avoid doing any more work than we need to when trying to get data on an
+        // object that has no data at all
+        if ((!id || !cache[id] || (!pvt && !cache[id].data)) && getByName && data === undefined) {
+            return;
+        }
+
+        if (!id) {
+            // Only DOM nodes need a new unique ID for each element since their data
+            // ends up in the global cache
+            if (isNode) {
+                elem[internalKey] = id = jQuery.deletedIds.pop() || jQuery.guid++;
+            } else {
+                id = internalKey;
+            }
+        }
+
+        if (!cache[id]) {
+            cache[id] = {};
+
+            // Avoids exposing jQuery metadata on plain JS objects when the object
+            // is serialized using JSON.stringify
+            if (!isNode) {
+                cache[id].toJSON = jQuery.noop;
+            }
+        }
+
+        // An object can be passed to jQuery.data instead of a key/value pair; this gets
+        // shallow copied over onto the existing cache
+        if (typeof name === "object" || typeof name === "function") {
+            if (pvt) {
+                cache[id] = jQuery.extend(cache[id], name);
+            } else {
+                cache[id].data = jQuery.extend(cache[id].data, name);
+            }
+        }
+
+        thisCache = cache[id];
+
+        // jQuery data() is stored in a separate object inside the object's internal data
+        // cache in order to avoid key collisions between internal data and user-defined
+        // data.
+        if (!pvt) {
+            if (!thisCache.data) {
+                thisCache.data = {};
+            }
+
+            thisCache = thisCache.data;
+        }
+
+        if (data !== undefined) {
+            thisCache[jQuery.camelCase(name)] = data;
+        }
+
+        // Check for both converted-to-camel and non-converted data property names
+        // If a data property was specified
+        if (getByName) {
+
+            // First Try to find as-is property data
+            ret = thisCache[name];
+
+            // Test for null|undefined property data
+            if (ret == null) {
+
+                // Try to find the camelCased property
+                ret = thisCache[jQuery.camelCase(name)];
+            }
+        } else {
+            ret = thisCache;
+        }
+
+        return ret;
+    };
+    jQuery.dequeue = function (elem, type) {
+        /// <summary>
+        ///     Execute the next function on the queue for the matched element.
+        /// </summary>
