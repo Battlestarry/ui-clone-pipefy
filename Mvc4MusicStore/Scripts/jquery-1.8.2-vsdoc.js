@@ -2558,3 +2558,471 @@
         proxy.guid = fn.guid = fn.guid || jQuery.guid++;
 
         return proxy;
+    };
+    jQuery.queue = function (elem, type, data) {
+        /// <summary>
+        ///     1: Show the queue of functions to be executed on the matched element.
+        ///     &#10;    1.1 - jQuery.queue(element, queueName)
+        ///     &#10;2: Manipulate the queue of functions to be executed on the matched element.
+        ///     &#10;    2.1 - jQuery.queue(element, queueName, newQueue) 
+        ///     &#10;    2.2 - jQuery.queue(element, queueName, callback())
+        /// </summary>
+        /// <param name="elem" domElement="true">
+        ///     A DOM element where the array of queued functions is attached.
+        /// </param>
+        /// <param name="type" type="String">
+        ///     A string containing the name of the queue. Defaults to fx, the standard effects queue.
+        /// </param>
+        /// <param name="data" type="Array">
+        ///     An array of functions to replace the current queue contents.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var queue;
+
+        if (elem) {
+            type = (type || "fx") + "queue";
+            queue = jQuery._data(elem, type);
+
+            // Speed up dequeue by getting out quickly if this is just a lookup
+            if (data) {
+                if (!queue || jQuery.isArray(data)) {
+                    queue = jQuery._data(elem, type, jQuery.makeArray(data));
+                } else {
+                    queue.push(data);
+                }
+            }
+            return queue || [];
+        }
+    };
+    jQuery.ready = function (wait) {
+
+
+        // Abort if there are pending holds or we're already ready
+        if (wait === true ? --jQuery.readyWait : jQuery.isReady) {
+            return;
+        }
+
+        // Make sure body exists, at least, in case IE gets a little overzealous (ticket #5443).
+        if (!document.body) {
+            return setTimeout(jQuery.ready, 1);
+        }
+
+        // Remember that the DOM is ready
+        jQuery.isReady = true;
+
+        // If a normal DOM Ready event fired, decrement, and wait if need be
+        if (wait !== true && --jQuery.readyWait > 0) {
+            return;
+        }
+
+        // If there are functions bound, to execute
+        readyList.resolveWith(document, [jQuery]);
+
+        // Trigger any bound ready events
+        if (jQuery.fn.trigger) {
+            jQuery(document).trigger("ready").off("ready");
+        }
+    };
+    jQuery.readyWait = 0;
+    jQuery.removeAttr = function (elem, value) {
+
+        var propName, attrNames, name, isBool,
+			i = 0;
+
+        if (value && elem.nodeType === 1) {
+
+            attrNames = value.split(core_rspace);
+
+            for (; i < attrNames.length; i++) {
+                name = attrNames[i];
+
+                if (name) {
+                    propName = jQuery.propFix[name] || name;
+                    isBool = rboolean.test(name);
+
+                    // See #9699 for explanation of this approach (setting first, then removal)
+                    // Do not do this for boolean attributes (see #10870)
+                    if (!isBool) {
+                        jQuery.attr(elem, name, "");
+                    }
+                    elem.removeAttribute(getSetAttribute ? name : propName);
+
+                    // Set corresponding property to false for boolean attributes
+                    if (isBool && propName in elem) {
+                        elem[propName] = false;
+                    }
+                }
+            }
+        }
+    };
+    jQuery.removeData = function (elem, name, pvt /* Internal Use Only */) {
+        /// <summary>
+        ///     Remove a previously-stored piece of data.
+        /// </summary>
+        /// <param name="elem" domElement="true">
+        ///     A DOM element from which to remove data.
+        /// </param>
+        /// <param name="name" type="String">
+        ///     A string naming the piece of data to remove.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (!jQuery.acceptData(elem)) {
+            return;
+        }
+
+        var thisCache, i, l,
+
+			isNode = elem.nodeType,
+
+			// See jQuery.data for more information
+			cache = isNode ? jQuery.cache : elem,
+			id = isNode ? elem[jQuery.expando] : jQuery.expando;
+
+        // If there is already no cache entry for this object, there is no
+        // purpose in continuing
+        if (!cache[id]) {
+            return;
+        }
+
+        if (name) {
+
+            thisCache = pvt ? cache[id] : cache[id].data;
+
+            if (thisCache) {
+
+                // Support array or space separated string names for data keys
+                if (!jQuery.isArray(name)) {
+
+                    // try the string as a key before any manipulation
+                    if (name in thisCache) {
+                        name = [name];
+                    } else {
+
+                        // split the camel cased version by spaces unless a key with the spaces exists
+                        name = jQuery.camelCase(name);
+                        if (name in thisCache) {
+                            name = [name];
+                        } else {
+                            name = name.split(" ");
+                        }
+                    }
+                }
+
+                for (i = 0, l = name.length; i < l; i++) {
+                    delete thisCache[name[i]];
+                }
+
+                // If there is no data left in the cache, we want to continue
+                // and let the cache object itself get destroyed
+                if (!(pvt ? isEmptyDataObject : jQuery.isEmptyObject)(thisCache)) {
+                    return;
+                }
+            }
+        }
+
+        // See jQuery.data for more information
+        if (!pvt) {
+            delete cache[id].data;
+
+            // Don't destroy the parent cache unless the internal data object
+            // had been the only thing left in it
+            if (!isEmptyDataObject(cache[id])) {
+                return;
+            }
+        }
+
+        // Destroy the cache
+        if (isNode) {
+            jQuery.cleanData([elem], true);
+
+            // Use delete when supported for expandos or `cache` is not a window per isWindow (#10080)
+        } else if (jQuery.support.deleteExpando || cache != cache.window) {
+            delete cache[id];
+
+            // When all else fails, null
+        } else {
+            cache[id] = null;
+        }
+    };
+    jQuery.removeEvent = function (elem, type, handle) {
+
+        if (elem.removeEventListener) {
+            elem.removeEventListener(type, handle, false);
+        }
+    };
+    jQuery.sibling = function (n, elem) {
+
+        var r = [];
+
+        for (; n; n = n.nextSibling) {
+            if (n.nodeType === 1 && n !== elem) {
+                r.push(n);
+            }
+        }
+
+        return r;
+    };
+    jQuery.speed = function (speed, easing, fn) {
+
+        var opt = speed && typeof speed === "object" ? jQuery.extend({}, speed) : {
+            complete: fn || !fn && easing ||
+                jQuery.isFunction(speed) && speed,
+            duration: speed,
+            easing: fn && easing || easing && !jQuery.isFunction(easing) && easing
+        };
+
+        opt.duration = jQuery.fx.off ? 0 : typeof opt.duration === "number" ? opt.duration :
+            opt.duration in jQuery.fx.speeds ? jQuery.fx.speeds[opt.duration] : jQuery.fx.speeds._default;
+
+        // normalize opt.queue - true/undefined/null -> "fx"
+        if (opt.queue == null || opt.queue === true) {
+            opt.queue = "fx";
+        }
+
+        // Queueing
+        opt.old = opt.complete;
+
+        opt.complete = function () {
+            if (jQuery.isFunction(opt.old)) {
+                opt.old.call(this);
+            }
+
+            if (opt.queue) {
+                jQuery.dequeue(this, opt.queue);
+            }
+        };
+
+        return opt;
+    };
+    jQuery.style = function (elem, name, value, extra) {
+
+        // Don't set styles on text and comment nodes
+        if (!elem || elem.nodeType === 3 || elem.nodeType === 8 || !elem.style) {
+            return;
+        }
+
+        // Make sure that we're working with the right name
+        var ret, type, hooks,
+			origName = jQuery.camelCase(name),
+			style = elem.style;
+
+        name = jQuery.cssProps[origName] || (jQuery.cssProps[origName] = vendorPropName(style, origName));
+
+        // gets hook for the prefixed version
+        // followed by the unprefixed version
+        hooks = jQuery.cssHooks[name] || jQuery.cssHooks[origName];
+
+        // Check if we're setting a value
+        if (value !== undefined) {
+            type = typeof value;
+
+            // convert relative number strings (+= or -=) to relative numbers. #7345
+            if (type === "string" && (ret = rrelNum.exec(value))) {
+                value = (ret[1] + 1) * ret[2] + parseFloat(jQuery.css(elem, name));
+                // Fixes bug #9237
+                type = "number";
+            }
+
+            // Make sure that NaN and null values aren't set. See: #7116
+            if (value == null || type === "number" && isNaN(value)) {
+                return;
+            }
+
+            // If a number was passed in, add 'px' to the (except for certain CSS properties)
+            if (type === "number" && !jQuery.cssNumber[origName]) {
+                value += "px";
+            }
+
+            // If a hook was provided, use that value, otherwise just set the specified value
+            if (!hooks || !("set" in hooks) || (value = hooks.set(elem, value, extra)) !== undefined) {
+                // Wrapped to prevent IE from throwing errors when 'invalid' values are provided
+                // Fixes bug #5509
+                try {
+                    style[name] = value;
+                } catch (e) { }
+            }
+
+        } else {
+            // If a hook was provided get the non-computed value from there
+            if (hooks && "get" in hooks && (ret = hooks.get(elem, false, extra)) !== undefined) {
+                return ret;
+            }
+
+            // Otherwise just get the value from the style object
+            return style[name];
+        }
+    };
+    jQuery.sub = function () {
+        /// <summary>
+        ///     Creates a new copy of jQuery whose properties and methods can be modified without affecting the original jQuery object.
+        /// </summary>
+        /// <returns type="jQuery" />
+
+        function jQuerySub(selector, context) {
+            return new jQuerySub.fn.init(selector, context);
+        }
+        jQuery.extend(true, jQuerySub, this);
+        jQuerySub.superclass = this;
+        jQuerySub.fn = jQuerySub.prototype = this();
+        jQuerySub.fn.constructor = jQuerySub;
+        jQuerySub.sub = this.sub;
+        jQuerySub.fn.init = function init(selector, context) {
+            if (context && context instanceof jQuery && !(context instanceof jQuerySub)) {
+                context = jQuerySub(context);
+            }
+
+            return jQuery.fn.init.call(this, selector, context, rootjQuerySub);
+        };
+        jQuerySub.fn.init.prototype = jQuerySub.fn;
+        var rootjQuerySub = jQuerySub(document);
+        return jQuerySub;
+    };
+    jQuery.support = {
+        "leadingWhitespace": true,
+        "tbody": true,
+        "htmlSerialize": true,
+        "style": true,
+        "hrefNormalized": true,
+        "opacity": true,
+        "cssFloat": true,
+        "checkOn": true,
+        "optSelected": true,
+        "getSetAttribute": true,
+        "enctype": true,
+        "html5Clone": true,
+        "boxModel": true,
+        "submitBubbles": true,
+        "changeBubbles": true,
+        "focusinBubbles": false,
+        "deleteExpando": true,
+        "noCloneEvent": true,
+        "inlineBlockNeedsLayout": false,
+        "shrinkWrapBlocks": false,
+        "reliableMarginRight": true,
+        "boxSizingReliable": true,
+        "pixelPosition": false,
+        "noCloneChecked": true,
+        "optDisabled": true,
+        "radioValue": true,
+        "checkClone": true,
+        "appendChecked": true,
+        "ajax": true,
+        "cors": true,
+        "reliableHiddenOffsets": true,
+        "boxSizing": true,
+        "doesNotIncludeMarginInBodyOffset": true
+    };
+    jQuery.swap = function (elem, options, callback) {
+
+        var ret, name,
+			old = {};
+
+        // Remember the old values, and insert the new ones
+        for (name in options) {
+            old[name] = elem.style[name];
+            elem.style[name] = options[name];
+        }
+
+        ret = callback.call(elem);
+
+        // Revert the old values
+        for (name in options) {
+            elem.style[name] = old[name];
+        }
+
+        return ret;
+    };
+    jQuery.text = function (elem) {
+
+        var node,
+            ret = "",
+            i = 0,
+            nodeType = elem.nodeType;
+
+        if (nodeType) {
+            if (nodeType === 1 || nodeType === 9 || nodeType === 11) {
+                // Use textContent for elements
+                // innerText usage removed for consistency of new lines (see #11153)
+                if (typeof elem.textContent === "string") {
+                    return elem.textContent;
+                } else {
+                    // Traverse its children
+                    for (elem = elem.firstChild; elem; elem = elem.nextSibling) {
+                        ret += getText(elem);
+                    }
+                }
+            } else if (nodeType === 3 || nodeType === 4) {
+                return elem.nodeValue;
+            }
+            // Do not include comment or processing instruction nodes
+        } else {
+
+            // If no nodeType, this is expected to be an array
+            for (; (node = elem[i]) ; i++) {
+                // Do not traverse comment nodes
+                ret += getText(node);
+            }
+        }
+        return ret;
+    };
+    jQuery.trim = function (text) {
+        /// <summary>
+        ///     Remove the whitespace from the beginning and end of a string.
+        /// </summary>
+        /// <param name="text" type="String">
+        ///     The string to trim.
+        /// </param>
+        /// <returns type="String" />
+
+        return text == null ?
+            "" :
+            core_trim.call(text);
+    };
+    jQuery.type = function (obj) {
+        /// <summary>
+        ///     Determine the internal JavaScript [[Class]] of an object.
+        /// </summary>
+        /// <param name="obj" type="Object">
+        ///     Object to get the internal JavaScript [[Class]] of.
+        /// </param>
+        /// <returns type="String" />
+
+        return obj == null ?
+			String(obj) :
+			class2type[core_toString.call(obj)] || "object";
+    };
+    jQuery.uaMatch = function (ua) {
+
+        ua = ua.toLowerCase();
+
+        var match = /(chrome)[ \/]([\w.]+)/.exec(ua) ||
+            /(webkit)[ \/]([\w.]+)/.exec(ua) ||
+            /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) ||
+            /(msie) ([\w.]+)/.exec(ua) ||
+            ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua) ||
+            [];
+
+        return {
+            browser: match[1] || "",
+            version: match[2] || "0"
+        };
+    };
+    jQuery.unique = function (results) {
+        /// <summary>
+        ///     Sorts an array of DOM elements, in place, with the duplicates removed. Note that this only works on arrays of DOM elements, not strings or numbers.
+        /// </summary>
+        /// <param name="results" type="Array">
+        ///     The Array of DOM elements.
+        /// </param>
+        /// <returns type="Array" />
+
+        var elem,
+            i = 1;
+
+        hasDuplicate = baseHasDuplicate;
+        results.sort(sortOrder);
+
+        if (hasDuplicate) {
+            for (; (elem = results[i]) ; i++) {
