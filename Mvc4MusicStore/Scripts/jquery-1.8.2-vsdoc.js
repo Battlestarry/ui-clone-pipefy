@@ -2096,3 +2096,465 @@
         ///     Determines whether its argument is a number.
         /// </summary>
         /// <param name="obj" type="Object">
+        ///     The value to be tested.
+        /// </param>
+        /// <returns type="Boolean" />
+
+        return !isNaN(parseFloat(obj)) && isFinite(obj);
+    };
+    jQuery.isPlainObject = function (obj) {
+        /// <summary>
+        ///     Check to see if an object is a plain object (created using "{}" or "new Object").
+        /// </summary>
+        /// <param name="obj" type="Object">
+        ///     The object that will be checked to see if it's a plain object.
+        /// </param>
+        /// <returns type="Boolean" />
+
+        // Must be an Object.
+        // Because of IE, we also have to check the presence of the constructor property.
+        // Make sure that DOM nodes and window objects don't pass through, as well
+        if (!obj || jQuery.type(obj) !== "object" || obj.nodeType || jQuery.isWindow(obj)) {
+            return false;
+        }
+
+        try {
+            // Not own constructor property must be Object
+            if (obj.constructor &&
+				!core_hasOwn.call(obj, "constructor") &&
+				!core_hasOwn.call(obj.constructor.prototype, "isPrototypeOf")) {
+                return false;
+            }
+        } catch (e) {
+            // IE8,9 Will throw exceptions on certain host objects #9897
+            return false;
+        }
+
+        // Own properties are enumerated firstly, so to speed up,
+        // if last one is own, then all properties are own.
+
+        var key;
+        for (key in obj) { }
+
+        return key === undefined || core_hasOwn.call(obj, key);
+    };
+    jQuery.isReady = true;
+    jQuery.isWindow = function (obj) {
+        /// <summary>
+        ///     Determine whether the argument is a window.
+        /// </summary>
+        /// <param name="obj" type="Object">
+        ///     Object to test whether or not it is a window.
+        /// </param>
+        /// <returns type="boolean" />
+
+        return obj != null && obj == obj.window;
+    };
+    jQuery.isXMLDoc = function (elem) {
+        /// <summary>
+        ///     Check to see if a DOM node is within an XML document (or is an XML document).
+        /// </summary>
+        /// <param name="elem" domElement="true">
+        ///     The DOM node that will be checked to see if it's in an XML document.
+        /// </param>
+        /// <returns type="Boolean" />
+
+        // documentElement is verified for cases where it doesn't yet exist
+        // (such as loading iframes in IE - #4833)
+        var documentElement = elem && (elem.ownerDocument || elem).documentElement;
+        return documentElement ? documentElement.nodeName !== "HTML" : false;
+    };
+    jQuery.lastModified = {};
+    jQuery.makeArray = function (arr, results) {
+        /// <summary>
+        ///     Convert an array-like object into a true JavaScript array.
+        /// </summary>
+        /// <param name="arr" type="Object">
+        ///     Any object to turn into a native Array.
+        /// </param>
+        /// <returns type="Array" />
+
+        var type,
+			ret = results || [];
+
+        if (arr != null) {
+            // The window, strings (and functions) also have 'length'
+            // Tweaked logic slightly to handle Blackberry 4.7 RegExp issues #6930
+            type = jQuery.type(arr);
+
+            if (arr.length == null || type === "string" || type === "function" || type === "regexp" || jQuery.isWindow(arr)) {
+                core_push.call(ret, arr);
+            } else {
+                jQuery.merge(ret, arr);
+            }
+        }
+
+        return ret;
+    };
+    jQuery.map = function (elems, callback, arg) {
+        /// <summary>
+        ///     Translate all items in an array or object to new array of items.
+        ///     &#10;1 - jQuery.map(array, callback(elementOfArray, indexInArray)) 
+        ///     &#10;2 - jQuery.map(arrayOrObject, callback( value, indexOrKey ))
+        /// </summary>
+        /// <param name="elems" type="Array">
+        ///     The Array to translate.
+        /// </param>
+        /// <param name="callback" type="Function">
+        ///     The function to process each item against.  The first argument to the function is the array item, the second argument is the index in array The function can return any value. Within the function, this refers to the global (window) object.
+        /// </param>
+        /// <returns type="Array" />
+
+        var value, key,
+			ret = [],
+			i = 0,
+			length = elems.length,
+			// jquery objects are treated as arrays
+			isArray = elems instanceof jQuery || length !== undefined && typeof length === "number" && ((length > 0 && elems[0] && elems[length - 1]) || length === 0 || jQuery.isArray(elems));
+
+        // Go through the array, translating each of the items to their
+        if (isArray) {
+            for (; i < length; i++) {
+                value = callback(elems[i], i, arg);
+
+                if (value != null) {
+                    ret[ret.length] = value;
+                }
+            }
+
+            // Go through every key on the object,
+        } else {
+            for (key in elems) {
+                value = callback(elems[key], key, arg);
+
+                if (value != null) {
+                    ret[ret.length] = value;
+                }
+            }
+        }
+
+        // Flatten any nested arrays
+        return ret.concat.apply([], ret);
+    };
+    jQuery.merge = function (first, second) {
+        /// <summary>
+        ///     Merge the contents of two arrays together into the first array.
+        /// </summary>
+        /// <param name="first" type="Array">
+        ///     The first array to merge, the elements of second added.
+        /// </param>
+        /// <param name="second" type="Array">
+        ///     The second array to merge into the first, unaltered.
+        /// </param>
+        /// <returns type="Array" />
+
+        var l = second.length,
+			i = first.length,
+			j = 0;
+
+        if (typeof l === "number") {
+            for (; j < l; j++) {
+                first[i++] = second[j];
+            }
+
+        } else {
+            while (second[j] !== undefined) {
+                first[i++] = second[j++];
+            }
+        }
+
+        first.length = i;
+
+        return first;
+    };
+    jQuery.noConflict = function (deep) {
+        /// <summary>
+        ///     Relinquish jQuery's control of the $ variable.
+        /// </summary>
+        /// <param name="deep" type="Boolean">
+        ///     A Boolean indicating whether to remove all jQuery variables from the global scope (including jQuery itself).
+        /// </param>
+        /// <returns type="Object" />
+
+        if (window.$ === jQuery) {
+            window.$ = _$;
+        }
+
+        if (deep && window.jQuery === jQuery) {
+            window.jQuery = _jQuery;
+        }
+
+        return jQuery;
+    };
+    jQuery.noData = {
+        "embed": true,
+        "object": 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000',
+        "applet": true
+    };
+    jQuery.nodeName = function (elem, name) {
+
+        return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
+    };
+    jQuery.noop = function () {
+        /// <summary>
+        ///     An empty function.
+        /// </summary>
+        /// <returns type="Function" />
+    };
+    jQuery.now = function () {
+        /// <summary>
+        ///     Return a number representing the current time.
+        /// </summary>
+        /// <returns type="Number" />
+
+        return (new Date()).getTime();
+    };
+    jQuery.offset = {};
+    jQuery.param = function (a, traditional) {
+        /// <summary>
+        ///     Create a serialized representation of an array or object, suitable for use in a URL query string or Ajax request.
+        ///     &#10;1 - jQuery.param(obj) 
+        ///     &#10;2 - jQuery.param(obj, traditional)
+        /// </summary>
+        /// <param name="a" type="Object">
+        ///     An array or object to serialize.
+        /// </param>
+        /// <param name="traditional" type="Boolean">
+        ///     A Boolean indicating whether to perform a traditional "shallow" serialization.
+        /// </param>
+        /// <returns type="String" />
+
+        var prefix,
+            s = [],
+            add = function (key, value) {
+                // If value is a function, invoke it and return its value
+                value = jQuery.isFunction(value) ? value() : (value == null ? "" : value);
+                s[s.length] = encodeURIComponent(key) + "=" + encodeURIComponent(value);
+            };
+
+        // Set traditional to true for jQuery <= 1.3.2 behavior.
+        if (traditional === undefined) {
+            traditional = jQuery.ajaxSettings && jQuery.ajaxSettings.traditional;
+        }
+
+        // If an array was passed in, assume that it is an array of form elements.
+        if (jQuery.isArray(a) || (a.jquery && !jQuery.isPlainObject(a))) {
+            // Serialize the form elements
+            jQuery.each(a, function () {
+                add(this.name, this.value);
+            });
+
+        } else {
+            // If traditional, encode the "old" way (the way 1.3.2 or older
+            // did it), otherwise encode params recursively.
+            for (prefix in a) {
+                buildParams(prefix, a[prefix], traditional, add);
+            }
+        }
+
+        // Return the resulting serialization
+        return s.join("&").replace(r20, "+");
+    };
+    jQuery.parseHTML = function (data, context, scripts) {
+
+        var parsed;
+        if (!data || typeof data !== "string") {
+            return null;
+        }
+        if (typeof context === "boolean") {
+            scripts = context;
+            context = 0;
+        }
+        context = context || document;
+
+        // Single tag
+        if ((parsed = rsingleTag.exec(data))) {
+            return [context.createElement(parsed[1])];
+        }
+
+        parsed = jQuery.buildFragment([data], context, scripts ? null : []);
+        return jQuery.merge([],
+			(parsed.cacheable ? jQuery.clone(parsed.fragment) : parsed.fragment).childNodes);
+    };
+    jQuery.parseJSON = function (data) {
+        /// <summary>
+        ///     Takes a well-formed JSON string and returns the resulting JavaScript object.
+        /// </summary>
+        /// <param name="data" type="String">
+        ///     The JSON string to parse.
+        /// </param>
+        /// <returns type="Object" />
+
+        if (!data || typeof data !== "string") {
+            return null;
+        }
+
+        // Make sure leading/trailing whitespace is removed (IE can't handle it)
+        data = jQuery.trim(data);
+
+        // Attempt to parse using the native JSON parser first
+        if (window.JSON && window.JSON.parse) {
+            return window.JSON.parse(data);
+        }
+
+        // Make sure the incoming data is actual JSON
+        // Logic borrowed from http://json.org/json2.js
+        if (rvalidchars.test(data.replace(rvalidescape, "@")
+			.replace(rvalidtokens, "]")
+			.replace(rvalidbraces, ""))) {
+
+            return (new Function("return " + data))();
+
+        }
+        jQuery.error("Invalid JSON: " + data);
+    };
+    jQuery.parseXML = function (data) {
+        /// <summary>
+        ///     Parses a string into an XML document.
+        /// </summary>
+        /// <param name="data" type="String">
+        ///     a well-formed XML string to be parsed
+        /// </param>
+        /// <returns type="XMLDocument" />
+
+        var xml, tmp;
+        if (!data || typeof data !== "string") {
+            return null;
+        }
+        try {
+            if (window.DOMParser) { // Standard
+                tmp = new DOMParser();
+                xml = tmp.parseFromString(data, "text/xml");
+            } else { // IE
+                xml = new ActiveXObject("Microsoft.XMLDOM");
+                xml.async = "false";
+                xml.loadXML(data);
+            }
+        } catch (e) {
+            xml = undefined;
+        }
+        if (!xml || !xml.documentElement || xml.getElementsByTagName("parsererror").length) {
+            jQuery.error("Invalid XML: " + data);
+        }
+        return xml;
+    };
+    jQuery.post = function (url, data, callback, type) {
+        /// <summary>
+        ///     Load data from the server using a HTTP POST request.
+        /// </summary>
+        /// <param name="url" type="String">
+        ///     A string containing the URL to which the request is sent.
+        /// </param>
+        /// <param name="data" type="String">
+        ///     A map or string that is sent to the server with the request.
+        /// </param>
+        /// <param name="callback" type="Function">
+        ///     A callback function that is executed if the request succeeds.
+        /// </param>
+        /// <param name="type" type="String">
+        ///     The type of data expected from the server. Default: Intelligent Guess (xml, json, script, text, html).
+        /// </param>
+
+        // shift arguments if data argument was omitted
+        if (jQuery.isFunction(data)) {
+            type = type || callback;
+            callback = data;
+            data = undefined;
+        }
+
+        return jQuery.ajax({
+            type: method,
+            url: url,
+            data: data,
+            success: callback,
+            dataType: type
+        });
+    };
+    jQuery.prop = function (elem, name, value) {
+
+        var ret, hooks, notxml,
+			nType = elem.nodeType;
+
+        // don't get/set properties on text, comment and attribute nodes
+        if (!elem || nType === 3 || nType === 8 || nType === 2) {
+            return;
+        }
+
+        notxml = nType !== 1 || !jQuery.isXMLDoc(elem);
+
+        if (notxml) {
+            // Fix name and attach hooks
+            name = jQuery.propFix[name] || name;
+            hooks = jQuery.propHooks[name];
+        }
+
+        if (value !== undefined) {
+            if (hooks && "set" in hooks && (ret = hooks.set(elem, value, name)) !== undefined) {
+                return ret;
+
+            } else {
+                return (elem[name] = value);
+            }
+
+        } else {
+            if (hooks && "get" in hooks && (ret = hooks.get(elem, name)) !== null) {
+                return ret;
+
+            } else {
+                return elem[name];
+            }
+        }
+    };
+    jQuery.propFix = {
+        "tabindex": 'tabIndex',
+        "readonly": 'readOnly',
+        "for": 'htmlFor',
+        "class": 'className',
+        "maxlength": 'maxLength',
+        "cellspacing": 'cellSpacing',
+        "cellpadding": 'cellPadding',
+        "rowspan": 'rowSpan',
+        "colspan": 'colSpan',
+        "usemap": 'useMap',
+        "frameborder": 'frameBorder',
+        "contenteditable": 'contentEditable'
+    };
+    jQuery.propHooks = { "tabIndex": {} };
+    jQuery.proxy = function (fn, context) {
+        /// <summary>
+        ///     Takes a function and returns a new one that will always have a particular context.
+        ///     &#10;1 - jQuery.proxy(function, context) 
+        ///     &#10;2 - jQuery.proxy(context, name)
+        /// </summary>
+        /// <param name="fn" type="Function">
+        ///     The function whose context will be changed.
+        /// </param>
+        /// <param name="context" type="Object">
+        ///     The object to which the context (this) of the function should be set.
+        /// </param>
+        /// <returns type="Function" />
+
+        var tmp, args, proxy;
+
+        if (typeof context === "string") {
+            tmp = fn[context];
+            context = fn;
+            fn = tmp;
+        }
+
+        // Quick check to determine if target is callable, in the spec
+        // this throws a TypeError, but we will just return undefined.
+        if (!jQuery.isFunction(fn)) {
+            return undefined;
+        }
+
+        // Simulated bind
+        args = core_slice.call(arguments, 2);
+        proxy = function () {
+            return fn.apply(context, args.concat(core_slice.call(arguments)));
+        };
+
+        // Set the guid of unique handler to the same of original handler, so it can be removed
+        proxy.guid = fn.guid = fn.guid || jQuery.guid++;
+
+        return proxy;
