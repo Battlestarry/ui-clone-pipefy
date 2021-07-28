@@ -3026,3 +3026,477 @@
 
         if (hasDuplicate) {
             for (; (elem = results[i]) ; i++) {
+                if (elem === results[i - 1]) {
+                    results.splice(i--, 1);
+                }
+            }
+        }
+
+        return results;
+    };
+    jQuery.uuid = 0;
+    jQuery.valHooks = {
+        "option": {},
+        "select": {},
+        "radio": {},
+        "checkbox": {}
+    };
+    jQuery.when = function (subordinate /* , ..., subordinateN */) {
+        /// <summary>
+        ///     Provides a way to execute callback functions based on one or more objects, usually Deferred objects that represent asynchronous events.
+        /// </summary>
+        /// <param name="subordinate/*" type="Deferred">
+        ///     One or more Deferred objects, or plain JavaScript objects.
+        /// </param>
+        /// <returns type="Promise" />
+
+        var i = 0,
+			resolveValues = core_slice.call(arguments),
+			length = resolveValues.length,
+
+			// the count of uncompleted subordinates
+			remaining = length !== 1 || (subordinate && jQuery.isFunction(subordinate.promise)) ? length : 0,
+
+			// the master Deferred. If resolveValues consist of only a single Deferred, just use that.
+			deferred = remaining === 1 ? subordinate : jQuery.Deferred(),
+
+			// Update function for both resolve and progress values
+			updateFunc = function (i, contexts, values) {
+			    return function (value) {
+			        contexts[i] = this;
+			        values[i] = arguments.length > 1 ? core_slice.call(arguments) : value;
+			        if (values === progressValues) {
+			            deferred.notifyWith(contexts, values);
+			        } else if (!(--remaining)) {
+			            deferred.resolveWith(contexts, values);
+			        }
+			    };
+			},
+
+			progressValues, progressContexts, resolveContexts;
+
+        // add listeners to Deferred subordinates; treat others as resolved
+        if (length > 1) {
+            progressValues = new Array(length);
+            progressContexts = new Array(length);
+            resolveContexts = new Array(length);
+            for (; i < length; i++) {
+                if (resolveValues[i] && jQuery.isFunction(resolveValues[i].promise)) {
+                    resolveValues[i].promise()
+						.done(updateFunc(i, resolveContexts, resolveValues))
+						.fail(deferred.reject)
+						.progress(updateFunc(i, progressContexts, progressValues));
+                } else {
+                    --remaining;
+                }
+            }
+        }
+
+        // if we're not waiting on anything, resolve the master
+        if (!remaining) {
+            deferred.resolveWith(resolveContexts, resolveValues);
+        }
+
+        return deferred.promise();
+    };
+    jQuery.Event.prototype.isDefaultPrevented = function returnFalse() {
+        /// <summary>
+        ///     Returns whether event.preventDefault() was ever called on this event object.
+        /// </summary>
+        /// <returns type="Boolean" />
+
+        return false;
+    };
+    jQuery.Event.prototype.isImmediatePropagationStopped = function returnFalse() {
+        /// <summary>
+        ///     Returns whether event.stopImmediatePropagation() was ever called on this event object.
+        /// </summary>
+        /// <returns type="Boolean" />
+
+        return false;
+    };
+    jQuery.Event.prototype.isPropagationStopped = function returnFalse() {
+        /// <summary>
+        ///     Returns whether event.stopPropagation() was ever called on this event object.
+        /// </summary>
+        /// <returns type="Boolean" />
+
+        return false;
+    };
+    jQuery.Event.prototype.preventDefault = function () {
+        /// <summary>
+        ///     If this method is called, the default action of the event will not be triggered.
+        /// </summary>
+        /// <returns type="undefined" />
+
+        this.isDefaultPrevented = returnTrue;
+
+        var e = this.originalEvent;
+        if (!e) {
+            return;
+        }
+
+        // if preventDefault exists run it on the original event
+        if (e.preventDefault) {
+            e.preventDefault();
+
+            // otherwise set the returnValue property of the original event to false (IE)
+        } else {
+            e.returnValue = false;
+        }
+    };
+    jQuery.Event.prototype.stopImmediatePropagation = function () {
+        /// <summary>
+        ///     Keeps the rest of the handlers from being executed and prevents the event from bubbling up the DOM tree.
+        /// </summary>
+
+        this.isImmediatePropagationStopped = returnTrue;
+        this.stopPropagation();
+    };
+    jQuery.Event.prototype.stopPropagation = function () {
+        /// <summary>
+        ///     Prevents the event from bubbling up the DOM tree, preventing any parent handlers from being notified of the event.
+        /// </summary>
+
+        this.isPropagationStopped = returnTrue;
+
+        var e = this.originalEvent;
+        if (!e) {
+            return;
+        }
+        // if stopPropagation exists run it on the original event
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
+        // otherwise set the cancelBubble property of the original event to true (IE)
+        e.cancelBubble = true;
+    };
+    jQuery.prototype.add = function (selector, context) {
+        /// <summary>
+        ///     Add elements to the set of matched elements.
+        ///     &#10;1 - add(selector) 
+        ///     &#10;2 - add(elements) 
+        ///     &#10;3 - add(html) 
+        ///     &#10;4 - add(jQuery object) 
+        ///     &#10;5 - add(selector, context)
+        /// </summary>
+        /// <param name="selector" type="String">
+        ///     A string representing a selector expression to find additional elements to add to the set of matched elements.
+        /// </param>
+        /// <param name="context" domElement="true">
+        ///     The point in the document at which the selector should begin matching; similar to the context argument of the $(selector, context) method.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var set = typeof selector === "string" ?
+				jQuery(selector, context) :
+				jQuery.makeArray(selector && selector.nodeType ? [selector] : selector),
+			all = jQuery.merge(this.get(), set);
+
+        return this.pushStack(isDisconnected(set[0]) || isDisconnected(all[0]) ?
+            all :
+			jQuery.unique(all));
+    };
+    jQuery.prototype.addBack = function (selector) {
+
+        return this.add(selector == null ?
+			this.prevObject : this.prevObject.filter(selector)
+		);
+    };
+    jQuery.prototype.addClass = function (value) {
+        /// <summary>
+        ///     Adds the specified class(es) to each of the set of matched elements.
+        ///     &#10;1 - addClass(className) 
+        ///     &#10;2 - addClass(function(index, currentClass))
+        /// </summary>
+        /// <param name="value" type="String">
+        ///     One or more class names to be added to the class attribute of each matched element.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var classNames, i, l, elem,
+			setClass, c, cl;
+
+        if (jQuery.isFunction(value)) {
+            return this.each(function (j) {
+                jQuery(this).addClass(value.call(this, j, this.className));
+            });
+        }
+
+        if (value && typeof value === "string") {
+            classNames = value.split(core_rspace);
+
+            for (i = 0, l = this.length; i < l; i++) {
+                elem = this[i];
+
+                if (elem.nodeType === 1) {
+                    if (!elem.className && classNames.length === 1) {
+                        elem.className = value;
+
+                    } else {
+                        setClass = " " + elem.className + " ";
+
+                        for (c = 0, cl = classNames.length; c < cl; c++) {
+                            if (setClass.indexOf(" " + classNames[c] + " ") < 0) {
+                                setClass += classNames[c] + " ";
+                            }
+                        }
+                        elem.className = jQuery.trim(setClass);
+                    }
+                }
+            }
+        }
+
+        return this;
+    };
+    jQuery.prototype.after = function () {
+        /// <summary>
+        ///     Insert content, specified by the parameter, after each element in the set of matched elements.
+        ///     &#10;1 - after(content, content) 
+        ///     &#10;2 - after(function(index))
+        /// </summary>
+        /// <param name="" type="jQuery">
+        ///     HTML string, DOM element, or jQuery object to insert after each element in the set of matched elements.
+        /// </param>
+        /// <param name="" type="jQuery">
+        ///     One or more additional DOM elements, arrays of elements, HTML strings, or jQuery objects to insert after each element in the set of matched elements.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (!isDisconnected(this[0])) {
+            return this.domManip(arguments, false, function (elem) {
+                this.parentNode.insertBefore(elem, this.nextSibling);
+            });
+        }
+
+        if (arguments.length) {
+            var set = jQuery.clean(arguments);
+            return this.pushStack(jQuery.merge(this, set), "after", this.selector);
+        }
+    };
+    jQuery.prototype.ajaxComplete = function (f) {
+        /// <summary>
+        ///     Register a handler to be called when Ajax requests complete. This is an Ajax Event.
+        /// </summary>
+        /// <param name="f" type="Function">
+        ///     The function to be invoked.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.on(o, f);
+    };
+    jQuery.prototype.ajaxError = function (f) {
+        /// <summary>
+        ///     Register a handler to be called when Ajax requests complete with an error. This is an Ajax Event.
+        /// </summary>
+        /// <param name="f" type="Function">
+        ///     The function to be invoked.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.on(o, f);
+    };
+    jQuery.prototype.ajaxSend = function (f) {
+        /// <summary>
+        ///     Attach a function to be executed before an Ajax request is sent. This is an Ajax Event.
+        /// </summary>
+        /// <param name="f" type="Function">
+        ///     The function to be invoked.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.on(o, f);
+    };
+    jQuery.prototype.ajaxStart = function (f) {
+        /// <summary>
+        ///     Register a handler to be called when the first Ajax request begins. This is an Ajax Event.
+        /// </summary>
+        /// <param name="f" type="Function">
+        ///     The function to be invoked.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.on(o, f);
+    };
+    jQuery.prototype.ajaxStop = function (f) {
+        /// <summary>
+        ///     Register a handler to be called when all Ajax requests have completed. This is an Ajax Event.
+        /// </summary>
+        /// <param name="f" type="Function">
+        ///     The function to be invoked.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.on(o, f);
+    };
+    jQuery.prototype.ajaxSuccess = function (f) {
+        /// <summary>
+        ///     Attach a function to be executed whenever an Ajax request completes successfully. This is an Ajax Event.
+        /// </summary>
+        /// <param name="f" type="Function">
+        ///     The function to be invoked.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.on(o, f);
+    };
+    jQuery.prototype.andSelf = function (selector) {
+        /// <summary>
+        ///     Add the previous set of elements on the stack to the current set.
+        /// </summary>
+        /// <returns type="jQuery" />
+
+        return this.add(selector == null ?
+			this.prevObject : this.prevObject.filter(selector)
+		);
+    };
+    jQuery.prototype.animate = function (prop, speed, easing, callback) {
+        /// <summary>
+        ///     Perform a custom animation of a set of CSS properties.
+        ///     &#10;1 - animate(properties, duration, easing, complete) 
+        ///     &#10;2 - animate(properties, options)
+        /// </summary>
+        /// <param name="prop" type="Object">
+        ///     A map of CSS properties that the animation will move toward.
+        /// </param>
+        /// <param name="speed" type="Number">
+        ///     A string or number determining how long the animation will run.
+        /// </param>
+        /// <param name="easing" type="String">
+        ///     A string indicating which easing function to use for the transition.
+        /// </param>
+        /// <param name="callback" type="Function">
+        ///     A function to call once the animation is complete.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var empty = jQuery.isEmptyObject(prop),
+			optall = jQuery.speed(speed, easing, callback),
+			doAnimation = function () {
+			    // Operate on a copy of prop so per-property easing won't be lost
+			    var anim = Animation(this, jQuery.extend({}, prop), optall);
+
+			    // Empty animations resolve immediately
+			    if (empty) {
+			        anim.stop(true);
+			    }
+			};
+
+        return empty || optall.queue === false ?
+			this.each(doAnimation) :
+			this.queue(optall.queue, doAnimation);
+    };
+    jQuery.prototype.append = function () {
+        /// <summary>
+        ///     Insert content, specified by the parameter, to the end of each element in the set of matched elements.
+        ///     &#10;1 - append(content, content) 
+        ///     &#10;2 - append(function(index, html))
+        /// </summary>
+        /// <param name="" type="jQuery">
+        ///     DOM element, HTML string, or jQuery object to insert at the end of each element in the set of matched elements.
+        /// </param>
+        /// <param name="" type="jQuery">
+        ///     One or more additional DOM elements, arrays of elements, HTML strings, or jQuery objects to insert at the end of each element in the set of matched elements.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.domManip(arguments, true, function (elem) {
+            if (this.nodeType === 1 || this.nodeType === 11) {
+                this.appendChild(elem);
+            }
+        });
+    };
+    jQuery.prototype.appendTo = function (selector) {
+        /// <summary>
+        ///     Insert every element in the set of matched elements to the end of the target.
+        /// </summary>
+        /// <param name="selector" type="jQuery">
+        ///     A selector, element, HTML string, or jQuery object; the matched set of elements will be inserted at the end of the element(s) specified by this parameter.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var elems,
+			i = 0,
+			ret = [],
+			insert = jQuery(selector),
+			l = insert.length,
+			parent = this.length === 1 && this[0].parentNode;
+
+        if ((parent == null || parent && parent.nodeType === 11 && parent.childNodes.length === 1) && l === 1) {
+            insert[original](this[0]);
+            return this;
+        } else {
+            for (; i < l; i++) {
+                elems = (i > 0 ? this.clone(true) : this).get();
+                jQuery(insert[i])[original](elems);
+                ret = ret.concat(elems);
+            }
+
+            return this.pushStack(ret, name, insert.selector);
+        }
+    };
+    jQuery.prototype.attr = function (name, value) {
+        /// <summary>
+        ///     1: Get the value of an attribute for the first element in the set of matched elements.
+        ///     &#10;    1.1 - attr(attributeName)
+        ///     &#10;2: Set one or more attributes for the set of matched elements.
+        ///     &#10;    2.1 - attr(attributeName, value) 
+        ///     &#10;    2.2 - attr(map) 
+        ///     &#10;    2.3 - attr(attributeName, function(index, attr))
+        /// </summary>
+        /// <param name="name" type="String">
+        ///     The name of the attribute to set.
+        /// </param>
+        /// <param name="value" type="Number">
+        ///     A value to set for the attribute.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return jQuery.access(this, jQuery.attr, name, value, arguments.length > 1);
+    };
+    jQuery.prototype.before = function () {
+        /// <summary>
+        ///     Insert content, specified by the parameter, before each element in the set of matched elements.
+        ///     &#10;1 - before(content, content) 
+        ///     &#10;2 - before(function)
+        /// </summary>
+        /// <param name="" type="jQuery">
+        ///     HTML string, DOM element, or jQuery object to insert before each element in the set of matched elements.
+        /// </param>
+        /// <param name="" type="jQuery">
+        ///     One or more additional DOM elements, arrays of elements, HTML strings, or jQuery objects to insert before each element in the set of matched elements.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (!isDisconnected(this[0])) {
+            return this.domManip(arguments, false, function (elem) {
+                this.parentNode.insertBefore(elem, this);
+            });
+        }
+
+        if (arguments.length) {
+            var set = jQuery.clean(arguments);
+            return this.pushStack(jQuery.merge(set, this), "before", this.selector);
+        }
+    };
+    jQuery.prototype.bind = function (types, data, fn) {
+        /// <summary>
+        ///     Attach a handler to an event for the elements.
+        ///     &#10;1 - bind(eventType, eventData, handler(eventObject)) 
+        ///     &#10;2 - bind(eventType, eventData, preventBubble) 
+        ///     &#10;3 - bind(events)
+        /// </summary>
+        /// <param name="types" type="String">
+        ///     A string containing one or more DOM event types, such as "click" or "submit," or custom event names.
+        /// </param>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.on(types, null, data, fn);
+    };
+    jQuery.prototype.blur = function (data, fn) {
