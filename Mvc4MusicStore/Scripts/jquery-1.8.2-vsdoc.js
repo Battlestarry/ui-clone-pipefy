@@ -3500,3 +3500,481 @@
         return this.on(types, null, data, fn);
     };
     jQuery.prototype.blur = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "blur" JavaScript event, or trigger that event on an element.
+        ///     &#10;1 - blur(handler(eventObject)) 
+        ///     &#10;2 - blur(eventData, handler(eventObject)) 
+        ///     &#10;3 - blur()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.change = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "change" JavaScript event, or trigger that event on an element.
+        ///     &#10;1 - change(handler(eventObject)) 
+        ///     &#10;2 - change(eventData, handler(eventObject)) 
+        ///     &#10;3 - change()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.children = function (until, selector) {
+        /// <summary>
+        ///     Get the children of each element in the set of matched elements, optionally filtered by a selector.
+        /// </summary>
+        /// <param name="until" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var ret = jQuery.map(this, fn, until);
+
+        if (!runtil.test(name)) {
+            selector = until;
+        }
+
+        if (selector && typeof selector === "string") {
+            ret = jQuery.filter(selector, ret);
+        }
+
+        ret = this.length > 1 && !guaranteedUnique[name] ? jQuery.unique(ret) : ret;
+
+        if (this.length > 1 && rparentsprev.test(name)) {
+            ret = ret.reverse();
+        }
+
+        return this.pushStack(ret, name, core_slice.call(arguments).join(","));
+    };
+    jQuery.prototype.clearQueue = function (type) {
+        /// <summary>
+        ///     Remove from the queue all items that have not yet been run.
+        /// </summary>
+        /// <param name="type" type="String">
+        ///     A string containing the name of the queue. Defaults to fx, the standard effects queue.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.queue(type || "fx", []);
+    };
+    jQuery.prototype.click = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "click" JavaScript event, or trigger that event on an element.
+        ///     &#10;1 - click(handler(eventObject)) 
+        ///     &#10;2 - click(eventData, handler(eventObject)) 
+        ///     &#10;3 - click()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.clone = function (dataAndEvents, deepDataAndEvents) {
+        /// <summary>
+        ///     Create a deep copy of the set of matched elements.
+        ///     &#10;1 - clone(withDataAndEvents) 
+        ///     &#10;2 - clone(withDataAndEvents, deepWithDataAndEvents)
+        /// </summary>
+        /// <param name="dataAndEvents" type="Boolean">
+        ///     A Boolean indicating whether event handlers and data should be copied along with the elements. The default value is false. *In jQuery 1.5.0 the default value was incorrectly true; it was changed back to false in 1.5.1 and up.
+        /// </param>
+        /// <param name="deepDataAndEvents" type="Boolean">
+        ///     A Boolean indicating whether event handlers and data for all children of the cloned element should be copied. By default its value matches the first argument's value (which defaults to false).
+        /// </param>
+        /// <returns type="jQuery" />
+
+        dataAndEvents = dataAndEvents == null ? false : dataAndEvents;
+        deepDataAndEvents = deepDataAndEvents == null ? dataAndEvents : deepDataAndEvents;
+
+        return this.map(function () {
+            return jQuery.clone(this, dataAndEvents, deepDataAndEvents);
+        });
+    };
+    jQuery.prototype.closest = function (selectors, context) {
+        /// <summary>
+        ///     1: Get the first element that matches the selector, beginning at the current element and progressing up through the DOM tree.
+        ///     &#10;    1.1 - closest(selector) 
+        ///     &#10;    1.2 - closest(selector, context) 
+        ///     &#10;    1.3 - closest(jQuery object) 
+        ///     &#10;    1.4 - closest(element)
+        ///     &#10;2: Gets an array of all the elements and selectors matched against the current element up through the DOM tree.
+        ///     &#10;    2.1 - closest(selectors, context)
+        /// </summary>
+        /// <param name="selectors" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <param name="context" domElement="true">
+        ///     A DOM element within which a matching element may be found. If no context is passed in then the context of the jQuery set will be used instead.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var cur,
+			i = 0,
+			l = this.length,
+			ret = [],
+			pos = rneedsContext.test(selectors) || typeof selectors !== "string" ?
+				jQuery(selectors, context || this.context) :
+				0;
+
+        for (; i < l; i++) {
+            cur = this[i];
+
+            while (cur && cur.ownerDocument && cur !== context && cur.nodeType !== 11) {
+                if (pos ? pos.index(cur) > -1 : jQuery.find.matchesSelector(cur, selectors)) {
+                    ret.push(cur);
+                    break;
+                }
+                cur = cur.parentNode;
+            }
+        }
+
+        ret = ret.length > 1 ? jQuery.unique(ret) : ret;
+
+        return this.pushStack(ret, "closest", selectors);
+    };
+    jQuery.prototype.constructor = function (selector, context) {
+
+        // The jQuery object is actually just the init constructor 'enhanced'
+        return new jQuery.fn.init(selector, context, rootjQuery);
+    };
+    jQuery.prototype.contents = function (until, selector) {
+        /// <summary>
+        ///     Get the children of each element in the set of matched elements, including text and comment nodes.
+        /// </summary>
+        /// <returns type="jQuery" />
+
+        var ret = jQuery.map(this, fn, until);
+
+        if (!runtil.test(name)) {
+            selector = until;
+        }
+
+        if (selector && typeof selector === "string") {
+            ret = jQuery.filter(selector, ret);
+        }
+
+        ret = this.length > 1 && !guaranteedUnique[name] ? jQuery.unique(ret) : ret;
+
+        if (this.length > 1 && rparentsprev.test(name)) {
+            ret = ret.reverse();
+        }
+
+        return this.pushStack(ret, name, core_slice.call(arguments).join(","));
+    };
+    jQuery.prototype.contextmenu = function (data, fn) {
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.css = function (name, value) {
+        /// <summary>
+        ///     1: Get the value of a style property for the first element in the set of matched elements.
+        ///     &#10;    1.1 - css(propertyName)
+        ///     &#10;2: Set one or more CSS properties for the  set of matched elements.
+        ///     &#10;    2.1 - css(propertyName, value) 
+        ///     &#10;    2.2 - css(propertyName, function(index, value)) 
+        ///     &#10;    2.3 - css(map)
+        /// </summary>
+        /// <param name="name" type="String">
+        ///     A CSS property name.
+        /// </param>
+        /// <param name="value" type="Number">
+        ///     A value to set for the property.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return jQuery.access(this, function (elem, name, value) {
+            return value !== undefined ?
+				jQuery.style(elem, name, value) :
+				jQuery.css(elem, name);
+        }, name, value, arguments.length > 1);
+    };
+    jQuery.prototype.data = function (key, value) {
+        /// <summary>
+        ///     1: Store arbitrary data associated with the matched elements.
+        ///     &#10;    1.1 - data(key, value) 
+        ///     &#10;    1.2 - data(obj)
+        ///     &#10;2: Returns value at named data store for the first element in the jQuery collection, as set by data(name, value).
+        ///     &#10;    2.1 - data(key) 
+        ///     &#10;    2.2 - data()
+        /// </summary>
+        /// <param name="key" type="String">
+        ///     A string naming the piece of data to set.
+        /// </param>
+        /// <param name="value" type="Object">
+        ///     The new data value; it can be any Javascript type including Array or Object.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var parts, part, attr, name, l,
+			elem = this[0],
+			i = 0,
+			data = null;
+
+        // Gets all values
+        if (key === undefined) {
+            if (this.length) {
+                data = jQuery.data(elem);
+
+                if (elem.nodeType === 1 && !jQuery._data(elem, "parsedAttrs")) {
+                    attr = elem.attributes;
+                    for (l = attr.length; i < l; i++) {
+                        name = attr[i].name;
+
+                        if (!name.indexOf("data-")) {
+                            name = jQuery.camelCase(name.substring(5));
+
+                            dataAttr(elem, name, data[name]);
+                        }
+                    }
+                    jQuery._data(elem, "parsedAttrs", true);
+                }
+            }
+
+            return data;
+        }
+
+        // Sets multiple values
+        if (typeof key === "object") {
+            return this.each(function () {
+                jQuery.data(this, key);
+            });
+        }
+
+        parts = key.split(".", 2);
+        parts[1] = parts[1] ? "." + parts[1] : "";
+        part = parts[1] + "!";
+
+        return jQuery.access(this, function (value) {
+
+            if (value === undefined) {
+                data = this.triggerHandler("getData" + part, [parts[0]]);
+
+                // Try to fetch any internally stored data first
+                if (data === undefined && elem) {
+                    data = jQuery.data(elem, key);
+                    data = dataAttr(elem, key, data);
+                }
+
+                return data === undefined && parts[1] ?
+					this.data(parts[0]) :
+					data;
+            }
+
+            parts[1] = value;
+            this.each(function () {
+                var self = jQuery(this);
+
+                self.triggerHandler("setData" + part, parts);
+                jQuery.data(this, key, value);
+                self.triggerHandler("changeData" + part, parts);
+            });
+        }, null, value, arguments.length > 1, null, false);
+    };
+    jQuery.prototype.dblclick = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "dblclick" JavaScript event, or trigger that event on an element.
+        ///     &#10;1 - dblclick(handler(eventObject)) 
+        ///     &#10;2 - dblclick(eventData, handler(eventObject)) 
+        ///     &#10;3 - dblclick()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.delay = function (time, type) {
+        /// <summary>
+        ///     Set a timer to delay execution of subsequent items in the queue.
+        /// </summary>
+        /// <param name="time" type="Number">
+        ///     An integer indicating the number of milliseconds to delay execution of the next item in the queue.
+        /// </param>
+        /// <param name="type" type="String">
+        ///     A string containing the name of the queue. Defaults to fx, the standard effects queue.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        time = jQuery.fx ? jQuery.fx.speeds[time] || time : time;
+        type = type || "fx";
+
+        return this.queue(type, function (next, hooks) {
+            var timeout = setTimeout(next, time);
+            hooks.stop = function () {
+                clearTimeout(timeout);
+            };
+        });
+    };
+    jQuery.prototype.delegate = function (selector, types, data, fn) {
+        /// <summary>
+        ///     Attach a handler to one or more events for all elements that match the selector, now or in the future, based on a specific set of root elements.
+        ///     &#10;1 - delegate(selector, eventType, handler(eventObject)) 
+        ///     &#10;2 - delegate(selector, eventType, eventData, handler(eventObject)) 
+        ///     &#10;3 - delegate(selector, events)
+        /// </summary>
+        /// <param name="selector" type="String">
+        ///     A selector to filter the elements that trigger the event.
+        /// </param>
+        /// <param name="types" type="String">
+        ///     A string containing one or more space-separated JavaScript event types, such as "click" or "keydown," or custom event names.
+        /// </param>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute at the time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.on(types, selector, data, fn);
+    };
+    jQuery.prototype.dequeue = function (type) {
+        /// <summary>
+        ///     Execute the next function on the queue for the matched elements.
+        /// </summary>
+        /// <param name="type" type="String">
+        ///     A string containing the name of the queue. Defaults to fx, the standard effects queue.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.each(function () {
+            jQuery.dequeue(this, type);
+        });
+    };
+    jQuery.prototype.detach = function (selector) {
+        /// <summary>
+        ///     Remove the set of matched elements from the DOM.
+        /// </summary>
+        /// <param name="selector" type="String">
+        ///     A selector expression that filters the set of matched elements to be removed.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.remove(selector, true);
+    };
+    jQuery.prototype.die = function (types, fn) {
+        /// <summary>
+        ///     1: Remove all event handlers previously attached using .live() from the elements.
+        ///     &#10;    1.1 - die()
+        ///     &#10;2: Remove an event handler previously attached using .live() from the elements.
+        ///     &#10;    2.1 - die(eventType, handler) 
+        ///     &#10;    2.2 - die(eventTypes)
+        /// </summary>
+        /// <param name="types" type="String">
+        ///     A string containing a JavaScript event type, such as click or keydown.
+        /// </param>
+        /// <param name="fn" type="String">
+        ///     The function that is no longer to be executed.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        jQuery(this.context).off(types, this.selector || "**", fn);
+        return this;
+    };
+    jQuery.prototype.domManip = function (args, table, callback) {
+
+
+        // Flatten any nested arrays
+        args = [].concat.apply([], args);
+
+        var results, first, fragment, iNoClone,
+			i = 0,
+			value = args[0],
+			scripts = [],
+			l = this.length;
+
+        // We can't cloneNode fragments that contain checked, in WebKit
+        if (!jQuery.support.checkClone && l > 1 && typeof value === "string" && rchecked.test(value)) {
+            return this.each(function () {
+                jQuery(this).domManip(args, table, callback);
+            });
+        }
+
+        if (jQuery.isFunction(value)) {
+            return this.each(function (i) {
+                var self = jQuery(this);
+                args[0] = value.call(this, i, table ? self.html() : undefined);
+                self.domManip(args, table, callback);
+            });
+        }
+
+        if (this[0]) {
+            results = jQuery.buildFragment(args, this, scripts);
+            fragment = results.fragment;
+            first = fragment.firstChild;
+
+            if (fragment.childNodes.length === 1) {
+                fragment = first;
+            }
+
+            if (first) {
+                table = table && jQuery.nodeName(first, "tr");
+
+                // Use the original fragment for the last item instead of the first because it can end up
+                // being emptied incorrectly in certain situations (#8070).
+                // Fragments from the fragment cache must always be cloned and never used in place.
+                for (iNoClone = results.cacheable || l - 1; i < l; i++) {
+                    callback.call(
+						table && jQuery.nodeName(this[i], "table") ?
+							findOrAppend(this[i], "tbody") :
+							this[i],
+						i === iNoClone ?
+                        fragment :
