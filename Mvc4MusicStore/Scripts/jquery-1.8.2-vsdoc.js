@@ -3978,3 +3978,499 @@
 							this[i],
 						i === iNoClone ?
                         fragment :
+							jQuery.clone(fragment, true, true)
+					);
+                }
+            }
+
+            // Fix #11809: Avoid leaking memory
+            fragment = first = null;
+
+            if (scripts.length) {
+                jQuery.each(scripts, function (i, elem) {
+                    if (elem.src) {
+                        if (jQuery.ajax) {
+                            jQuery.ajax({
+                                url: elem.src,
+                                type: "GET",
+                                dataType: "script",
+                                async: false,
+                                global: false,
+                                "throws": true
+                            });
+                        } else {
+                            jQuery.error("no ajax");
+                        }
+                    } else {
+                        jQuery.globalEval((elem.text || elem.textContent || elem.innerHTML || "").replace(rcleanScript, ""));
+                    }
+
+                    if (elem.parentNode) {
+                        elem.parentNode.removeChild(elem);
+                    }
+                });
+            }
+        }
+
+        return this;
+    };
+    jQuery.prototype.each = function (callback, args) {
+        /// <summary>
+        ///     Iterate over a jQuery object, executing a function for each matched element.
+        /// </summary>
+        /// <param name="callback" type="Function">
+        ///     A function to execute for each matched element.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return jQuery.each(this, callback, args);
+    };
+    jQuery.prototype.empty = function () {
+        /// <summary>
+        ///     Remove all child nodes of the set of matched elements from the DOM.
+        /// </summary>
+        /// <returns type="jQuery" />
+
+        var elem,
+			i = 0;
+
+        for (; (elem = this[i]) != null; i++) {
+            // Remove element nodes and prevent memory leaks
+            if (elem.nodeType === 1) {
+                jQuery.cleanData(elem.getElementsByTagName("*"));
+            }
+
+            // Remove any remaining nodes
+            while (elem.firstChild) {
+                elem.removeChild(elem.firstChild);
+            }
+        }
+
+        return this;
+    };
+    jQuery.prototype.end = function () {
+        /// <summary>
+        ///     End the most recent filtering operation in the current chain and return the set of matched elements to its previous state.
+        /// </summary>
+        /// <returns type="jQuery" />
+
+        return this.prevObject || this.constructor(null);
+    };
+    jQuery.prototype.eq = function (i) {
+        /// <summary>
+        ///     Reduce the set of matched elements to the one at the specified index.
+        ///     &#10;1 - eq(index) 
+        ///     &#10;2 - eq(-index)
+        /// </summary>
+        /// <param name="i" type="Number">
+        ///     An integer indicating the 0-based position of the element.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        i = +i;
+        return i === -1 ?
+			this.slice(i) :
+			this.slice(i, i + 1);
+    };
+    jQuery.prototype.error = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "error" JavaScript event.
+        ///     &#10;1 - error(handler(eventObject)) 
+        ///     &#10;2 - error(eventData, handler(eventObject))
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.extend = function () {
+
+        var options, name, src, copy, copyIsArray, clone,
+            target = arguments[0] || {},
+            i = 1,
+            length = arguments.length,
+            deep = false;
+
+        // Handle a deep copy situation
+        if (typeof target === "boolean") {
+            deep = target;
+            target = arguments[1] || {};
+            // skip the boolean and the target
+            i = 2;
+        }
+
+        // Handle case when target is a string or something (possible in deep copy)
+        if (typeof target !== "object" && !jQuery.isFunction(target)) {
+            target = {};
+        }
+
+        // extend jQuery itself if only one argument is passed
+        if (length === i) {
+            target = this;
+            --i;
+        }
+
+        for (; i < length; i++) {
+            // Only deal with non-null/undefined values
+            if ((options = arguments[i]) != null) {
+                // Extend the base object
+                for (name in options) {
+                    src = target[name];
+                    copy = options[name];
+
+                    // Prevent never-ending loop
+                    if (target === copy) {
+                        continue;
+                    }
+
+                    // Recurse if we're merging plain objects or arrays
+                    if (deep && copy && (jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)))) {
+                        if (copyIsArray) {
+                            copyIsArray = false;
+                            clone = src && jQuery.isArray(src) ? src : [];
+
+                        } else {
+                            clone = src && jQuery.isPlainObject(src) ? src : {};
+                        }
+
+                        // Never move original objects, clone them
+                        target[name] = jQuery.extend(deep, clone, copy);
+
+                        // Don't bring in undefined values
+                    } else if (copy !== undefined) {
+                        target[name] = copy;
+                    }
+                }
+            }
+        }
+
+        // Return the modified object
+        return target;
+    };
+    jQuery.prototype.fadeIn = function (speed, easing, callback) {
+        /// <summary>
+        ///     Display the matched elements by fading them to opaque.
+        ///     &#10;1 - fadeIn(duration, callback) 
+        ///     &#10;2 - fadeIn(duration, easing, callback)
+        /// </summary>
+        /// <param name="speed" type="Number">
+        ///     A string or number determining how long the animation will run.
+        /// </param>
+        /// <param name="easing" type="String">
+        ///     A string indicating which easing function to use for the transition.
+        /// </param>
+        /// <param name="callback" type="Function">
+        ///     A function to call once the animation is complete.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.animate(props, speed, easing, callback);
+    };
+    jQuery.prototype.fadeOut = function (speed, easing, callback) {
+        /// <summary>
+        ///     Hide the matched elements by fading them to transparent.
+        ///     &#10;1 - fadeOut(duration, callback) 
+        ///     &#10;2 - fadeOut(duration, easing, callback)
+        /// </summary>
+        /// <param name="speed" type="Number">
+        ///     A string or number determining how long the animation will run.
+        /// </param>
+        /// <param name="easing" type="String">
+        ///     A string indicating which easing function to use for the transition.
+        /// </param>
+        /// <param name="callback" type="Function">
+        ///     A function to call once the animation is complete.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.animate(props, speed, easing, callback);
+    };
+    jQuery.prototype.fadeTo = function (speed, to, easing, callback) {
+        /// <summary>
+        ///     Adjust the opacity of the matched elements.
+        ///     &#10;1 - fadeTo(duration, opacity, callback) 
+        ///     &#10;2 - fadeTo(duration, opacity, easing, callback)
+        /// </summary>
+        /// <param name="speed" type="Number">
+        ///     A string or number determining how long the animation will run.
+        /// </param>
+        /// <param name="to" type="Number">
+        ///     A number between 0 and 1 denoting the target opacity.
+        /// </param>
+        /// <param name="easing" type="String">
+        ///     A string indicating which easing function to use for the transition.
+        /// </param>
+        /// <param name="callback" type="Function">
+        ///     A function to call once the animation is complete.
+        /// </param>
+        /// <returns type="jQuery" />
+
+
+        // show any hidden elements after setting opacity to 0
+        return this.filter(isHidden).css("opacity", 0).show()
+
+			// animate to the value specified
+			.end().animate({ opacity: to }, speed, easing, callback);
+    };
+    jQuery.prototype.fadeToggle = function (speed, easing, callback) {
+        /// <summary>
+        ///     Display or hide the matched elements by animating their opacity.
+        /// </summary>
+        /// <param name="speed" type="Number">
+        ///     A string or number determining how long the animation will run.
+        /// </param>
+        /// <param name="easing" type="String">
+        ///     A string indicating which easing function to use for the transition.
+        /// </param>
+        /// <param name="callback" type="Function">
+        ///     A function to call once the animation is complete.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.animate(props, speed, easing, callback);
+    };
+    jQuery.prototype.filter = function (selector) {
+        /// <summary>
+        ///     Reduce the set of matched elements to those that match the selector or pass the function's test.
+        ///     &#10;1 - filter(selector) 
+        ///     &#10;2 - filter(function(index)) 
+        ///     &#10;3 - filter(element) 
+        ///     &#10;4 - filter(jQuery object)
+        /// </summary>
+        /// <param name="selector" type="String">
+        ///     A string containing a selector expression to match the current set of elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.pushStack(winnow(this, selector, true), "filter", selector);
+    };
+    jQuery.prototype.find = function (selector) {
+        /// <summary>
+        ///     Get the descendants of each element in the current set of matched elements, filtered by a selector, jQuery object, or element.
+        ///     &#10;1 - find(selector) 
+        ///     &#10;2 - find(jQuery object) 
+        ///     &#10;3 - find(element)
+        /// </summary>
+        /// <param name="selector" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var i, l, length, n, r, ret,
+			self = this;
+
+        if (typeof selector !== "string") {
+            return jQuery(selector).filter(function () {
+                for (i = 0, l = self.length; i < l; i++) {
+                    if (jQuery.contains(self[i], this)) {
+                        return true;
+                    }
+                }
+            });
+        }
+
+        ret = this.pushStack("", "find", selector);
+
+        for (i = 0, l = this.length; i < l; i++) {
+            length = ret.length;
+            jQuery.find(selector, this[i], ret);
+
+            if (i > 0) {
+                // Make sure that the results are unique
+                for (n = length; n < ret.length; n++) {
+                    for (r = 0; r < length; r++) {
+                        if (ret[r] === ret[n]) {
+                            ret.splice(n--, 1);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return ret;
+    };
+    jQuery.prototype.first = function () {
+        /// <summary>
+        ///     Reduce the set of matched elements to the first in the set.
+        /// </summary>
+        /// <returns type="jQuery" />
+
+        return this.eq(0);
+    };
+    jQuery.prototype.focus = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "focus" JavaScript event, or trigger that event on an element.
+        ///     &#10;1 - focus(handler(eventObject)) 
+        ///     &#10;2 - focus(eventData, handler(eventObject)) 
+        ///     &#10;3 - focus()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.focusin = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "focusin" event.
+        ///     &#10;1 - focusin(handler(eventObject)) 
+        ///     &#10;2 - focusin(eventData, handler(eventObject))
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.focusout = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "focusout" JavaScript event.
+        ///     &#10;1 - focusout(handler(eventObject)) 
+        ///     &#10;2 - focusout(eventData, handler(eventObject))
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.get = function (num) {
+        /// <summary>
+        ///     Retrieve the DOM elements matched by the jQuery object.
+        /// </summary>
+        /// <param name="num" type="Number">
+        ///     A zero-based integer indicating which element to retrieve.
+        /// </param>
+        /// <returns type="Array" />
+
+        return num == null ?
+
+			// Return a 'clean' array
+			this.toArray() :
+
+			// Return just the object
+			(num < 0 ? this[this.length + num] : this[num]);
+    };
+    jQuery.prototype.has = function (target) {
+        /// <summary>
+        ///     Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.
+        ///     &#10;1 - has(selector) 
+        ///     &#10;2 - has(contained)
+        /// </summary>
+        /// <param name="target" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var i,
+			targets = jQuery(target, this),
+			len = targets.length;
+
+        return this.filter(function () {
+            for (i = 0; i < len; i++) {
+                if (jQuery.contains(this, targets[i])) {
+                    return true;
+                }
+            }
+        });
+    };
+    jQuery.prototype.hasClass = function (selector) {
+        /// <summary>
+        ///     Determine whether any of the matched elements are assigned the given class.
+        /// </summary>
+        /// <param name="selector" type="String">
+        ///     The class name to search for.
+        /// </param>
+        /// <returns type="Boolean" />
+
+        var className = " " + selector + " ",
+			i = 0,
+			l = this.length;
+        for (; i < l; i++) {
+            if (this[i].nodeType === 1 && (" " + this[i].className + " ").replace(rclass, " ").indexOf(className) >= 0) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+    jQuery.prototype.height = function (margin, value) {
+        /// <summary>
+        ///     1: Get the current computed height for the first element in the set of matched elements.
+        ///     &#10;    1.1 - height()
+        ///     &#10;2: Set the CSS height of every matched element.
+        ///     &#10;    2.1 - height(value) 
+        ///     &#10;    2.2 - height(function(index, height))
+        /// </summary>
+        /// <param name="margin" type="Number">
+        ///     An integer representing the number of pixels, or an integer with an optional unit of measure appended (as a string).
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var chainable = arguments.length && (defaultExtra || typeof margin !== "boolean"),
+            extra = defaultExtra || (margin === true || value === true ? "margin" : "border");
+
+        return jQuery.access(this, function (elem, type, value) {
+            var doc;
+
+            if (jQuery.isWindow(elem)) {
+                // As of 5/8/2012 this will yield incorrect results for Mobile Safari, but there
+                // isn't a whole lot we can do. See pull request at this URL for discussion:
+                // https://github.com/jquery/jquery/pull/764
+                return elem.document.documentElement["client" + name];
+            }
+
+            // Get document width or height
+            if (elem.nodeType === 9) {
+                doc = elem.documentElement;
+
+                // Either scroll[Width/Height] or offset[Width/Height] or client[Width/Height], whichever is greatest
+                // unfortunately, this causes bug #3838 in IE6/8 only, but there is currently no good, small way to fix it.
+                return Math.max(
+                    elem.body["scroll" + name], doc["scroll" + name],
