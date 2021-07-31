@@ -5458,3 +5458,481 @@
         ///     A selector string to filter the descendants of the selected elements that trigger the event. If the selector is null or omitted, the event is always triggered when it reaches the selected element.
         /// </param>
         /// <param name="data" type="Anything">
+        ///     Data to be passed to the handler in event.data when an event is triggered.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute when the event is triggered. The value false is also allowed as a shorthand for a function that simply does return false.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var origFn, type;
+
+        // Types can be a map of types/handlers
+        if (typeof types === "object") {
+            // ( types-Object, selector, data )
+            if (typeof selector !== "string") { // && selector != null
+                // ( types-Object, data )
+                data = data || selector;
+                selector = undefined;
+            }
+            for (type in types) {
+                this.on(type, selector, data, types[type], one);
+            }
+            return this;
+        }
+
+        if (data == null && fn == null) {
+            // ( types, fn )
+            fn = selector;
+            data = selector = undefined;
+        } else if (fn == null) {
+            if (typeof selector === "string") {
+                // ( types, selector, fn )
+                fn = data;
+                data = undefined;
+            } else {
+                // ( types, data, fn )
+                fn = data;
+                data = selector;
+                selector = undefined;
+            }
+        }
+        if (fn === false) {
+            fn = returnFalse;
+        } else if (!fn) {
+            return this;
+        }
+
+        if (one === 1) {
+            origFn = fn;
+            fn = function (event) {
+                // Can use an empty set, since event contains the info
+                jQuery().off(event);
+                return origFn.apply(this, arguments);
+            };
+            // Use same guid so caller can remove using origFn
+            fn.guid = origFn.guid || (origFn.guid = jQuery.guid++);
+        }
+        return this.each(function () {
+            jQuery.event.add(this, types, fn, data, selector);
+        });
+    };
+    jQuery.prototype.one = function (types, selector, data, fn) {
+        /// <summary>
+        ///     Attach a handler to an event for the elements. The handler is executed at most once per element.
+        ///     &#10;1 - one(events, data, handler(eventObject)) 
+        ///     &#10;2 - one(events, selector, data, handler(eventObject)) 
+        ///     &#10;3 - one(events-map, selector, data)
+        /// </summary>
+        /// <param name="types" type="String">
+        ///     One or more space-separated event types and optional namespaces, such as "click" or "keydown.myPlugin".
+        /// </param>
+        /// <param name="selector" type="String">
+        ///     A selector string to filter the descendants of the selected elements that trigger the event. If the selector is null or omitted, the event is always triggered when it reaches the selected element.
+        /// </param>
+        /// <param name="data" type="Anything">
+        ///     Data to be passed to the handler in event.data when an event is triggered.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute when the event is triggered. The value false is also allowed as a shorthand for a function that simply does return false.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.on(types, selector, data, fn, 1);
+    };
+    jQuery.prototype.outerHeight = function (margin, value) {
+        /// <summary>
+        ///     Get the current computed height for the first element in the set of matched elements, including padding, border, and optionally margin. Returns an integer (without "px") representation of the value or null if called on an empty set of elements.
+        /// </summary>
+        /// <param name="margin" type="Boolean">
+        ///     A Boolean indicating whether to include the element's margin in the calculation.
+        /// </param>
+        /// <returns type="Number" />
+
+        var chainable = arguments.length && (defaultExtra || typeof margin !== "boolean"),
+            extra = defaultExtra || (margin === true || value === true ? "margin" : "border");
+
+        return jQuery.access(this, function (elem, type, value) {
+            var doc;
+
+            if (jQuery.isWindow(elem)) {
+                // As of 5/8/2012 this will yield incorrect results for Mobile Safari, but there
+                // isn't a whole lot we can do. See pull request at this URL for discussion:
+                // https://github.com/jquery/jquery/pull/764
+                return elem.document.documentElement["client" + name];
+            }
+
+            // Get document width or height
+            if (elem.nodeType === 9) {
+                doc = elem.documentElement;
+
+                // Either scroll[Width/Height] or offset[Width/Height] or client[Width/Height], whichever is greatest
+                // unfortunately, this causes bug #3838 in IE6/8 only, but there is currently no good, small way to fix it.
+                return Math.max(
+                    elem.body["scroll" + name], doc["scroll" + name],
+                    elem.body["offset" + name], doc["offset" + name],
+                    doc["client" + name]
+                );
+            }
+
+            return value === undefined ?
+                // Get width or height on the element, requesting but not forcing parseFloat
+                jQuery.css(elem, type, value, extra) :
+
+                // Set width or height on the element
+                jQuery.style(elem, type, value, extra);
+        }, type, chainable ? margin : undefined, chainable, null);
+    };
+    jQuery.prototype.outerWidth = function (margin, value) {
+        /// <summary>
+        ///     Get the current computed width for the first element in the set of matched elements, including padding and border.
+        /// </summary>
+        /// <param name="margin" type="Boolean">
+        ///     A Boolean indicating whether to include the element's margin in the calculation.
+        /// </param>
+        /// <returns type="Number" />
+
+        var chainable = arguments.length && (defaultExtra || typeof margin !== "boolean"),
+            extra = defaultExtra || (margin === true || value === true ? "margin" : "border");
+
+        return jQuery.access(this, function (elem, type, value) {
+            var doc;
+
+            if (jQuery.isWindow(elem)) {
+                // As of 5/8/2012 this will yield incorrect results for Mobile Safari, but there
+                // isn't a whole lot we can do. See pull request at this URL for discussion:
+                // https://github.com/jquery/jquery/pull/764
+                return elem.document.documentElement["client" + name];
+            }
+
+            // Get document width or height
+            if (elem.nodeType === 9) {
+                doc = elem.documentElement;
+
+                // Either scroll[Width/Height] or offset[Width/Height] or client[Width/Height], whichever is greatest
+                // unfortunately, this causes bug #3838 in IE6/8 only, but there is currently no good, small way to fix it.
+                return Math.max(
+                    elem.body["scroll" + name], doc["scroll" + name],
+                    elem.body["offset" + name], doc["offset" + name],
+                    doc["client" + name]
+                );
+            }
+
+            return value === undefined ?
+                // Get width or height on the element, requesting but not forcing parseFloat
+                jQuery.css(elem, type, value, extra) :
+
+                // Set width or height on the element
+                jQuery.style(elem, type, value, extra);
+        }, type, chainable ? margin : undefined, chainable, null);
+    };
+    jQuery.prototype.parent = function (until, selector) {
+        /// <summary>
+        ///     Get the parent of each element in the current set of matched elements, optionally filtered by a selector.
+        /// </summary>
+        /// <param name="until" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var ret = jQuery.map(this, fn, until);
+
+        if (!runtil.test(name)) {
+            selector = until;
+        }
+
+        if (selector && typeof selector === "string") {
+            ret = jQuery.filter(selector, ret);
+        }
+
+        ret = this.length > 1 && !guaranteedUnique[name] ? jQuery.unique(ret) : ret;
+
+        if (this.length > 1 && rparentsprev.test(name)) {
+            ret = ret.reverse();
+        }
+
+        return this.pushStack(ret, name, core_slice.call(arguments).join(","));
+    };
+    jQuery.prototype.parents = function (until, selector) {
+        /// <summary>
+        ///     Get the ancestors of each element in the current set of matched elements, optionally filtered by a selector.
+        /// </summary>
+        /// <param name="until" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var ret = jQuery.map(this, fn, until);
+
+        if (!runtil.test(name)) {
+            selector = until;
+        }
+
+        if (selector && typeof selector === "string") {
+            ret = jQuery.filter(selector, ret);
+        }
+
+        ret = this.length > 1 && !guaranteedUnique[name] ? jQuery.unique(ret) : ret;
+
+        if (this.length > 1 && rparentsprev.test(name)) {
+            ret = ret.reverse();
+        }
+
+        return this.pushStack(ret, name, core_slice.call(arguments).join(","));
+    };
+    jQuery.prototype.parentsUntil = function (until, selector) {
+        /// <summary>
+        ///     Get the ancestors of each element in the current set of matched elements, up to but not including the element matched by the selector, DOM node, or jQuery object.
+        ///     &#10;1 - parentsUntil(selector, filter) 
+        ///     &#10;2 - parentsUntil(element, filter)
+        /// </summary>
+        /// <param name="until" type="String">
+        ///     A string containing a selector expression to indicate where to stop matching ancestor elements.
+        /// </param>
+        /// <param name="selector" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var ret = jQuery.map(this, fn, until);
+
+        if (!runtil.test(name)) {
+            selector = until;
+        }
+
+        if (selector && typeof selector === "string") {
+            ret = jQuery.filter(selector, ret);
+        }
+
+        ret = this.length > 1 && !guaranteedUnique[name] ? jQuery.unique(ret) : ret;
+
+        if (this.length > 1 && rparentsprev.test(name)) {
+            ret = ret.reverse();
+        }
+
+        return this.pushStack(ret, name, core_slice.call(arguments).join(","));
+    };
+    jQuery.prototype.position = function () {
+        /// <summary>
+        ///     Get the current coordinates of the first element in the set of matched elements, relative to the offset parent.
+        /// </summary>
+        /// <returns type="Object" />
+
+        if (!this[0]) {
+            return;
+        }
+
+        var elem = this[0],
+
+		// Get *real* offsetParent
+		offsetParent = this.offsetParent(),
+
+		// Get correct offsets
+		offset = this.offset(),
+		parentOffset = rroot.test(offsetParent[0].nodeName) ? { top: 0, left: 0 } : offsetParent.offset();
+
+        // Subtract element margins
+        // note: when an element has margin: auto the offsetLeft and marginLeft
+        // are the same in Safari causing offset.left to incorrectly be 0
+        offset.top -= parseFloat(jQuery.css(elem, "marginTop")) || 0;
+        offset.left -= parseFloat(jQuery.css(elem, "marginLeft")) || 0;
+
+        // Add offsetParent borders
+        parentOffset.top += parseFloat(jQuery.css(offsetParent[0], "borderTopWidth")) || 0;
+        parentOffset.left += parseFloat(jQuery.css(offsetParent[0], "borderLeftWidth")) || 0;
+
+        // Subtract the two offsets
+        return {
+            top: offset.top - parentOffset.top,
+            left: offset.left - parentOffset.left
+        };
+    };
+    jQuery.prototype.prepend = function () {
+        /// <summary>
+        ///     Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.
+        ///     &#10;1 - prepend(content, content) 
+        ///     &#10;2 - prepend(function(index, html))
+        /// </summary>
+        /// <param name="" type="jQuery">
+        ///     DOM element, array of elements, HTML string, or jQuery object to insert at the beginning of each element in the set of matched elements.
+        /// </param>
+        /// <param name="" type="jQuery">
+        ///     One or more additional DOM elements, arrays of elements, HTML strings, or jQuery objects to insert at the beginning of each element in the set of matched elements.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.domManip(arguments, true, function (elem) {
+            if (this.nodeType === 1 || this.nodeType === 11) {
+                this.insertBefore(elem, this.firstChild);
+            }
+        });
+    };
+    jQuery.prototype.prependTo = function (selector) {
+        /// <summary>
+        ///     Insert every element in the set of matched elements to the beginning of the target.
+        /// </summary>
+        /// <param name="selector" type="jQuery">
+        ///     A selector, element, HTML string, or jQuery object; the matched set of elements will be inserted at the beginning of the element(s) specified by this parameter.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var elems,
+			i = 0,
+			ret = [],
+			insert = jQuery(selector),
+			l = insert.length,
+			parent = this.length === 1 && this[0].parentNode;
+
+        if ((parent == null || parent && parent.nodeType === 11 && parent.childNodes.length === 1) && l === 1) {
+            insert[original](this[0]);
+            return this;
+        } else {
+            for (; i < l; i++) {
+                elems = (i > 0 ? this.clone(true) : this).get();
+                jQuery(insert[i])[original](elems);
+                ret = ret.concat(elems);
+            }
+
+            return this.pushStack(ret, name, insert.selector);
+        }
+    };
+    jQuery.prototype.prev = function (until, selector) {
+        /// <summary>
+        ///     Get the immediately preceding sibling of each element in the set of matched elements, optionally filtered by a selector.
+        /// </summary>
+        /// <param name="until" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var ret = jQuery.map(this, fn, until);
+
+        if (!runtil.test(name)) {
+            selector = until;
+        }
+
+        if (selector && typeof selector === "string") {
+            ret = jQuery.filter(selector, ret);
+        }
+
+        ret = this.length > 1 && !guaranteedUnique[name] ? jQuery.unique(ret) : ret;
+
+        if (this.length > 1 && rparentsprev.test(name)) {
+            ret = ret.reverse();
+        }
+
+        return this.pushStack(ret, name, core_slice.call(arguments).join(","));
+    };
+    jQuery.prototype.prevAll = function (until, selector) {
+        /// <summary>
+        ///     Get all preceding siblings of each element in the set of matched elements, optionally filtered by a selector.
+        /// </summary>
+        /// <param name="until" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var ret = jQuery.map(this, fn, until);
+
+        if (!runtil.test(name)) {
+            selector = until;
+        }
+
+        if (selector && typeof selector === "string") {
+            ret = jQuery.filter(selector, ret);
+        }
+
+        ret = this.length > 1 && !guaranteedUnique[name] ? jQuery.unique(ret) : ret;
+
+        if (this.length > 1 && rparentsprev.test(name)) {
+            ret = ret.reverse();
+        }
+
+        return this.pushStack(ret, name, core_slice.call(arguments).join(","));
+    };
+    jQuery.prototype.prevUntil = function (until, selector) {
+        /// <summary>
+        ///     Get all preceding siblings of each element up to but not including the element matched by the selector, DOM node, or jQuery object.
+        ///     &#10;1 - prevUntil(selector, filter) 
+        ///     &#10;2 - prevUntil(element, filter)
+        /// </summary>
+        /// <param name="until" type="String">
+        ///     A string containing a selector expression to indicate where to stop matching preceding sibling elements.
+        /// </param>
+        /// <param name="selector" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var ret = jQuery.map(this, fn, until);
+
+        if (!runtil.test(name)) {
+            selector = until;
+        }
+
+        if (selector && typeof selector === "string") {
+            ret = jQuery.filter(selector, ret);
+        }
+
+        ret = this.length > 1 && !guaranteedUnique[name] ? jQuery.unique(ret) : ret;
+
+        if (this.length > 1 && rparentsprev.test(name)) {
+            ret = ret.reverse();
+        }
+
+        return this.pushStack(ret, name, core_slice.call(arguments).join(","));
+    };
+    jQuery.prototype.promise = function (type, obj) {
+        /// <summary>
+        ///     Return a Promise object to observe when all actions of a certain type bound to the collection, queued or not, have finished.
+        /// </summary>
+        /// <param name="type" type="String">
+        ///     The type of queue that needs to be observed.
+        /// </param>
+        /// <param name="obj" type="Object">
+        ///     Object onto which the promise methods have to be attached
+        /// </param>
+        /// <returns type="Promise" />
+
+        var tmp,
+			count = 1,
+			defer = jQuery.Deferred(),
+			elements = this,
+			i = this.length,
+			resolve = function () {
+			    if (!(--count)) {
+			        defer.resolveWith(elements, [elements]);
+			    }
+			};
+
+        if (typeof type !== "string") {
+            obj = type;
+            type = undefined;
+        }
+        type = type || "fx";
+
+        while (i--) {
+            tmp = jQuery._data(elements[i], type + "queueHooks");
+            if (tmp && tmp.empty) {
+                count++;
+                tmp.empty.add(resolve);
+            }
+        }
+        resolve();
+        return defer.promise(obj);
+    };
+    jQuery.prototype.prop = function (name, value) {
+        /// <summary>
+        ///     1: Get the value of a property for the first element in the set of matched elements.
+        ///     &#10;    1.1 - prop(propertyName)
+        ///     &#10;2: Set one or more properties for the set of matched elements.
+        ///     &#10;    2.1 - prop(propertyName, value) 
+        ///     &#10;    2.2 - prop(map) 
+        ///     &#10;    2.3 - prop(propertyName, function(index, oldPropertyValue))
+        /// </summary>
+        /// <param name="name" type="String">
+        ///     The name of the property to set.
+        /// </param>
+        /// <param name="value" type="Boolean">
+        ///     A value to set for the property.
+        /// </param>
