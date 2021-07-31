@@ -4474,3 +4474,489 @@
                 // unfortunately, this causes bug #3838 in IE6/8 only, but there is currently no good, small way to fix it.
                 return Math.max(
                     elem.body["scroll" + name], doc["scroll" + name],
+                    elem.body["offset" + name], doc["offset" + name],
+                    doc["client" + name]
+                );
+            }
+
+            return value === undefined ?
+                // Get width or height on the element, requesting but not forcing parseFloat
+                jQuery.css(elem, type, value, extra) :
+
+                // Set width or height on the element
+                jQuery.style(elem, type, value, extra);
+        }, type, chainable ? margin : undefined, chainable, null);
+    };
+    jQuery.prototype.hide = function (speed, easing, callback) {
+        /// <summary>
+        ///     Hide the matched elements.
+        ///     &#10;1 - hide() 
+        ///     &#10;2 - hide(duration, callback) 
+        ///     &#10;3 - hide(duration, easing, callback)
+        /// </summary>
+        /// <param name="speed" type="Number">
+        ///     A string or number determining how long the animation will run.
+        /// </param>
+        /// <param name="easing" type="String">
+        ///     A string indicating which easing function to use for the transition.
+        /// </param>
+        /// <param name="callback" type="Function">
+        ///     A function to call once the animation is complete.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return speed == null || typeof speed === "boolean" ||
+			// special check for .toggle( handler, handler, ... )
+			(!i && jQuery.isFunction(speed) && jQuery.isFunction(easing)) ?
+			cssFn.apply(this, arguments) :
+			this.animate(genFx(name, true), speed, easing, callback);
+    };
+    jQuery.prototype.hover = function (fnOver, fnOut) {
+        /// <summary>
+        ///     1: Bind two handlers to the matched elements, to be executed when the mouse pointer enters and leaves the elements.
+        ///     &#10;    1.1 - hover(handlerIn(eventObject), handlerOut(eventObject))
+        ///     &#10;2: Bind a single handler to the matched elements, to be executed when the mouse pointer enters or leaves the elements.
+        ///     &#10;    2.1 - hover(handlerInOut(eventObject))
+        /// </summary>
+        /// <param name="fnOver" type="Function">
+        ///     A function to execute when the mouse pointer enters the element.
+        /// </param>
+        /// <param name="fnOut" type="Function">
+        ///     A function to execute when the mouse pointer leaves the element.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.mouseenter(fnOver).mouseleave(fnOut || fnOver);
+    };
+    jQuery.prototype.html = function (value) {
+        /// <summary>
+        ///     1: Get the HTML contents of the first element in the set of matched elements.
+        ///     &#10;    1.1 - html()
+        ///     &#10;2: Set the HTML contents of each element in the set of matched elements.
+        ///     &#10;    2.1 - html(htmlString) 
+        ///     &#10;    2.2 - html(function(index, oldhtml))
+        /// </summary>
+        /// <param name="value" type="String">
+        ///     A string of HTML to set as the content of each matched element.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return jQuery.access(this, function (value) {
+            var elem = this[0] || {},
+				i = 0,
+				l = this.length;
+
+            if (value === undefined) {
+                return elem.nodeType === 1 ?
+					elem.innerHTML.replace(rinlinejQuery, "") :
+					undefined;
+            }
+
+            // See if we can take a shortcut and just use innerHTML
+            if (typeof value === "string" && !rnoInnerhtml.test(value) &&
+				(jQuery.support.htmlSerialize || !rnoshimcache.test(value)) &&
+				(jQuery.support.leadingWhitespace || !rleadingWhitespace.test(value)) &&
+				!wrapMap[(rtagName.exec(value) || ["", ""])[1].toLowerCase()]) {
+
+                value = value.replace(rxhtmlTag, "<$1></$2>");
+
+                try {
+                    for (; i < l; i++) {
+                        // Remove element nodes and prevent memory leaks
+                        elem = this[i] || {};
+                        if (elem.nodeType === 1) {
+                            jQuery.cleanData(elem.getElementsByTagName("*"));
+                            elem.innerHTML = value;
+                        }
+                    }
+
+                    elem = 0;
+
+                    // If using innerHTML throws an exception, use the fallback method
+                } catch (e) { }
+            }
+
+            if (elem) {
+                this.empty().append(value);
+            }
+        }, null, value, arguments.length);
+    };
+    jQuery.prototype.index = function (elem) {
+        /// <summary>
+        ///     Search for a given element from among the matched elements.
+        ///     &#10;1 - index() 
+        ///     &#10;2 - index(selector) 
+        ///     &#10;3 - index(element)
+        /// </summary>
+        /// <param name="elem" type="String">
+        ///     A selector representing a jQuery collection in which to look for an element.
+        /// </param>
+        /// <returns type="Number" />
+
+
+        // No argument, return index in parent
+        if (!elem) {
+            return (this[0] && this[0].parentNode) ? this.prevAll().length : -1;
+        }
+
+        // index in selector
+        if (typeof elem === "string") {
+            return jQuery.inArray(this[0], jQuery(elem));
+        }
+
+        // Locate the position of the desired element
+        return jQuery.inArray(
+			// If it receives a jQuery object, the first element is used
+			elem.jquery ? elem[0] : elem, this);
+    };
+    jQuery.prototype.init = function (selector, context, rootjQuery) {
+
+        var match, elem, ret, doc;
+
+        // Handle $(""), $(null), $(undefined), $(false)
+        if (!selector) {
+            return this;
+        }
+
+        // Handle $(DOMElement)
+        if (selector.nodeType) {
+            this.context = this[0] = selector;
+            this.length = 1;
+            return this;
+        }
+
+        // Handle HTML strings
+        if (typeof selector === "string") {
+            if (selector.charAt(0) === "<" && selector.charAt(selector.length - 1) === ">" && selector.length >= 3) {
+                // Assume that strings that start and end with <> are HTML and skip the regex check
+                match = [null, selector, null];
+
+            } else {
+                match = rquickExpr.exec(selector);
+            }
+
+            // Match html or make sure no context is specified for #id
+            if (match && (match[1] || !context)) {
+
+                // HANDLE: $(html) -> $(array)
+                if (match[1]) {
+                    context = context instanceof jQuery ? context[0] : context;
+                    doc = (context && context.nodeType ? context.ownerDocument || context : document);
+
+                    // scripts is true for back-compat
+                    selector = jQuery.parseHTML(match[1], doc, true);
+                    if (rsingleTag.test(match[1]) && jQuery.isPlainObject(context)) {
+                        this.attr.call(selector, context, true);
+                    }
+
+                    return jQuery.merge(this, selector);
+
+                    // HANDLE: $(#id)
+                } else {
+                    elem = document.getElementById(match[2]);
+
+                    // Check parentNode to catch when Blackberry 4.6 returns
+                    // nodes that are no longer in the document #6963
+                    if (elem && elem.parentNode) {
+                        // Handle the case where IE and Opera return items
+                        // by name instead of ID
+                        if (elem.id !== match[2]) {
+                            return rootjQuery.find(selector);
+                        }
+
+                        // Otherwise, we inject the element directly into the jQuery object
+                        this.length = 1;
+                        this[0] = elem;
+                    }
+
+                    this.context = document;
+                    this.selector = selector;
+                    return this;
+                }
+
+                // HANDLE: $(expr, $(...))
+            } else if (!context || context.jquery) {
+                return (context || rootjQuery).find(selector);
+
+                // HANDLE: $(expr, context)
+                // (which is just equivalent to: $(context).find(expr)
+            } else {
+                return this.constructor(context).find(selector);
+            }
+
+            // HANDLE: $(function)
+            // Shortcut for document ready
+        } else if (jQuery.isFunction(selector)) {
+            return rootjQuery.ready(selector);
+        }
+
+        if (selector.selector !== undefined) {
+            this.selector = selector.selector;
+            this.context = selector.context;
+        }
+
+        return jQuery.makeArray(selector, this);
+    };
+    jQuery.prototype.innerHeight = function (margin, value) {
+        /// <summary>
+        ///     Get the current computed height for the first element in the set of matched elements, including padding but not border.
+        /// </summary>
+        /// <returns type="Number" />
+
+        var chainable = arguments.length && (defaultExtra || typeof margin !== "boolean"),
+            extra = defaultExtra || (margin === true || value === true ? "margin" : "border");
+
+        return jQuery.access(this, function (elem, type, value) {
+            var doc;
+
+            if (jQuery.isWindow(elem)) {
+                // As of 5/8/2012 this will yield incorrect results for Mobile Safari, but there
+                // isn't a whole lot we can do. See pull request at this URL for discussion:
+                // https://github.com/jquery/jquery/pull/764
+                return elem.document.documentElement["client" + name];
+            }
+
+            // Get document width or height
+            if (elem.nodeType === 9) {
+                doc = elem.documentElement;
+
+                // Either scroll[Width/Height] or offset[Width/Height] or client[Width/Height], whichever is greatest
+                // unfortunately, this causes bug #3838 in IE6/8 only, but there is currently no good, small way to fix it.
+                return Math.max(
+                    elem.body["scroll" + name], doc["scroll" + name],
+                    elem.body["offset" + name], doc["offset" + name],
+                    doc["client" + name]
+                );
+            }
+
+            return value === undefined ?
+                // Get width or height on the element, requesting but not forcing parseFloat
+                jQuery.css(elem, type, value, extra) :
+
+                // Set width or height on the element
+                jQuery.style(elem, type, value, extra);
+        }, type, chainable ? margin : undefined, chainable, null);
+    };
+    jQuery.prototype.innerWidth = function (margin, value) {
+        /// <summary>
+        ///     Get the current computed width for the first element in the set of matched elements, including padding but not border.
+        /// </summary>
+        /// <returns type="Number" />
+
+        var chainable = arguments.length && (defaultExtra || typeof margin !== "boolean"),
+            extra = defaultExtra || (margin === true || value === true ? "margin" : "border");
+
+        return jQuery.access(this, function (elem, type, value) {
+            var doc;
+
+            if (jQuery.isWindow(elem)) {
+                // As of 5/8/2012 this will yield incorrect results for Mobile Safari, but there
+                // isn't a whole lot we can do. See pull request at this URL for discussion:
+                // https://github.com/jquery/jquery/pull/764
+                return elem.document.documentElement["client" + name];
+            }
+
+            // Get document width or height
+            if (elem.nodeType === 9) {
+                doc = elem.documentElement;
+
+                // Either scroll[Width/Height] or offset[Width/Height] or client[Width/Height], whichever is greatest
+                // unfortunately, this causes bug #3838 in IE6/8 only, but there is currently no good, small way to fix it.
+                return Math.max(
+                    elem.body["scroll" + name], doc["scroll" + name],
+                    elem.body["offset" + name], doc["offset" + name],
+                    doc["client" + name]
+                );
+            }
+
+            return value === undefined ?
+                // Get width or height on the element, requesting but not forcing parseFloat
+                jQuery.css(elem, type, value, extra) :
+
+                // Set width or height on the element
+                jQuery.style(elem, type, value, extra);
+        }, type, chainable ? margin : undefined, chainable, null);
+    };
+    jQuery.prototype.insertAfter = function (selector) {
+        /// <summary>
+        ///     Insert every element in the set of matched elements after the target.
+        /// </summary>
+        /// <param name="selector" type="jQuery">
+        ///     A selector, element, HTML string, or jQuery object; the matched set of elements will be inserted after the element(s) specified by this parameter.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var elems,
+			i = 0,
+			ret = [],
+			insert = jQuery(selector),
+			l = insert.length,
+			parent = this.length === 1 && this[0].parentNode;
+
+        if ((parent == null || parent && parent.nodeType === 11 && parent.childNodes.length === 1) && l === 1) {
+            insert[original](this[0]);
+            return this;
+        } else {
+            for (; i < l; i++) {
+                elems = (i > 0 ? this.clone(true) : this).get();
+                jQuery(insert[i])[original](elems);
+                ret = ret.concat(elems);
+            }
+
+            return this.pushStack(ret, name, insert.selector);
+        }
+    };
+    jQuery.prototype.insertBefore = function (selector) {
+        /// <summary>
+        ///     Insert every element in the set of matched elements before the target.
+        /// </summary>
+        /// <param name="selector" type="jQuery">
+        ///     A selector, element, HTML string, or jQuery object; the matched set of elements will be inserted before the element(s) specified by this parameter.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var elems,
+			i = 0,
+			ret = [],
+			insert = jQuery(selector),
+			l = insert.length,
+			parent = this.length === 1 && this[0].parentNode;
+
+        if ((parent == null || parent && parent.nodeType === 11 && parent.childNodes.length === 1) && l === 1) {
+            insert[original](this[0]);
+            return this;
+        } else {
+            for (; i < l; i++) {
+                elems = (i > 0 ? this.clone(true) : this).get();
+                jQuery(insert[i])[original](elems);
+                ret = ret.concat(elems);
+            }
+
+            return this.pushStack(ret, name, insert.selector);
+        }
+    };
+    jQuery.prototype.is = function (selector) {
+        /// <summary>
+        ///     Check the current matched set of elements against a selector, element, or jQuery object and return true if at least one of these elements matches the given arguments.
+        ///     &#10;1 - is(selector) 
+        ///     &#10;2 - is(function(index)) 
+        ///     &#10;3 - is(jQuery object) 
+        ///     &#10;4 - is(element)
+        /// </summary>
+        /// <param name="selector" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="Boolean" />
+
+        return !!selector && (
+			typeof selector === "string" ?
+				// If this is a positional/relative selector, check membership in the returned set
+				// so $("p:first").is("p:last") won't return true for a doc with two "p".
+				rneedsContext.test(selector) ?
+					jQuery(selector, this.context).index(this[0]) >= 0 :
+					jQuery.filter(selector, this).length > 0 :
+				this.filter(selector).length > 0);
+    };
+    jQuery.prototype.keydown = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "keydown" JavaScript event, or trigger that event on an element.
+        ///     &#10;1 - keydown(handler(eventObject)) 
+        ///     &#10;2 - keydown(eventData, handler(eventObject)) 
+        ///     &#10;3 - keydown()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.keypress = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "keypress" JavaScript event, or trigger that event on an element.
+        ///     &#10;1 - keypress(handler(eventObject)) 
+        ///     &#10;2 - keypress(eventData, handler(eventObject)) 
+        ///     &#10;3 - keypress()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.keyup = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "keyup" JavaScript event, or trigger that event on an element.
+        ///     &#10;1 - keyup(handler(eventObject)) 
+        ///     &#10;2 - keyup(eventData, handler(eventObject)) 
+        ///     &#10;3 - keyup()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.last = function () {
+        /// <summary>
+        ///     Reduce the set of matched elements to the final one in the set.
+        /// </summary>
+        /// <returns type="jQuery" />
+
+        return this.eq(-1);
+    };
+    jQuery.prototype.length = 0;
+    jQuery.prototype.live = function (types, data, fn) {
+        /// <summary>
+        ///     Attach an event handler for all elements which match the current selector, now and in the future.
+        ///     &#10;1 - live(events, handler(eventObject)) 
+        ///     &#10;2 - live(events, data, handler(eventObject)) 
+        ///     &#10;3 - live(events-map)
+        /// </summary>
+        /// <param name="types" type="String">
+        ///     A string containing a JavaScript event type, such as "click" or "keydown." As of jQuery 1.4 the string can contain multiple, space-separated event types or custom event names.
+        /// </param>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute at the time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        jQuery(this.context).on(types, this.selector, data, fn);
+        return this;
+    };
+    jQuery.prototype.load = function (url, params, callback) {
