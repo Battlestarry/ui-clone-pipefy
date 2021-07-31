@@ -4960,3 +4960,501 @@
         return this;
     };
     jQuery.prototype.load = function (url, params, callback) {
+        /// <summary>
+        ///     1: Bind an event handler to the "load" JavaScript event.
+        ///     &#10;    1.1 - load(handler(eventObject)) 
+        ///     &#10;    1.2 - load(eventData, handler(eventObject))
+        ///     &#10;2: Load data from the server and place the returned HTML into the matched element.
+        ///     &#10;    2.1 - load(url, data, complete(responseText, textStatus, XMLHttpRequest))
+        /// </summary>
+        /// <param name="url" type="String">
+        ///     A string containing the URL to which the request is sent.
+        /// </param>
+        /// <param name="params" type="String">
+        ///     A map or string that is sent to the server with the request.
+        /// </param>
+        /// <param name="callback" type="Function">
+        ///     A callback function that is executed when the request completes.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (typeof url !== "string" && _load) {
+            return _load.apply(this, arguments);
+        }
+
+        // Don't do a request if no elements are being requested
+        if (!this.length) {
+            return this;
+        }
+
+        var selector, type, response,
+            self = this,
+            off = url.indexOf(" ");
+
+        if (off >= 0) {
+            selector = url.slice(off, url.length);
+            url = url.slice(0, off);
+        }
+
+        // If it's a function
+        if (jQuery.isFunction(params)) {
+
+            // We assume that it's the callback
+            callback = params;
+            params = undefined;
+
+            // Otherwise, build a param string
+        } else if (params && typeof params === "object") {
+            type = "POST";
+        }
+
+        // Request the remote document
+        jQuery.ajax({
+            url: url,
+
+            // if "type" variable is undefined, then "GET" method will be used
+            type: type,
+            dataType: "html",
+            data: params,
+            complete: function (jqXHR, status) {
+                if (callback) {
+                    self.each(callback, response || [jqXHR.responseText, status, jqXHR]);
+                }
+            }
+        }).done(function (responseText) {
+
+            // Save response for use in complete callback
+            response = arguments;
+
+            // See if a selector was specified
+            self.html(selector ?
+
+                // Create a dummy div to hold the results
+                jQuery("<div>")
+
+                    // inject the contents of the document in, removing the scripts
+                    // to avoid any 'Permission Denied' errors in IE
+                    .append(responseText.replace(rscript, ""))
+
+                    // Locate the specified elements
+                    .find(selector) :
+
+                // If not, just inject the full result
+                responseText);
+
+        });
+
+        return this;
+    };
+    jQuery.prototype.map = function (callback) {
+        /// <summary>
+        ///     Pass each element in the current matched set through a function, producing a new jQuery object containing the return values.
+        /// </summary>
+        /// <param name="callback" type="Function">
+        ///     A function object that will be invoked for each element in the current set.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.pushStack(jQuery.map(this, function (elem, i) {
+            return callback.call(elem, i, elem);
+        }));
+    };
+    jQuery.prototype.mousedown = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "mousedown" JavaScript event, or trigger that event on an element.
+        ///     &#10;1 - mousedown(handler(eventObject)) 
+        ///     &#10;2 - mousedown(eventData, handler(eventObject)) 
+        ///     &#10;3 - mousedown()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.mouseenter = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to be fired when the mouse enters an element, or trigger that handler on an element.
+        ///     &#10;1 - mouseenter(handler(eventObject)) 
+        ///     &#10;2 - mouseenter(eventData, handler(eventObject)) 
+        ///     &#10;3 - mouseenter()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.mouseleave = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to be fired when the mouse leaves an element, or trigger that handler on an element.
+        ///     &#10;1 - mouseleave(handler(eventObject)) 
+        ///     &#10;2 - mouseleave(eventData, handler(eventObject)) 
+        ///     &#10;3 - mouseleave()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.mousemove = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "mousemove" JavaScript event, or trigger that event on an element.
+        ///     &#10;1 - mousemove(handler(eventObject)) 
+        ///     &#10;2 - mousemove(eventData, handler(eventObject)) 
+        ///     &#10;3 - mousemove()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.mouseout = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "mouseout" JavaScript event, or trigger that event on an element.
+        ///     &#10;1 - mouseout(handler(eventObject)) 
+        ///     &#10;2 - mouseout(eventData, handler(eventObject)) 
+        ///     &#10;3 - mouseout()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.mouseover = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "mouseover" JavaScript event, or trigger that event on an element.
+        ///     &#10;1 - mouseover(handler(eventObject)) 
+        ///     &#10;2 - mouseover(eventData, handler(eventObject)) 
+        ///     &#10;3 - mouseover()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.mouseup = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "mouseup" JavaScript event, or trigger that event on an element.
+        ///     &#10;1 - mouseup(handler(eventObject)) 
+        ///     &#10;2 - mouseup(eventData, handler(eventObject)) 
+        ///     &#10;3 - mouseup()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.next = function (until, selector) {
+        /// <summary>
+        ///     Get the immediately following sibling of each element in the set of matched elements. If a selector is provided, it retrieves the next sibling only if it matches that selector.
+        /// </summary>
+        /// <param name="until" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var ret = jQuery.map(this, fn, until);
+
+        if (!runtil.test(name)) {
+            selector = until;
+        }
+
+        if (selector && typeof selector === "string") {
+            ret = jQuery.filter(selector, ret);
+        }
+
+        ret = this.length > 1 && !guaranteedUnique[name] ? jQuery.unique(ret) : ret;
+
+        if (this.length > 1 && rparentsprev.test(name)) {
+            ret = ret.reverse();
+        }
+
+        return this.pushStack(ret, name, core_slice.call(arguments).join(","));
+    };
+    jQuery.prototype.nextAll = function (until, selector) {
+        /// <summary>
+        ///     Get all following siblings of each element in the set of matched elements, optionally filtered by a selector.
+        /// </summary>
+        /// <param name="until" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var ret = jQuery.map(this, fn, until);
+
+        if (!runtil.test(name)) {
+            selector = until;
+        }
+
+        if (selector && typeof selector === "string") {
+            ret = jQuery.filter(selector, ret);
+        }
+
+        ret = this.length > 1 && !guaranteedUnique[name] ? jQuery.unique(ret) : ret;
+
+        if (this.length > 1 && rparentsprev.test(name)) {
+            ret = ret.reverse();
+        }
+
+        return this.pushStack(ret, name, core_slice.call(arguments).join(","));
+    };
+    jQuery.prototype.nextUntil = function (until, selector) {
+        /// <summary>
+        ///     Get all following siblings of each element up to but not including the element matched by the selector, DOM node, or jQuery object passed.
+        ///     &#10;1 - nextUntil(selector, filter) 
+        ///     &#10;2 - nextUntil(element, filter)
+        /// </summary>
+        /// <param name="until" type="String">
+        ///     A string containing a selector expression to indicate where to stop matching following sibling elements.
+        /// </param>
+        /// <param name="selector" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var ret = jQuery.map(this, fn, until);
+
+        if (!runtil.test(name)) {
+            selector = until;
+        }
+
+        if (selector && typeof selector === "string") {
+            ret = jQuery.filter(selector, ret);
+        }
+
+        ret = this.length > 1 && !guaranteedUnique[name] ? jQuery.unique(ret) : ret;
+
+        if (this.length > 1 && rparentsprev.test(name)) {
+            ret = ret.reverse();
+        }
+
+        return this.pushStack(ret, name, core_slice.call(arguments).join(","));
+    };
+    jQuery.prototype.not = function (selector) {
+        /// <summary>
+        ///     Remove elements from the set of matched elements.
+        ///     &#10;1 - not(selector) 
+        ///     &#10;2 - not(elements) 
+        ///     &#10;3 - not(function(index)) 
+        ///     &#10;4 - not(jQuery object)
+        /// </summary>
+        /// <param name="selector" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.pushStack(winnow(this, selector, false), "not", selector);
+    };
+    jQuery.prototype.off = function (types, selector, fn) {
+        /// <summary>
+        ///     Remove an event handler.
+        ///     &#10;1 - off(events, selector, handler(eventObject)) 
+        ///     &#10;2 - off(events-map, selector)
+        /// </summary>
+        /// <param name="types" type="String">
+        ///     One or more space-separated event types and optional namespaces, or just namespaces, such as "click", "keydown.myPlugin", or ".myPlugin".
+        /// </param>
+        /// <param name="selector" type="String">
+        ///     A selector which should match the one originally passed to .on() when attaching event handlers.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A handler function previously attached for the event(s), or the special value false.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var handleObj, type;
+        if (types && types.preventDefault && types.handleObj) {
+            // ( event )  dispatched jQuery.Event
+            handleObj = types.handleObj;
+            jQuery(types.delegateTarget).off(
+				handleObj.namespace ? handleObj.origType + "." + handleObj.namespace : handleObj.origType,
+				handleObj.selector,
+				handleObj.handler
+			);
+            return this;
+        }
+        if (typeof types === "object") {
+            // ( types-object [, selector] )
+            for (type in types) {
+                this.off(type, selector, types[type]);
+            }
+            return this;
+        }
+        if (selector === false || typeof selector === "function") {
+            // ( types [, fn] )
+            fn = selector;
+            selector = undefined;
+        }
+        if (fn === false) {
+            fn = returnFalse;
+        }
+        return this.each(function () {
+            jQuery.event.remove(this, types, fn, selector);
+        });
+    };
+    jQuery.prototype.offset = function (options) {
+        /// <summary>
+        ///     1: Get the current coordinates of the first element in the set of matched elements, relative to the document.
+        ///     &#10;    1.1 - offset()
+        ///     &#10;2: Set the current coordinates of every element in the set of matched elements, relative to the document.
+        ///     &#10;    2.1 - offset(coordinates) 
+        ///     &#10;    2.2 - offset(function(index, coords))
+        /// </summary>
+        /// <param name="options" type="Object">
+        ///     An object containing the properties top and left, which are integers indicating the new top and left coordinates for the elements.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (arguments.length) {
+            return options === undefined ?
+                this :
+                this.each(function (i) {
+                    jQuery.offset.setOffset(this, options, i);
+                });
+        }
+
+        var docElem, body, win, clientTop, clientLeft, scrollTop, scrollLeft,
+            box = { top: 0, left: 0 },
+            elem = this[0],
+            doc = elem && elem.ownerDocument;
+
+        if (!doc) {
+            return;
+        }
+
+        if ((body = doc.body) === elem) {
+            return jQuery.offset.bodyOffset(elem);
+        }
+
+        docElem = doc.documentElement;
+
+        // Make sure it's not a disconnected DOM node
+        if (!jQuery.contains(docElem, elem)) {
+            return box;
+        }
+
+        // If we don't have gBCR, just use 0,0 rather than error
+        // BlackBerry 5, iOS 3 (original iPhone)
+        if (typeof elem.getBoundingClientRect !== "undefined") {
+            box = elem.getBoundingClientRect();
+        }
+        win = getWindow(doc);
+        clientTop = docElem.clientTop || body.clientTop || 0;
+        clientLeft = docElem.clientLeft || body.clientLeft || 0;
+        scrollTop = win.pageYOffset || docElem.scrollTop;
+        scrollLeft = win.pageXOffset || docElem.scrollLeft;
+        return {
+            top: box.top + scrollTop - clientTop,
+            left: box.left + scrollLeft - clientLeft
+        };
+    };
+    jQuery.prototype.offsetParent = function () {
+        /// <summary>
+        ///     Get the closest ancestor element that is positioned.
+        /// </summary>
+        /// <returns type="jQuery" />
+
+        return this.map(function () {
+            var offsetParent = this.offsetParent || document.body;
+            while (offsetParent && (!rroot.test(offsetParent.nodeName) && jQuery.css(offsetParent, "position") === "static")) {
+                offsetParent = offsetParent.offsetParent;
+            }
+            return offsetParent || document.body;
+        });
+    };
+    jQuery.prototype.on = function (types, selector, data, fn, /*INTERNAL*/ one) {
+        /// <summary>
+        ///     Attach an event handler function for one or more events to the selected elements.
+        ///     &#10;1 - on(events, selector, data, handler(eventObject)) 
+        ///     &#10;2 - on(events-map, selector, data)
+        /// </summary>
+        /// <param name="types" type="String">
+        ///     One or more space-separated event types and optional namespaces, such as "click" or "keydown.myPlugin".
+        /// </param>
+        /// <param name="selector" type="String">
+        ///     A selector string to filter the descendants of the selected elements that trigger the event. If the selector is null or omitted, the event is always triggered when it reaches the selected element.
+        /// </param>
+        /// <param name="data" type="Anything">
