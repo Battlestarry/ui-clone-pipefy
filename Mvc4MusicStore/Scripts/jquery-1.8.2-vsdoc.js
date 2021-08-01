@@ -6397,3 +6397,490 @@
         ///     A string or number determining how long the animation will run.
         /// </param>
         /// <param name="easing" type="String">
+        ///     A string indicating which easing function to use for the transition.
+        /// </param>
+        /// <param name="callback" type="Function">
+        ///     A function to call once the animation is complete.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return speed == null || typeof speed === "boolean" ||
+			// special check for .toggle( handler, handler, ... )
+			(!i && jQuery.isFunction(speed) && jQuery.isFunction(easing)) ?
+			cssFn.apply(this, arguments) :
+			this.animate(genFx(name, true), speed, easing, callback);
+    };
+    jQuery.prototype.siblings = function (until, selector) {
+        /// <summary>
+        ///     Get the siblings of each element in the set of matched elements, optionally filtered by a selector.
+        /// </summary>
+        /// <param name="until" type="String">
+        ///     A string containing a selector expression to match elements against.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var ret = jQuery.map(this, fn, until);
+
+        if (!runtil.test(name)) {
+            selector = until;
+        }
+
+        if (selector && typeof selector === "string") {
+            ret = jQuery.filter(selector, ret);
+        }
+
+        ret = this.length > 1 && !guaranteedUnique[name] ? jQuery.unique(ret) : ret;
+
+        if (this.length > 1 && rparentsprev.test(name)) {
+            ret = ret.reverse();
+        }
+
+        return this.pushStack(ret, name, core_slice.call(arguments).join(","));
+    };
+    jQuery.prototype.size = function () {
+        /// <summary>
+        ///     Return the number of elements in the jQuery object.
+        /// </summary>
+        /// <returns type="Number" />
+
+        return this.length;
+    };
+    jQuery.prototype.slice = function () {
+        /// <summary>
+        ///     Reduce the set of matched elements to a subset specified by a range of indices.
+        /// </summary>
+        /// <param name="" type="Number">
+        ///     An integer indicating the 0-based position at which the elements begin to be selected. If negative, it indicates an offset from the end of the set.
+        /// </param>
+        /// <param name="" type="Number">
+        ///     An integer indicating the 0-based position at which the elements stop being selected. If negative, it indicates an offset from the end of the set. If omitted, the range continues until the end of the set.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.pushStack(core_slice.apply(this, arguments),
+			"slice", core_slice.call(arguments).join(","));
+    };
+    jQuery.prototype.slideDown = function (speed, easing, callback) {
+        /// <summary>
+        ///     Display the matched elements with a sliding motion.
+        ///     &#10;1 - slideDown(duration, callback) 
+        ///     &#10;2 - slideDown(duration, easing, callback)
+        /// </summary>
+        /// <param name="speed" type="Number">
+        ///     A string or number determining how long the animation will run.
+        /// </param>
+        /// <param name="easing" type="String">
+        ///     A string indicating which easing function to use for the transition.
+        /// </param>
+        /// <param name="callback" type="Function">
+        ///     A function to call once the animation is complete.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.animate(props, speed, easing, callback);
+    };
+    jQuery.prototype.slideToggle = function (speed, easing, callback) {
+        /// <summary>
+        ///     Display or hide the matched elements with a sliding motion.
+        ///     &#10;1 - slideToggle(duration, callback) 
+        ///     &#10;2 - slideToggle(duration, easing, callback)
+        /// </summary>
+        /// <param name="speed" type="Number">
+        ///     A string or number determining how long the animation will run.
+        /// </param>
+        /// <param name="easing" type="String">
+        ///     A string indicating which easing function to use for the transition.
+        /// </param>
+        /// <param name="callback" type="Function">
+        ///     A function to call once the animation is complete.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.animate(props, speed, easing, callback);
+    };
+    jQuery.prototype.slideUp = function (speed, easing, callback) {
+        /// <summary>
+        ///     Hide the matched elements with a sliding motion.
+        ///     &#10;1 - slideUp(duration, callback) 
+        ///     &#10;2 - slideUp(duration, easing, callback)
+        /// </summary>
+        /// <param name="speed" type="Number">
+        ///     A string or number determining how long the animation will run.
+        /// </param>
+        /// <param name="easing" type="String">
+        ///     A string indicating which easing function to use for the transition.
+        /// </param>
+        /// <param name="callback" type="Function">
+        ///     A function to call once the animation is complete.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.animate(props, speed, easing, callback);
+    };
+    jQuery.prototype.stop = function (type, clearQueue, gotoEnd) {
+        /// <summary>
+        ///     Stop the currently-running animation on the matched elements.
+        ///     &#10;1 - stop(clearQueue, jumpToEnd) 
+        ///     &#10;2 - stop(queue, clearQueue, jumpToEnd)
+        /// </summary>
+        /// <param name="type" type="String">
+        ///     The name of the queue in which to stop animations.
+        /// </param>
+        /// <param name="clearQueue" type="Boolean">
+        ///     A Boolean indicating whether to remove queued animation as well. Defaults to false.
+        /// </param>
+        /// <param name="gotoEnd" type="Boolean">
+        ///     A Boolean indicating whether to complete the current animation immediately. Defaults to false.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var stopQueue = function (hooks) {
+            var stop = hooks.stop;
+            delete hooks.stop;
+            stop(gotoEnd);
+        };
+
+        if (typeof type !== "string") {
+            gotoEnd = clearQueue;
+            clearQueue = type;
+            type = undefined;
+        }
+        if (clearQueue && type !== false) {
+            this.queue(type || "fx", []);
+        }
+
+        return this.each(function () {
+            var dequeue = true,
+				index = type != null && type + "queueHooks",
+				timers = jQuery.timers,
+				data = jQuery._data(this);
+
+            if (index) {
+                if (data[index] && data[index].stop) {
+                    stopQueue(data[index]);
+                }
+            } else {
+                for (index in data) {
+                    if (data[index] && data[index].stop && rrun.test(index)) {
+                        stopQueue(data[index]);
+                    }
+                }
+            }
+
+            for (index = timers.length; index--;) {
+                if (timers[index].elem === this && (type == null || timers[index].queue === type)) {
+                    timers[index].anim.stop(gotoEnd);
+                    dequeue = false;
+                    timers.splice(index, 1);
+                }
+            }
+
+            // start the next in the queue if the last step wasn't forced
+            // timers currently will call their complete callbacks, which will dequeue
+            // but only if they were gotoEnd
+            if (dequeue || !gotoEnd) {
+                jQuery.dequeue(this, type);
+            }
+        });
+    };
+    jQuery.prototype.submit = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "submit" JavaScript event, or trigger that event on an element.
+        ///     &#10;1 - submit(handler(eventObject)) 
+        ///     &#10;2 - submit(eventData, handler(eventObject)) 
+        ///     &#10;3 - submit()
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.text = function (value) {
+        /// <summary>
+        ///     1: Get the combined text contents of each element in the set of matched elements, including their descendants.
+        ///     &#10;    1.1 - text()
+        ///     &#10;2: Set the content of each element in the set of matched elements to the specified text.
+        ///     &#10;    2.1 - text(textString) 
+        ///     &#10;    2.2 - text(function(index, text))
+        /// </summary>
+        /// <param name="value" type="String">
+        ///     A string of text to set as the content of each matched element.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return jQuery.access(this, function (value) {
+            return value === undefined ?
+				jQuery.text(this) :
+				this.empty().append((this[0] && this[0].ownerDocument || document).createTextNode(value));
+        }, null, value, arguments.length);
+    };
+    jQuery.prototype.toArray = function () {
+        /// <summary>
+        ///     Retrieve all the DOM elements contained in the jQuery set, as an array.
+        /// </summary>
+        /// <returns type="Array" />
+
+        return core_slice.call(this);
+    };
+    jQuery.prototype.toggle = function (speed, easing, callback) {
+        /// <summary>
+        ///     1: Bind two or more handlers to the matched elements, to be executed on alternate clicks.
+        ///     &#10;    1.1 - toggle(handler(eventObject), handler(eventObject), handler(eventObject))
+        ///     &#10;2: Display or hide the matched elements.
+        ///     &#10;    2.1 - toggle(duration, callback) 
+        ///     &#10;    2.2 - toggle(duration, easing, callback) 
+        ///     &#10;    2.3 - toggle(showOrHide)
+        /// </summary>
+        /// <param name="speed" type="Function">
+        ///     A function to execute every even time the element is clicked.
+        /// </param>
+        /// <param name="easing" type="Function">
+        ///     A function to execute every odd time the element is clicked.
+        /// </param>
+        /// <param name="callback" type="Function">
+        ///     Additional handlers to cycle through after clicks.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return speed == null || typeof speed === "boolean" ||
+			// special check for .toggle( handler, handler, ... )
+			(!i && jQuery.isFunction(speed) && jQuery.isFunction(easing)) ?
+			cssFn.apply(this, arguments) :
+			this.animate(genFx(name, true), speed, easing, callback);
+    };
+    jQuery.prototype.toggleClass = function (value, stateVal) {
+        /// <summary>
+        ///     Add or remove one or more classes from each element in the set of matched elements, depending on either the class's presence or the value of the switch argument.
+        ///     &#10;1 - toggleClass(className) 
+        ///     &#10;2 - toggleClass(className, switch) 
+        ///     &#10;3 - toggleClass(switch) 
+        ///     &#10;4 - toggleClass(function(index, class, switch), switch)
+        /// </summary>
+        /// <param name="value" type="String">
+        ///     One or more class names (separated by spaces) to be toggled for each element in the matched set.
+        /// </param>
+        /// <param name="stateVal" type="Boolean">
+        ///     A Boolean (not just truthy/falsy) value to determine whether the class should be added or removed.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var type = typeof value,
+			isBool = typeof stateVal === "boolean";
+
+        if (jQuery.isFunction(value)) {
+            return this.each(function (i) {
+                jQuery(this).toggleClass(value.call(this, i, this.className, stateVal), stateVal);
+            });
+        }
+
+        return this.each(function () {
+            if (type === "string") {
+                // toggle individual class names
+                var className,
+					i = 0,
+					self = jQuery(this),
+					state = stateVal,
+					classNames = value.split(core_rspace);
+
+                while ((className = classNames[i++])) {
+                    // check each className given, space separated list
+                    state = isBool ? state : !self.hasClass(className);
+                    self[state ? "addClass" : "removeClass"](className);
+                }
+
+            } else if (type === "undefined" || type === "boolean") {
+                if (this.className) {
+                    // store className if set
+                    jQuery._data(this, "__className__", this.className);
+                }
+
+                // toggle whole className
+                this.className = this.className || value === false ? "" : jQuery._data(this, "__className__") || "";
+            }
+        });
+    };
+    jQuery.prototype.trigger = function (type, data) {
+        /// <summary>
+        ///     Execute all handlers and behaviors attached to the matched elements for the given event type.
+        ///     &#10;1 - trigger(eventType, extraParameters) 
+        ///     &#10;2 - trigger(event)
+        /// </summary>
+        /// <param name="type" type="String">
+        ///     A string containing a JavaScript event type, such as click or submit.
+        /// </param>
+        /// <param name="data" type="Object">
+        ///     Additional parameters to pass along to the event handler.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.each(function () {
+            jQuery.event.trigger(type, data, this);
+        });
+    };
+    jQuery.prototype.triggerHandler = function (type, data) {
+        /// <summary>
+        ///     Execute all handlers attached to an element for an event.
+        /// </summary>
+        /// <param name="type" type="String">
+        ///     A string containing a JavaScript event type, such as click or submit.
+        /// </param>
+        /// <param name="data" type="Array">
+        ///     An array of additional parameters to pass along to the event handler.
+        /// </param>
+        /// <returns type="Object" />
+
+        if (this[0]) {
+            return jQuery.event.trigger(type, data, this[0], true);
+        }
+    };
+    jQuery.prototype.unbind = function (types, fn) {
+        /// <summary>
+        ///     Remove a previously-attached event handler from the elements.
+        ///     &#10;1 - unbind(eventType, handler(eventObject)) 
+        ///     &#10;2 - unbind(eventType, false) 
+        ///     &#10;3 - unbind(event)
+        /// </summary>
+        /// <param name="types" type="String">
+        ///     A string containing a JavaScript event type, such as click or submit.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     The function that is to be no longer executed.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        return this.off(types, null, fn);
+    };
+    jQuery.prototype.undelegate = function (selector, types, fn) {
+        /// <summary>
+        ///     Remove a handler from the event for all elements which match the current selector, based upon a specific set of root elements.
+        ///     &#10;1 - undelegate() 
+        ///     &#10;2 - undelegate(selector, eventType) 
+        ///     &#10;3 - undelegate(selector, eventType, handler(eventObject)) 
+        ///     &#10;4 - undelegate(selector, events) 
+        ///     &#10;5 - undelegate(namespace)
+        /// </summary>
+        /// <param name="selector" type="String">
+        ///     A selector which will be used to filter the event results.
+        /// </param>
+        /// <param name="types" type="String">
+        ///     A string containing a JavaScript event type, such as "click" or "keydown"
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute at the time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        // ( namespace ) or ( selector, types [, fn] )
+        return arguments.length === 1 ? this.off(selector, "**") : this.off(types, selector || "**", fn);
+    };
+    jQuery.prototype.unload = function (data, fn) {
+        /// <summary>
+        ///     Bind an event handler to the "unload" JavaScript event.
+        ///     &#10;1 - unload(handler(eventObject)) 
+        ///     &#10;2 - unload(eventData, handler(eventObject))
+        /// </summary>
+        /// <param name="data" type="Object">
+        ///     A map of data that will be passed to the event handler.
+        /// </param>
+        /// <param name="fn" type="Function">
+        ///     A function to execute each time the event is triggered.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (fn == null) {
+            fn = data;
+            data = null;
+        }
+
+        return arguments.length > 0 ?
+			this.on(name, null, data, fn) :
+			this.trigger(name);
+    };
+    jQuery.prototype.unwrap = function () {
+        /// <summary>
+        ///     Remove the parents of the set of matched elements from the DOM, leaving the matched elements in their place.
+        /// </summary>
+        /// <returns type="jQuery" />
+
+        return this.parent().each(function () {
+            if (!jQuery.nodeName(this, "body")) {
+                jQuery(this).replaceWith(this.childNodes);
+            }
+        }).end();
+    };
+    jQuery.prototype.val = function (value) {
+        /// <summary>
+        ///     1: Get the current value of the first element in the set of matched elements.
+        ///     &#10;    1.1 - val()
+        ///     &#10;2: Set the value of each element in the set of matched elements.
+        ///     &#10;    2.1 - val(value) 
+        ///     &#10;    2.2 - val(function(index, value))
+        /// </summary>
+        /// <param name="value" type="String">
+        ///     A string of text or an array of strings corresponding to the value of each matched element to set as selected/checked.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var hooks, ret, isFunction,
+			elem = this[0];
+
+        if (!arguments.length) {
+            if (elem) {
+                hooks = jQuery.valHooks[elem.type] || jQuery.valHooks[elem.nodeName.toLowerCase()];
+
+                if (hooks && "get" in hooks && (ret = hooks.get(elem, "value")) !== undefined) {
+                    return ret;
+                }
+
+                ret = elem.value;
+
+                return typeof ret === "string" ?
+					// handle most common string cases
+					ret.replace(rreturn, "") :
+					// handle cases where value is null/undef or number
+					ret == null ? "" : ret;
+            }
+
+            return;
+        }
+
+        isFunction = jQuery.isFunction(value);
+
+        return this.each(function (i) {
+            var val,
+				self = jQuery(this);
+
+            if (this.nodeType !== 1) {
+                return;
+            }
+
+            if (isFunction) {
+                val = value.call(this, i, self.val());
+            } else {
+                val = value;
+            }
+
+            // Treat null/undefined as ""; convert numbers to string
+            if (val == null) {
+                val = "";
+            } else if (typeof val === "number") {
+                val += "";
+            } else if (jQuery.isArray(val)) {
+                val = jQuery.map(val, function (value) {
+                    return value == null ? "" : value + "";
+                });
+            }
+
+            hooks = jQuery.valHooks[this.type] || jQuery.valHooks[this.nodeName.toLowerCase()];
