@@ -6884,3 +6884,143 @@
             }
 
             hooks = jQuery.valHooks[this.type] || jQuery.valHooks[this.nodeName.toLowerCase()];
+
+            // If set returns undefined, fall back to normal setting
+            if (!hooks || !("set" in hooks) || hooks.set(this, val, "value") === undefined) {
+                this.value = val;
+            }
+        });
+    };
+    jQuery.prototype.width = function (margin, value) {
+        /// <summary>
+        ///     1: Get the current computed width for the first element in the set of matched elements.
+        ///     &#10;    1.1 - width()
+        ///     &#10;2: Set the CSS width of each element in the set of matched elements.
+        ///     &#10;    2.1 - width(value) 
+        ///     &#10;    2.2 - width(function(index, width))
+        /// </summary>
+        /// <param name="margin" type="Number">
+        ///     An integer representing the number of pixels, or an integer along with an optional unit of measure appended (as a string).
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var chainable = arguments.length && (defaultExtra || typeof margin !== "boolean"),
+            extra = defaultExtra || (margin === true || value === true ? "margin" : "border");
+
+        return jQuery.access(this, function (elem, type, value) {
+            var doc;
+
+            if (jQuery.isWindow(elem)) {
+                // As of 5/8/2012 this will yield incorrect results for Mobile Safari, but there
+                // isn't a whole lot we can do. See pull request at this URL for discussion:
+                // https://github.com/jquery/jquery/pull/764
+                return elem.document.documentElement["client" + name];
+            }
+
+            // Get document width or height
+            if (elem.nodeType === 9) {
+                doc = elem.documentElement;
+
+                // Either scroll[Width/Height] or offset[Width/Height] or client[Width/Height], whichever is greatest
+                // unfortunately, this causes bug #3838 in IE6/8 only, but there is currently no good, small way to fix it.
+                return Math.max(
+                    elem.body["scroll" + name], doc["scroll" + name],
+                    elem.body["offset" + name], doc["offset" + name],
+                    doc["client" + name]
+                );
+            }
+
+            return value === undefined ?
+                // Get width or height on the element, requesting but not forcing parseFloat
+                jQuery.css(elem, type, value, extra) :
+
+                // Set width or height on the element
+                jQuery.style(elem, type, value, extra);
+        }, type, chainable ? margin : undefined, chainable, null);
+    };
+    jQuery.prototype.wrap = function (html) {
+        /// <summary>
+        ///     Wrap an HTML structure around each element in the set of matched elements.
+        ///     &#10;1 - wrap(wrappingElement) 
+        ///     &#10;2 - wrap(function(index))
+        /// </summary>
+        /// <param name="html" type="jQuery">
+        ///     An HTML snippet, selector expression, jQuery object, or DOM element specifying the structure to wrap around the matched elements.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        var isFunction = jQuery.isFunction(html);
+
+        return this.each(function (i) {
+            jQuery(this).wrapAll(isFunction ? html.call(this, i) : html);
+        });
+    };
+    jQuery.prototype.wrapAll = function (html) {
+        /// <summary>
+        ///     Wrap an HTML structure around all elements in the set of matched elements.
+        /// </summary>
+        /// <param name="html" type="jQuery">
+        ///     An HTML snippet, selector expression, jQuery object, or DOM element specifying the structure to wrap around the matched elements.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (jQuery.isFunction(html)) {
+            return this.each(function (i) {
+                jQuery(this).wrapAll(html.call(this, i));
+            });
+        }
+
+        if (this[0]) {
+            // The elements to wrap the target around
+            var wrap = jQuery(html, this[0].ownerDocument).eq(0).clone(true);
+
+            if (this[0].parentNode) {
+                wrap.insertBefore(this[0]);
+            }
+
+            wrap.map(function () {
+                var elem = this;
+
+                while (elem.firstChild && elem.firstChild.nodeType === 1) {
+                    elem = elem.firstChild;
+                }
+
+                return elem;
+            }).append(this);
+        }
+
+        return this;
+    };
+    jQuery.prototype.wrapInner = function (html) {
+        /// <summary>
+        ///     Wrap an HTML structure around the content of each element in the set of matched elements.
+        ///     &#10;1 - wrapInner(wrappingElement) 
+        ///     &#10;2 - wrapInner(function(index))
+        /// </summary>
+        /// <param name="html" type="String">
+        ///     An HTML snippet, selector expression, jQuery object, or DOM element specifying the structure to wrap around the content of the matched elements.
+        /// </param>
+        /// <returns type="jQuery" />
+
+        if (jQuery.isFunction(html)) {
+            return this.each(function (i) {
+                jQuery(this).wrapInner(html.call(this, i));
+            });
+        }
+
+        return this.each(function () {
+            var self = jQuery(this),
+				contents = self.contents();
+
+            if (contents.length) {
+                contents.wrapAll(html);
+
+            } else {
+                self.append(html);
+            }
+        });
+    };
+    jQuery.fn = jQuery.prototype;
+    jQuery.fn.init.prototype = jQuery.fn;
+    window.jQuery = window.$ = jQuery;
+})(window);
