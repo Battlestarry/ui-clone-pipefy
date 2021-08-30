@@ -2581,3 +2581,485 @@ $.ui.plugin.add("resizable", "containment", {
 		if (hoset + self.size.height >= self.parentData.height) {
 			self.size.height = self.parentData.height - hoset;
 			if (pRatio) self.size.width = self.size.height * self.aspectRatio;
+		}
+	},
+
+	stop: function(event, ui){
+		var self = $(this).data("resizable"), o = self.options, cp = self.position,
+				co = self.containerOffset, cop = self.containerPosition, ce = self.containerElement;
+
+		var helper = $(self.helper), ho = helper.offset(), w = helper.outerWidth() - self.sizeDiff.width, h = helper.outerHeight() - self.sizeDiff.height;
+
+		if (self._helper && !o.animate && (/relative/).test(ce.css('position')))
+			$(this).css({ left: ho.left - cop.left - co.left, width: w, height: h });
+
+		if (self._helper && !o.animate && (/static/).test(ce.css('position')))
+			$(this).css({ left: ho.left - cop.left - co.left, width: w, height: h });
+
+	}
+});
+
+$.ui.plugin.add("resizable", "ghost", {
+
+	start: function(event, ui) {
+
+		var self = $(this).data("resizable"), o = self.options, cs = self.size;
+
+		self.ghost = self.originalElement.clone();
+		self.ghost
+			.css({ opacity: .25, display: 'block', position: 'relative', height: cs.height, width: cs.width, margin: 0, left: 0, top: 0 })
+			.addClass('ui-resizable-ghost')
+			.addClass(typeof o.ghost == 'string' ? o.ghost : '');
+
+		self.ghost.appendTo(self.helper);
+
+	},
+
+	resize: function(event, ui){
+		var self = $(this).data("resizable"), o = self.options;
+		if (self.ghost) self.ghost.css({ position: 'relative', height: self.size.height, width: self.size.width });
+	},
+
+	stop: function(event, ui){
+		var self = $(this).data("resizable"), o = self.options;
+		if (self.ghost && self.helper) self.helper.get(0).removeChild(self.ghost.get(0));
+	}
+
+});
+
+$.ui.plugin.add("resizable", "grid", {
+
+	resize: function(event, ui) {
+		var self = $(this).data("resizable"), o = self.options, cs = self.size, os = self.originalSize, op = self.originalPosition, a = self.axis, ratio = o._aspectRatio || event.shiftKey;
+		o.grid = typeof o.grid == "number" ? [o.grid, o.grid] : o.grid;
+		var ox = Math.round((cs.width - os.width) / (o.grid[0]||1)) * (o.grid[0]||1), oy = Math.round((cs.height - os.height) / (o.grid[1]||1)) * (o.grid[1]||1);
+
+		if (/^(se|s|e)$/.test(a)) {
+			self.size.width = os.width + ox;
+			self.size.height = os.height + oy;
+		}
+		else if (/^(ne)$/.test(a)) {
+			self.size.width = os.width + ox;
+			self.size.height = os.height + oy;
+			self.position.top = op.top - oy;
+		}
+		else if (/^(sw)$/.test(a)) {
+			self.size.width = os.width + ox;
+			self.size.height = os.height + oy;
+			self.position.left = op.left - ox;
+		}
+		else {
+			self.size.width = os.width + ox;
+			self.size.height = os.height + oy;
+			self.position.top = op.top - oy;
+			self.position.left = op.left - ox;
+		}
+	}
+
+});
+
+var num = function(v) {
+	return parseInt(v, 10) || 0;
+};
+
+var isNumber = function(value) {
+	return !isNaN(parseInt(value, 10));
+};
+
+})(jQuery);
+
+(function( $, undefined ) {
+
+$.widget("ui.selectable", $.ui.mouse, {
+	options: {
+		appendTo: 'body',
+		autoRefresh: true,
+		distance: 0,
+		filter: '*',
+		tolerance: 'touch'
+	},
+	_create: function() {
+		var self = this;
+
+		this.element.addClass("ui-selectable");
+
+		this.dragged = false;
+
+		// cache selectee children based on filter
+		var selectees;
+		this.refresh = function() {
+			selectees = $(self.options.filter, self.element[0]);
+			selectees.addClass("ui-selectee");
+			selectees.each(function() {
+				var $this = $(this);
+				var pos = $this.offset();
+				$.data(this, "selectable-item", {
+					element: this,
+					$element: $this,
+					left: pos.left,
+					top: pos.top,
+					right: pos.left + $this.outerWidth(),
+					bottom: pos.top + $this.outerHeight(),
+					startselected: false,
+					selected: $this.hasClass('ui-selected'),
+					selecting: $this.hasClass('ui-selecting'),
+					unselecting: $this.hasClass('ui-unselecting')
+				});
+			});
+		};
+		this.refresh();
+
+		this.selectees = selectees.addClass("ui-selectee");
+
+		this._mouseInit();
+
+		this.helper = $("<div class='ui-selectable-helper'></div>");
+	},
+
+	destroy: function() {
+		this.selectees
+			.removeClass("ui-selectee")
+			.removeData("selectable-item");
+		this.element
+			.removeClass("ui-selectable ui-selectable-disabled")
+			.removeData("selectable")
+			.unbind(".selectable");
+		this._mouseDestroy();
+
+		return this;
+	},
+
+	_mouseStart: function(event) {
+		var self = this;
+
+		this.opos = [event.pageX, event.pageY];
+
+		if (this.options.disabled)
+			return;
+
+		var options = this.options;
+
+		this.selectees = $(options.filter, this.element[0]);
+
+		this._trigger("start", event);
+
+		$(options.appendTo).append(this.helper);
+		// position helper (lasso)
+		this.helper.css({
+			"left": event.clientX,
+			"top": event.clientY,
+			"width": 0,
+			"height": 0
+		});
+
+		if (options.autoRefresh) {
+			this.refresh();
+		}
+
+		this.selectees.filter('.ui-selected').each(function() {
+			var selectee = $.data(this, "selectable-item");
+			selectee.startselected = true;
+			if (!event.metaKey && !event.ctrlKey) {
+				selectee.$element.removeClass('ui-selected');
+				selectee.selected = false;
+				selectee.$element.addClass('ui-unselecting');
+				selectee.unselecting = true;
+				// selectable UNSELECTING callback
+				self._trigger("unselecting", event, {
+					unselecting: selectee.element
+				});
+			}
+		});
+
+		$(event.target).parents().andSelf().each(function() {
+			var selectee = $.data(this, "selectable-item");
+			if (selectee) {
+				var doSelect = (!event.metaKey && !event.ctrlKey) || !selectee.$element.hasClass('ui-selected');
+				selectee.$element
+					.removeClass(doSelect ? "ui-unselecting" : "ui-selected")
+					.addClass(doSelect ? "ui-selecting" : "ui-unselecting");
+				selectee.unselecting = !doSelect;
+				selectee.selecting = doSelect;
+				selectee.selected = doSelect;
+				// selectable (UN)SELECTING callback
+				if (doSelect) {
+					self._trigger("selecting", event, {
+						selecting: selectee.element
+					});
+				} else {
+					self._trigger("unselecting", event, {
+						unselecting: selectee.element
+					});
+				}
+				return false;
+			}
+		});
+
+	},
+
+	_mouseDrag: function(event) {
+		var self = this;
+		this.dragged = true;
+
+		if (this.options.disabled)
+			return;
+
+		var options = this.options;
+
+		var x1 = this.opos[0], y1 = this.opos[1], x2 = event.pageX, y2 = event.pageY;
+		if (x1 > x2) { var tmp = x2; x2 = x1; x1 = tmp; }
+		if (y1 > y2) { var tmp = y2; y2 = y1; y1 = tmp; }
+		this.helper.css({left: x1, top: y1, width: x2-x1, height: y2-y1});
+
+		this.selectees.each(function() {
+			var selectee = $.data(this, "selectable-item");
+			//prevent helper from being selected if appendTo: selectable
+			if (!selectee || selectee.element == self.element[0])
+				return;
+			var hit = false;
+			if (options.tolerance == 'touch') {
+				hit = ( !(selectee.left > x2 || selectee.right < x1 || selectee.top > y2 || selectee.bottom < y1) );
+			} else if (options.tolerance == 'fit') {
+				hit = (selectee.left > x1 && selectee.right < x2 && selectee.top > y1 && selectee.bottom < y2);
+			}
+
+			if (hit) {
+				// SELECT
+				if (selectee.selected) {
+					selectee.$element.removeClass('ui-selected');
+					selectee.selected = false;
+				}
+				if (selectee.unselecting) {
+					selectee.$element.removeClass('ui-unselecting');
+					selectee.unselecting = false;
+				}
+				if (!selectee.selecting) {
+					selectee.$element.addClass('ui-selecting');
+					selectee.selecting = true;
+					// selectable SELECTING callback
+					self._trigger("selecting", event, {
+						selecting: selectee.element
+					});
+				}
+			} else {
+				// UNSELECT
+				if (selectee.selecting) {
+					if ((event.metaKey || event.ctrlKey) && selectee.startselected) {
+						selectee.$element.removeClass('ui-selecting');
+						selectee.selecting = false;
+						selectee.$element.addClass('ui-selected');
+						selectee.selected = true;
+					} else {
+						selectee.$element.removeClass('ui-selecting');
+						selectee.selecting = false;
+						if (selectee.startselected) {
+							selectee.$element.addClass('ui-unselecting');
+							selectee.unselecting = true;
+						}
+						// selectable UNSELECTING callback
+						self._trigger("unselecting", event, {
+							unselecting: selectee.element
+						});
+					}
+				}
+				if (selectee.selected) {
+					if (!event.metaKey && !event.ctrlKey && !selectee.startselected) {
+						selectee.$element.removeClass('ui-selected');
+						selectee.selected = false;
+
+						selectee.$element.addClass('ui-unselecting');
+						selectee.unselecting = true;
+						// selectable UNSELECTING callback
+						self._trigger("unselecting", event, {
+							unselecting: selectee.element
+						});
+					}
+				}
+			}
+		});
+
+		return false;
+	},
+
+	_mouseStop: function(event) {
+		var self = this;
+
+		this.dragged = false;
+
+		var options = this.options;
+
+		$('.ui-unselecting', this.element[0]).each(function() {
+			var selectee = $.data(this, "selectable-item");
+			selectee.$element.removeClass('ui-unselecting');
+			selectee.unselecting = false;
+			selectee.startselected = false;
+			self._trigger("unselected", event, {
+				unselected: selectee.element
+			});
+		});
+		$('.ui-selecting', this.element[0]).each(function() {
+			var selectee = $.data(this, "selectable-item");
+			selectee.$element.removeClass('ui-selecting').addClass('ui-selected');
+			selectee.selecting = false;
+			selectee.selected = true;
+			selectee.startselected = true;
+			self._trigger("selected", event, {
+				selected: selectee.element
+			});
+		});
+		this._trigger("stop", event);
+
+		this.helper.remove();
+
+		return false;
+	}
+
+});
+
+$.extend($.ui.selectable, {
+	version: "1.8.24"
+});
+
+})(jQuery);
+
+(function( $, undefined ) {
+
+$.widget("ui.sortable", $.ui.mouse, {
+	widgetEventPrefix: "sort",
+	ready: false,
+	options: {
+		appendTo: "parent",
+		axis: false,
+		connectWith: false,
+		containment: false,
+		cursor: 'auto',
+		cursorAt: false,
+		dropOnEmpty: true,
+		forcePlaceholderSize: false,
+		forceHelperSize: false,
+		grid: false,
+		handle: false,
+		helper: "original",
+		items: '> *',
+		opacity: false,
+		placeholder: false,
+		revert: false,
+		scroll: true,
+		scrollSensitivity: 20,
+		scrollSpeed: 20,
+		scope: "default",
+		tolerance: "intersect",
+		zIndex: 1000
+	},
+	_create: function() {
+
+		var o = this.options;
+		this.containerCache = {};
+		this.element.addClass("ui-sortable");
+
+		//Get the items
+		this.refresh();
+
+		//Let's determine if the items are being displayed horizontally
+		this.floating = this.items.length ? o.axis === 'x' || (/left|right/).test(this.items[0].item.css('float')) || (/inline|table-cell/).test(this.items[0].item.css('display')) : false;
+
+		//Let's determine the parent's offset
+		this.offset = this.element.offset();
+
+		//Initialize mouse events for interaction
+		this._mouseInit();
+		
+		//We're ready to go
+		this.ready = true
+
+	},
+
+	destroy: function() {
+		$.Widget.prototype.destroy.call( this );
+		this.element
+			.removeClass("ui-sortable ui-sortable-disabled");
+		this._mouseDestroy();
+
+		for ( var i = this.items.length - 1; i >= 0; i-- )
+			this.items[i].item.removeData(this.widgetName + "-item");
+
+		return this;
+	},
+
+	_setOption: function(key, value){
+		if ( key === "disabled" ) {
+			this.options[ key ] = value;
+	
+			this.widget()
+				[ value ? "addClass" : "removeClass"]( "ui-sortable-disabled" );
+		} else {
+			// Don't call widget base _setOption for disable as it adds ui-state-disabled class
+			$.Widget.prototype._setOption.apply(this, arguments);
+		}
+	},
+
+	_mouseCapture: function(event, overrideHandle) {
+		var that = this;
+
+		if (this.reverting) {
+			return false;
+		}
+
+		if(this.options.disabled || this.options.type == 'static') return false;
+
+		//We have to refresh the items data once first
+		this._refreshItems(event);
+
+		//Find out if the clicked node (or one of its parents) is a actual item in this.items
+		var currentItem = null, self = this, nodes = $(event.target).parents().each(function() {
+			if($.data(this, that.widgetName + '-item') == self) {
+				currentItem = $(this);
+				return false;
+			}
+		});
+		if($.data(event.target, that.widgetName + '-item') == self) currentItem = $(event.target);
+
+		if(!currentItem) return false;
+		if(this.options.handle && !overrideHandle) {
+			var validHandle = false;
+
+			$(this.options.handle, currentItem).find("*").andSelf().each(function() { if(this == event.target) validHandle = true; });
+			if(!validHandle) return false;
+		}
+
+		this.currentItem = currentItem;
+		this._removeCurrentsFromItems();
+		return true;
+
+	},
+
+	_mouseStart: function(event, overrideHandle, noActivation) {
+
+		var o = this.options, self = this;
+		this.currentContainer = this;
+
+		//We only need to call refreshPositions, because the refreshItems call has been moved to mouseCapture
+		this.refreshPositions();
+
+		//Create and append the visible helper
+		this.helper = this._createHelper(event);
+
+		//Cache the helper size
+		this._cacheHelperProportions();
+
+		/*
+		 * - Position generation -
+		 * This block generates everything position related - it's the core of draggables.
+		 */
+
+		//Cache the margins of the original element
+		this._cacheMargins();
+
+		//Get the next scrolling parent
+		this.scrollParent = this.helper.scrollParent();
+
+		//The element's absolute position on the page minus margins
+		this.offset = this.currentItem.offset();
+		this.offset = {
+			top: this.offset.top - this.margins.top,
+			left: this.offset.left - this.margins.left
