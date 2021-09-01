@@ -3539,3 +3539,539 @@ $.widget("ui.sortable", $.ui.mouse, {
 			var item = this.items[i];
 
 			//We ignore calculating positions of all connected containers when we're not over them
+			if(item.instance != this.currentContainer && this.currentContainer && item.item[0] != this.currentItem[0])
+				continue;
+
+			var t = this.options.toleranceElement ? $(this.options.toleranceElement, item.item) : item.item;
+
+			if (!fast) {
+				item.width = t.outerWidth();
+				item.height = t.outerHeight();
+			}
+
+			var p = t.offset();
+			item.left = p.left;
+			item.top = p.top;
+		};
+
+		if(this.options.custom && this.options.custom.refreshContainers) {
+			this.options.custom.refreshContainers.call(this);
+		} else {
+			for (var i = this.containers.length - 1; i >= 0; i--){
+				var p = this.containers[i].element.offset();
+				this.containers[i].containerCache.left = p.left;
+				this.containers[i].containerCache.top = p.top;
+				this.containers[i].containerCache.width	= this.containers[i].element.outerWidth();
+				this.containers[i].containerCache.height = this.containers[i].element.outerHeight();
+			};
+		}
+
+		return this;
+	},
+
+	_createPlaceholder: function(that) {
+
+		var self = that || this, o = self.options;
+
+		if(!o.placeholder || o.placeholder.constructor == String) {
+			var className = o.placeholder;
+			o.placeholder = {
+				element: function() {
+
+					var el = $(document.createElement(self.currentItem[0].nodeName))
+						.addClass(className || self.currentItem[0].className+" ui-sortable-placeholder")
+						.removeClass("ui-sortable-helper")[0];
+
+					if(!className)
+						el.style.visibility = "hidden";
+
+					return el;
+				},
+				update: function(container, p) {
+
+					// 1. If a className is set as 'placeholder option, we don't force sizes - the class is responsible for that
+					// 2. The option 'forcePlaceholderSize can be enabled to force it even if a class name is specified
+					if(className && !o.forcePlaceholderSize) return;
+
+					//If the element doesn't have a actual height by itself (without styles coming from a stylesheet), it receives the inline height from the dragged item
+					if(!p.height()) { p.height(self.currentItem.innerHeight() - parseInt(self.currentItem.css('paddingTop')||0, 10) - parseInt(self.currentItem.css('paddingBottom')||0, 10)); };
+					if(!p.width()) { p.width(self.currentItem.innerWidth() - parseInt(self.currentItem.css('paddingLeft')||0, 10) - parseInt(self.currentItem.css('paddingRight')||0, 10)); };
+				}
+			};
+		}
+
+		//Create the placeholder
+		self.placeholder = $(o.placeholder.element.call(self.element, self.currentItem));
+
+		//Append it after the actual current item
+		self.currentItem.after(self.placeholder);
+
+		//Update the size of the placeholder (TODO: Logic to fuzzy, see line 316/317)
+		o.placeholder.update(self, self.placeholder);
+
+	},
+
+	_contactContainers: function(event) {
+		
+		// get innermost container that intersects with item 
+		var innermostContainer = null, innermostIndex = null;		
+		
+		
+		for (var i = this.containers.length - 1; i >= 0; i--){
+
+			// never consider a container that's located within the item itself 
+			if($.ui.contains(this.currentItem[0], this.containers[i].element[0]))
+				continue;
+
+			if(this._intersectsWith(this.containers[i].containerCache)) {
+
+				// if we've already found a container and it's more "inner" than this, then continue 
+				if(innermostContainer && $.ui.contains(this.containers[i].element[0], innermostContainer.element[0]))
+					continue;
+
+				innermostContainer = this.containers[i]; 
+				innermostIndex = i;
+					
+			} else {
+				// container doesn't intersect. trigger "out" event if necessary 
+				if(this.containers[i].containerCache.over) {
+					this.containers[i]._trigger("out", event, this._uiHash(this));
+					this.containers[i].containerCache.over = 0;
+				}
+			}
+
+		}
+		
+		// if no intersecting containers found, return 
+		if(!innermostContainer) return; 
+
+		// move the item into the container if it's not there already
+		if(this.containers.length === 1) {
+			this.containers[innermostIndex]._trigger("over", event, this._uiHash(this));
+			this.containers[innermostIndex].containerCache.over = 1;
+		} else if(this.currentContainer != this.containers[innermostIndex]) {
+
+			//When entering a new container, we will find the item with the least distance and append our item near it
+			var dist = 10000; var itemWithLeastDistance = null; var base = this.positionAbs[this.containers[innermostIndex].floating ? 'left' : 'top'];
+			for (var j = this.items.length - 1; j >= 0; j--) {
+				if(!$.ui.contains(this.containers[innermostIndex].element[0], this.items[j].item[0])) continue;
+				var cur = this.containers[innermostIndex].floating ? this.items[j].item.offset().left : this.items[j].item.offset().top;
+				if(Math.abs(cur - base) < dist) {
+					dist = Math.abs(cur - base); itemWithLeastDistance = this.items[j];
+					this.direction = (cur - base > 0) ? 'down' : 'up';
+				}
+			}
+
+			if(!itemWithLeastDistance && !this.options.dropOnEmpty) //Check if dropOnEmpty is enabled
+				return;
+
+			this.currentContainer = this.containers[innermostIndex];
+			itemWithLeastDistance ? this._rearrange(event, itemWithLeastDistance, null, true) : this._rearrange(event, null, this.containers[innermostIndex].element, true);
+			this._trigger("change", event, this._uiHash());
+			this.containers[innermostIndex]._trigger("change", event, this._uiHash(this));
+
+			//Update the placeholder
+			this.options.placeholder.update(this.currentContainer, this.placeholder);
+
+			this.containers[innermostIndex]._trigger("over", event, this._uiHash(this));
+			this.containers[innermostIndex].containerCache.over = 1;
+		} 
+	
+		
+	},
+
+	_createHelper: function(event) {
+
+		var o = this.options;
+		var helper = $.isFunction(o.helper) ? $(o.helper.apply(this.element[0], [event, this.currentItem])) : (o.helper == 'clone' ? this.currentItem.clone() : this.currentItem);
+
+		if(!helper.parents('body').length) //Add the helper to the DOM if that didn't happen already
+			$(o.appendTo != 'parent' ? o.appendTo : this.currentItem[0].parentNode)[0].appendChild(helper[0]);
+
+		if(helper[0] == this.currentItem[0])
+			this._storedCSS = { width: this.currentItem[0].style.width, height: this.currentItem[0].style.height, position: this.currentItem.css("position"), top: this.currentItem.css("top"), left: this.currentItem.css("left") };
+
+		if(helper[0].style.width == '' || o.forceHelperSize) helper.width(this.currentItem.width());
+		if(helper[0].style.height == '' || o.forceHelperSize) helper.height(this.currentItem.height());
+
+		return helper;
+
+	},
+
+	_adjustOffsetFromHelper: function(obj) {
+		if (typeof obj == 'string') {
+			obj = obj.split(' ');
+		}
+		if ($.isArray(obj)) {
+			obj = {left: +obj[0], top: +obj[1] || 0};
+		}
+		if ('left' in obj) {
+			this.offset.click.left = obj.left + this.margins.left;
+		}
+		if ('right' in obj) {
+			this.offset.click.left = this.helperProportions.width - obj.right + this.margins.left;
+		}
+		if ('top' in obj) {
+			this.offset.click.top = obj.top + this.margins.top;
+		}
+		if ('bottom' in obj) {
+			this.offset.click.top = this.helperProportions.height - obj.bottom + this.margins.top;
+		}
+	},
+
+	_getParentOffset: function() {
+
+
+		//Get the offsetParent and cache its position
+		this.offsetParent = this.helper.offsetParent();
+		var po = this.offsetParent.offset();
+
+		// This is a special case where we need to modify a offset calculated on start, since the following happened:
+		// 1. The position of the helper is absolute, so it's position is calculated based on the next positioned parent
+		// 2. The actual offset parent is a child of the scroll parent, and the scroll parent isn't the document, which means that
+		//    the scroll is included in the initial calculation of the offset of the parent, and never recalculated upon drag
+		if(this.cssPosition == 'absolute' && this.scrollParent[0] != document && $.ui.contains(this.scrollParent[0], this.offsetParent[0])) {
+			po.left += this.scrollParent.scrollLeft();
+			po.top += this.scrollParent.scrollTop();
+		}
+
+		if((this.offsetParent[0] == document.body) //This needs to be actually done for all browsers, since pageX/pageY includes this information
+		|| (this.offsetParent[0].tagName && this.offsetParent[0].tagName.toLowerCase() == 'html' && $.browser.msie)) //Ugly IE fix
+			po = { top: 0, left: 0 };
+
+		return {
+			top: po.top + (parseInt(this.offsetParent.css("borderTopWidth"),10) || 0),
+			left: po.left + (parseInt(this.offsetParent.css("borderLeftWidth"),10) || 0)
+		};
+
+	},
+
+	_getRelativeOffset: function() {
+
+		if(this.cssPosition == "relative") {
+			var p = this.currentItem.position();
+			return {
+				top: p.top - (parseInt(this.helper.css("top"),10) || 0) + this.scrollParent.scrollTop(),
+				left: p.left - (parseInt(this.helper.css("left"),10) || 0) + this.scrollParent.scrollLeft()
+			};
+		} else {
+			return { top: 0, left: 0 };
+		}
+
+	},
+
+	_cacheMargins: function() {
+		this.margins = {
+			left: (parseInt(this.currentItem.css("marginLeft"),10) || 0),
+			top: (parseInt(this.currentItem.css("marginTop"),10) || 0)
+		};
+	},
+
+	_cacheHelperProportions: function() {
+		this.helperProportions = {
+			width: this.helper.outerWidth(),
+			height: this.helper.outerHeight()
+		};
+	},
+
+	_setContainment: function() {
+
+		var o = this.options;
+		if(o.containment == 'parent') o.containment = this.helper[0].parentNode;
+		if(o.containment == 'document' || o.containment == 'window') this.containment = [
+			0 - this.offset.relative.left - this.offset.parent.left,
+			0 - this.offset.relative.top - this.offset.parent.top,
+			$(o.containment == 'document' ? document : window).width() - this.helperProportions.width - this.margins.left,
+			($(o.containment == 'document' ? document : window).height() || document.body.parentNode.scrollHeight) - this.helperProportions.height - this.margins.top
+		];
+
+		if(!(/^(document|window|parent)$/).test(o.containment)) {
+			var ce = $(o.containment)[0];
+			var co = $(o.containment).offset();
+			var over = ($(ce).css("overflow") != 'hidden');
+
+			this.containment = [
+				co.left + (parseInt($(ce).css("borderLeftWidth"),10) || 0) + (parseInt($(ce).css("paddingLeft"),10) || 0) - this.margins.left,
+				co.top + (parseInt($(ce).css("borderTopWidth"),10) || 0) + (parseInt($(ce).css("paddingTop"),10) || 0) - this.margins.top,
+				co.left+(over ? Math.max(ce.scrollWidth,ce.offsetWidth) : ce.offsetWidth) - (parseInt($(ce).css("borderLeftWidth"),10) || 0) - (parseInt($(ce).css("paddingRight"),10) || 0) - this.helperProportions.width - this.margins.left,
+				co.top+(over ? Math.max(ce.scrollHeight,ce.offsetHeight) : ce.offsetHeight) - (parseInt($(ce).css("borderTopWidth"),10) || 0) - (parseInt($(ce).css("paddingBottom"),10) || 0) - this.helperProportions.height - this.margins.top
+			];
+		}
+
+	},
+
+	_convertPositionTo: function(d, pos) {
+
+		if(!pos) pos = this.position;
+		var mod = d == "absolute" ? 1 : -1;
+		var o = this.options, scroll = this.cssPosition == 'absolute' && !(this.scrollParent[0] != document && $.ui.contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent, scrollIsRootNode = (/(html|body)/i).test(scroll[0].tagName);
+
+		return {
+			top: (
+				pos.top																	// The absolute mouse position
+				+ this.offset.relative.top * mod										// Only for relative positioned nodes: Relative offset from element to offset parent
+				+ this.offset.parent.top * mod											// The offsetParent's offset without borders (offset + border)
+				- ($.browser.safari && this.cssPosition == 'fixed' ? 0 : ( this.cssPosition == 'fixed' ? -this.scrollParent.scrollTop() : ( scrollIsRootNode ? 0 : scroll.scrollTop() ) ) * mod)
+			),
+			left: (
+				pos.left																// The absolute mouse position
+				+ this.offset.relative.left * mod										// Only for relative positioned nodes: Relative offset from element to offset parent
+				+ this.offset.parent.left * mod											// The offsetParent's offset without borders (offset + border)
+				- ($.browser.safari && this.cssPosition == 'fixed' ? 0 : ( this.cssPosition == 'fixed' ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft() ) * mod)
+			)
+		};
+
+	},
+
+	_generatePosition: function(event) {
+
+		var o = this.options, scroll = this.cssPosition == 'absolute' && !(this.scrollParent[0] != document && $.ui.contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent, scrollIsRootNode = (/(html|body)/i).test(scroll[0].tagName);
+
+		// This is another very weird special case that only happens for relative elements:
+		// 1. If the css position is relative
+		// 2. and the scroll parent is the document or similar to the offset parent
+		// we have to refresh the relative offset during the scroll so there are no jumps
+		if(this.cssPosition == 'relative' && !(this.scrollParent[0] != document && this.scrollParent[0] != this.offsetParent[0])) {
+			this.offset.relative = this._getRelativeOffset();
+		}
+
+		var pageX = event.pageX;
+		var pageY = event.pageY;
+
+		/*
+		 * - Position constraining -
+		 * Constrain the position to a mix of grid, containment.
+		 */
+
+		if(this.originalPosition) { //If we are not dragging yet, we won't check for options
+
+			if(this.containment) {
+				if(event.pageX - this.offset.click.left < this.containment[0]) pageX = this.containment[0] + this.offset.click.left;
+				if(event.pageY - this.offset.click.top < this.containment[1]) pageY = this.containment[1] + this.offset.click.top;
+				if(event.pageX - this.offset.click.left > this.containment[2]) pageX = this.containment[2] + this.offset.click.left;
+				if(event.pageY - this.offset.click.top > this.containment[3]) pageY = this.containment[3] + this.offset.click.top;
+			}
+
+			if(o.grid) {
+				var top = this.originalPageY + Math.round((pageY - this.originalPageY) / o.grid[1]) * o.grid[1];
+				pageY = this.containment ? (!(top - this.offset.click.top < this.containment[1] || top - this.offset.click.top > this.containment[3]) ? top : (!(top - this.offset.click.top < this.containment[1]) ? top - o.grid[1] : top + o.grid[1])) : top;
+
+				var left = this.originalPageX + Math.round((pageX - this.originalPageX) / o.grid[0]) * o.grid[0];
+				pageX = this.containment ? (!(left - this.offset.click.left < this.containment[0] || left - this.offset.click.left > this.containment[2]) ? left : (!(left - this.offset.click.left < this.containment[0]) ? left - o.grid[0] : left + o.grid[0])) : left;
+			}
+
+		}
+
+		return {
+			top: (
+				pageY																// The absolute mouse position
+				- this.offset.click.top													// Click offset (relative to the element)
+				- this.offset.relative.top												// Only for relative positioned nodes: Relative offset from element to offset parent
+				- this.offset.parent.top												// The offsetParent's offset without borders (offset + border)
+				+ ($.browser.safari && this.cssPosition == 'fixed' ? 0 : ( this.cssPosition == 'fixed' ? -this.scrollParent.scrollTop() : ( scrollIsRootNode ? 0 : scroll.scrollTop() ) ))
+			),
+			left: (
+				pageX																// The absolute mouse position
+				- this.offset.click.left												// Click offset (relative to the element)
+				- this.offset.relative.left												// Only for relative positioned nodes: Relative offset from element to offset parent
+				- this.offset.parent.left												// The offsetParent's offset without borders (offset + border)
+				+ ($.browser.safari && this.cssPosition == 'fixed' ? 0 : ( this.cssPosition == 'fixed' ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft() ))
+			)
+		};
+
+	},
+
+	_rearrange: function(event, i, a, hardRefresh) {
+
+		a ? a[0].appendChild(this.placeholder[0]) : i.item[0].parentNode.insertBefore(this.placeholder[0], (this.direction == 'down' ? i.item[0] : i.item[0].nextSibling));
+
+		//Various things done here to improve the performance:
+		// 1. we create a setTimeout, that calls refreshPositions
+		// 2. on the instance, we have a counter variable, that get's higher after every append
+		// 3. on the local scope, we copy the counter variable, and check in the timeout, if it's still the same
+		// 4. this lets only the last addition to the timeout stack through
+		this.counter = this.counter ? ++this.counter : 1;
+		var self = this, counter = this.counter;
+
+		window.setTimeout(function() {
+			if(counter == self.counter) self.refreshPositions(!hardRefresh); //Precompute after each DOM insertion, NOT on mousemove
+		},0);
+
+	},
+
+	_clear: function(event, noPropagation) {
+
+		this.reverting = false;
+		// We delay all events that have to be triggered to after the point where the placeholder has been removed and
+		// everything else normalized again
+		var delayedTriggers = [], self = this;
+
+		// We first have to update the dom position of the actual currentItem
+		// Note: don't do it if the current item is already removed (by a user), or it gets reappended (see #4088)
+		if(!this._noFinalSort && this.currentItem.parent().length) this.placeholder.before(this.currentItem);
+		this._noFinalSort = null;
+
+		if(this.helper[0] == this.currentItem[0]) {
+			for(var i in this._storedCSS) {
+				if(this._storedCSS[i] == 'auto' || this._storedCSS[i] == 'static') this._storedCSS[i] = '';
+			}
+			this.currentItem.css(this._storedCSS).removeClass("ui-sortable-helper");
+		} else {
+			this.currentItem.show();
+		}
+
+		if(this.fromOutside && !noPropagation) delayedTriggers.push(function(event) { this._trigger("receive", event, this._uiHash(this.fromOutside)); });
+		if((this.fromOutside || this.domPosition.prev != this.currentItem.prev().not(".ui-sortable-helper")[0] || this.domPosition.parent != this.currentItem.parent()[0]) && !noPropagation) delayedTriggers.push(function(event) { this._trigger("update", event, this._uiHash()); }); //Trigger update callback if the DOM position has changed
+
+		// Check if the items Container has Changed and trigger appropriate
+		// events.
+		if (this !== this.currentContainer) {
+			if(!noPropagation) {
+				delayedTriggers.push(function(event) { this._trigger("remove", event, this._uiHash()); });
+				delayedTriggers.push((function(c) { return function(event) { c._trigger("receive", event, this._uiHash(this)); };  }).call(this, this.currentContainer));
+				delayedTriggers.push((function(c) { return function(event) { c._trigger("update", event, this._uiHash(this));  }; }).call(this, this.currentContainer));
+			}
+		}
+
+		//Post events to containers
+		for (var i = this.containers.length - 1; i >= 0; i--){
+			if(!noPropagation) delayedTriggers.push((function(c) { return function(event) { c._trigger("deactivate", event, this._uiHash(this)); };  }).call(this, this.containers[i]));
+			if(this.containers[i].containerCache.over) {
+				delayedTriggers.push((function(c) { return function(event) { c._trigger("out", event, this._uiHash(this)); };  }).call(this, this.containers[i]));
+				this.containers[i].containerCache.over = 0;
+			}
+		}
+
+		//Do what was originally in plugins
+		if(this._storedCursor) $('body').css("cursor", this._storedCursor); //Reset cursor
+		if(this._storedOpacity) this.helper.css("opacity", this._storedOpacity); //Reset opacity
+		if(this._storedZIndex) this.helper.css("zIndex", this._storedZIndex == 'auto' ? '' : this._storedZIndex); //Reset z-index
+
+		this.dragging = false;
+		if(this.cancelHelperRemoval) {
+			if(!noPropagation) {
+				this._trigger("beforeStop", event, this._uiHash());
+				for (var i=0; i < delayedTriggers.length; i++) { delayedTriggers[i].call(this, event); }; //Trigger all delayed events
+				this._trigger("stop", event, this._uiHash());
+			}
+
+			this.fromOutside = false;
+			return false;
+		}
+
+		if(!noPropagation) this._trigger("beforeStop", event, this._uiHash());
+
+		//$(this.placeholder[0]).remove(); would have been the jQuery way - unfortunately, it unbinds ALL events from the original node!
+		this.placeholder[0].parentNode.removeChild(this.placeholder[0]);
+
+		if(this.helper[0] != this.currentItem[0]) this.helper.remove(); this.helper = null;
+
+		if(!noPropagation) {
+			for (var i=0; i < delayedTriggers.length; i++) { delayedTriggers[i].call(this, event); }; //Trigger all delayed events
+			this._trigger("stop", event, this._uiHash());
+		}
+
+		this.fromOutside = false;
+		return true;
+
+	},
+
+	_trigger: function() {
+		if ($.Widget.prototype._trigger.apply(this, arguments) === false) {
+			this.cancel();
+		}
+	},
+
+	_uiHash: function(inst) {
+		var self = inst || this;
+		return {
+			helper: self.helper,
+			placeholder: self.placeholder || $([]),
+			position: self.position,
+			originalPosition: self.originalPosition,
+			offset: self.positionAbs,
+			item: self.currentItem,
+			sender: inst ? inst.element : null
+		};
+	}
+
+});
+
+$.extend($.ui.sortable, {
+	version: "1.8.24"
+});
+
+})(jQuery);
+
+;jQuery.effects || (function($, undefined) {
+
+$.effects = {};
+
+
+
+/******************************************************************************/
+/****************************** COLOR ANIMATIONS ******************************/
+/******************************************************************************/
+
+// override the animation for color styles
+$.each(['backgroundColor', 'borderBottomColor', 'borderLeftColor',
+	'borderRightColor', 'borderTopColor', 'borderColor', 'color', 'outlineColor'],
+function(i, attr) {
+	$.fx.step[attr] = function(fx) {
+		if (!fx.colorInit) {
+			fx.start = getColor(fx.elem, attr);
+			fx.end = getRGB(fx.end);
+			fx.colorInit = true;
+		}
+
+		fx.elem.style[attr] = 'rgb(' +
+			Math.max(Math.min(parseInt((fx.pos * (fx.end[0] - fx.start[0])) + fx.start[0], 10), 255), 0) + ',' +
+			Math.max(Math.min(parseInt((fx.pos * (fx.end[1] - fx.start[1])) + fx.start[1], 10), 255), 0) + ',' +
+			Math.max(Math.min(parseInt((fx.pos * (fx.end[2] - fx.start[2])) + fx.start[2], 10), 255), 0) + ')';
+	};
+});
+
+// Color Conversion functions from highlightFade
+// By Blair Mitchelmore
+// http://jquery.offput.ca/highlightFade/
+
+// Parse strings looking for color tuples [255,255,255]
+function getRGB(color) {
+		var result;
+
+		// Check if we're already dealing with an array of colors
+		if ( color && color.constructor == Array && color.length == 3 )
+				return color;
+
+		// Look for rgb(num,num,num)
+		if (result = /rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)/.exec(color))
+				return [parseInt(result[1],10), parseInt(result[2],10), parseInt(result[3],10)];
+
+		// Look for rgb(num%,num%,num%)
+		if (result = /rgb\(\s*([0-9]+(?:\.[0-9]+)?)\%\s*,\s*([0-9]+(?:\.[0-9]+)?)\%\s*,\s*([0-9]+(?:\.[0-9]+)?)\%\s*\)/.exec(color))
+				return [parseFloat(result[1])*2.55, parseFloat(result[2])*2.55, parseFloat(result[3])*2.55];
+
+		// Look for #a0b1c2
+		if (result = /#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})/.exec(color))
+				return [parseInt(result[1],16), parseInt(result[2],16), parseInt(result[3],16)];
+
+		// Look for #fff
+		if (result = /#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])/.exec(color))
+				return [parseInt(result[1]+result[1],16), parseInt(result[2]+result[2],16), parseInt(result[3]+result[3],16)];
+
+		// Look for rgba(0, 0, 0, 0) == transparent in Safari 3
+		if (result = /rgba\(0, 0, 0, 0\)/.exec(color))
+				return colors['transparent'];
+
+		// Otherwise, we're most likely dealing with a named color
+		return colors[$.trim(color).toLowerCase()];
+}
+
+function getColor(elem, attr) {
+		var color;
+
+		do {
+				// jQuery <1.4.3 uses curCSS, in 1.4.3 - 1.7.2 curCSS = css, 1.8+ only has css
+				color = ($.curCSS || $.css)(elem, attr);
+
+				// Keep going until we find an element that has color, or we hit the body
