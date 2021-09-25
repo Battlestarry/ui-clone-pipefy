@@ -7905,3 +7905,498 @@ $.extend(Datepicker.prototype, {
 		// Check whether a format character is doubled
 		var lookAhead = function(match) {
 			var matches = (iFormat + 1 < format.length && format.charAt(iFormat + 1) == match);
+			if (matches)
+				iFormat++;
+			return matches;
+		};
+		// Extract a number from the string value
+		var getNumber = function(match) {
+			var isDoubled = lookAhead(match);
+			var size = (match == '@' ? 14 : (match == '!' ? 20 :
+				(match == 'y' && isDoubled ? 4 : (match == 'o' ? 3 : 2))));
+			var digits = new RegExp('^\\d{1,' + size + '}');
+			var num = value.substring(iValue).match(digits);
+			if (!num)
+				throw 'Missing number at position ' + iValue;
+			iValue += num[0].length;
+			return parseInt(num[0], 10);
+		};
+		// Extract a name from the string value and convert to an index
+		var getName = function(match, shortNames, longNames) {
+			var names = $.map(lookAhead(match) ? longNames : shortNames, function (v, k) {
+				return [ [k, v] ];
+			}).sort(function (a, b) {
+				return -(a[1].length - b[1].length);
+			});
+			var index = -1;
+			$.each(names, function (i, pair) {
+				var name = pair[1];
+				if (value.substr(iValue, name.length).toLowerCase() == name.toLowerCase()) {
+					index = pair[0];
+					iValue += name.length;
+					return false;
+				}
+			});
+			if (index != -1)
+				return index + 1;
+			else
+				throw 'Unknown name at position ' + iValue;
+		};
+		// Confirm that a literal character matches the string value
+		var checkLiteral = function() {
+			if (value.charAt(iValue) != format.charAt(iFormat))
+				throw 'Unexpected literal at position ' + iValue;
+			iValue++;
+		};
+		var iValue = 0;
+		for (var iFormat = 0; iFormat < format.length; iFormat++) {
+			if (literal)
+				if (format.charAt(iFormat) == "'" && !lookAhead("'"))
+					literal = false;
+				else
+					checkLiteral();
+			else
+				switch (format.charAt(iFormat)) {
+					case 'd':
+						day = getNumber('d');
+						break;
+					case 'D':
+						getName('D', dayNamesShort, dayNames);
+						break;
+					case 'o':
+						doy = getNumber('o');
+						break;
+					case 'm':
+						month = getNumber('m');
+						break;
+					case 'M':
+						month = getName('M', monthNamesShort, monthNames);
+						break;
+					case 'y':
+						year = getNumber('y');
+						break;
+					case '@':
+						var date = new Date(getNumber('@'));
+						year = date.getFullYear();
+						month = date.getMonth() + 1;
+						day = date.getDate();
+						break;
+					case '!':
+						var date = new Date((getNumber('!') - this._ticksTo1970) / 10000);
+						year = date.getFullYear();
+						month = date.getMonth() + 1;
+						day = date.getDate();
+						break;
+					case "'":
+						if (lookAhead("'"))
+							checkLiteral();
+						else
+							literal = true;
+						break;
+					default:
+						checkLiteral();
+				}
+		}
+		if (iValue < value.length){
+			throw "Extra/unparsed characters found in date: " + value.substring(iValue);
+		}
+		if (year == -1)
+			year = new Date().getFullYear();
+		else if (year < 100)
+			year += new Date().getFullYear() - new Date().getFullYear() % 100 +
+				(year <= shortYearCutoff ? 0 : -100);
+		if (doy > -1) {
+			month = 1;
+			day = doy;
+			do {
+				var dim = this._getDaysInMonth(year, month - 1);
+				if (day <= dim)
+					break;
+				month++;
+				day -= dim;
+			} while (true);
+		}
+		var date = this._daylightSavingAdjust(new Date(year, month - 1, day));
+		if (date.getFullYear() != year || date.getMonth() + 1 != month || date.getDate() != day)
+			throw 'Invalid date'; // E.g. 31/02/00
+		return date;
+	},
+
+	/* Standard date formats. */
+	ATOM: 'yy-mm-dd', // RFC 3339 (ISO 8601)
+	COOKIE: 'D, dd M yy',
+	ISO_8601: 'yy-mm-dd',
+	RFC_822: 'D, d M y',
+	RFC_850: 'DD, dd-M-y',
+	RFC_1036: 'D, d M y',
+	RFC_1123: 'D, d M yy',
+	RFC_2822: 'D, d M yy',
+	RSS: 'D, d M y', // RFC 822
+	TICKS: '!',
+	TIMESTAMP: '@',
+	W3C: 'yy-mm-dd', // ISO 8601
+
+	_ticksTo1970: (((1970 - 1) * 365 + Math.floor(1970 / 4) - Math.floor(1970 / 100) +
+		Math.floor(1970 / 400)) * 24 * 60 * 60 * 10000000),
+
+	/* Format a date object into a string value.
+	   The format can be combinations of the following:
+	   d  - day of month (no leading zero)
+	   dd - day of month (two digit)
+	   o  - day of year (no leading zeros)
+	   oo - day of year (three digit)
+	   D  - day name short
+	   DD - day name long
+	   m  - month of year (no leading zero)
+	   mm - month of year (two digit)
+	   M  - month name short
+	   MM - month name long
+	   y  - year (two digit)
+	   yy - year (four digit)
+	   @ - Unix timestamp (ms since 01/01/1970)
+	   ! - Windows ticks (100ns since 01/01/0001)
+	   '...' - literal text
+	   '' - single quote
+
+	   @param  format    string - the desired format of the date
+	   @param  date      Date - the date value to format
+	   @param  settings  Object - attributes include:
+	                     dayNamesShort    string[7] - abbreviated names of the days from Sunday (optional)
+	                     dayNames         string[7] - names of the days from Sunday (optional)
+	                     monthNamesShort  string[12] - abbreviated names of the months (optional)
+	                     monthNames       string[12] - names of the months (optional)
+	   @return  string - the date in the above format */
+	formatDate: function (format, date, settings) {
+		if (!date)
+			return '';
+		var dayNamesShort = (settings ? settings.dayNamesShort : null) || this._defaults.dayNamesShort;
+		var dayNames = (settings ? settings.dayNames : null) || this._defaults.dayNames;
+		var monthNamesShort = (settings ? settings.monthNamesShort : null) || this._defaults.monthNamesShort;
+		var monthNames = (settings ? settings.monthNames : null) || this._defaults.monthNames;
+		// Check whether a format character is doubled
+		var lookAhead = function(match) {
+			var matches = (iFormat + 1 < format.length && format.charAt(iFormat + 1) == match);
+			if (matches)
+				iFormat++;
+			return matches;
+		};
+		// Format a number, with leading zero if necessary
+		var formatNumber = function(match, value, len) {
+			var num = '' + value;
+			if (lookAhead(match))
+				while (num.length < len)
+					num = '0' + num;
+			return num;
+		};
+		// Format a name, short or long as requested
+		var formatName = function(match, value, shortNames, longNames) {
+			return (lookAhead(match) ? longNames[value] : shortNames[value]);
+		};
+		var output = '';
+		var literal = false;
+		if (date)
+			for (var iFormat = 0; iFormat < format.length; iFormat++) {
+				if (literal)
+					if (format.charAt(iFormat) == "'" && !lookAhead("'"))
+						literal = false;
+					else
+						output += format.charAt(iFormat);
+				else
+					switch (format.charAt(iFormat)) {
+						case 'd':
+							output += formatNumber('d', date.getDate(), 2);
+							break;
+						case 'D':
+							output += formatName('D', date.getDay(), dayNamesShort, dayNames);
+							break;
+						case 'o':
+							output += formatNumber('o',
+								Math.round((new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / 86400000), 3);
+							break;
+						case 'm':
+							output += formatNumber('m', date.getMonth() + 1, 2);
+							break;
+						case 'M':
+							output += formatName('M', date.getMonth(), monthNamesShort, monthNames);
+							break;
+						case 'y':
+							output += (lookAhead('y') ? date.getFullYear() :
+								(date.getYear() % 100 < 10 ? '0' : '') + date.getYear() % 100);
+							break;
+						case '@':
+							output += date.getTime();
+							break;
+						case '!':
+							output += date.getTime() * 10000 + this._ticksTo1970;
+							break;
+						case "'":
+							if (lookAhead("'"))
+								output += "'";
+							else
+								literal = true;
+							break;
+						default:
+							output += format.charAt(iFormat);
+					}
+			}
+		return output;
+	},
+
+	/* Extract all possible characters from the date format. */
+	_possibleChars: function (format) {
+		var chars = '';
+		var literal = false;
+		// Check whether a format character is doubled
+		var lookAhead = function(match) {
+			var matches = (iFormat + 1 < format.length && format.charAt(iFormat + 1) == match);
+			if (matches)
+				iFormat++;
+			return matches;
+		};
+		for (var iFormat = 0; iFormat < format.length; iFormat++)
+			if (literal)
+				if (format.charAt(iFormat) == "'" && !lookAhead("'"))
+					literal = false;
+				else
+					chars += format.charAt(iFormat);
+			else
+				switch (format.charAt(iFormat)) {
+					case 'd': case 'm': case 'y': case '@':
+						chars += '0123456789';
+						break;
+					case 'D': case 'M':
+						return null; // Accept anything
+					case "'":
+						if (lookAhead("'"))
+							chars += "'";
+						else
+							literal = true;
+						break;
+					default:
+						chars += format.charAt(iFormat);
+				}
+		return chars;
+	},
+
+	/* Get a setting value, defaulting if necessary. */
+	_get: function(inst, name) {
+		return inst.settings[name] !== undefined ?
+			inst.settings[name] : this._defaults[name];
+	},
+
+	/* Parse existing date and initialise date picker. */
+	_setDateFromField: function(inst, noDefault) {
+		if (inst.input.val() == inst.lastVal) {
+			return;
+		}
+		var dateFormat = this._get(inst, 'dateFormat');
+		var dates = inst.lastVal = inst.input ? inst.input.val() : null;
+		var date, defaultDate;
+		date = defaultDate = this._getDefaultDate(inst);
+		var settings = this._getFormatConfig(inst);
+		try {
+			date = this.parseDate(dateFormat, dates, settings) || defaultDate;
+		} catch (event) {
+			this.log(event);
+			dates = (noDefault ? '' : dates);
+		}
+		inst.selectedDay = date.getDate();
+		inst.drawMonth = inst.selectedMonth = date.getMonth();
+		inst.drawYear = inst.selectedYear = date.getFullYear();
+		inst.currentDay = (dates ? date.getDate() : 0);
+		inst.currentMonth = (dates ? date.getMonth() : 0);
+		inst.currentYear = (dates ? date.getFullYear() : 0);
+		this._adjustInstDate(inst);
+	},
+
+	/* Retrieve the default date shown on opening. */
+	_getDefaultDate: function(inst) {
+		return this._restrictMinMax(inst,
+			this._determineDate(inst, this._get(inst, 'defaultDate'), new Date()));
+	},
+
+	/* A date may be specified as an exact value or a relative one. */
+	_determineDate: function(inst, date, defaultDate) {
+		var offsetNumeric = function(offset) {
+			var date = new Date();
+			date.setDate(date.getDate() + offset);
+			return date;
+		};
+		var offsetString = function(offset) {
+			try {
+				return $.datepicker.parseDate($.datepicker._get(inst, 'dateFormat'),
+					offset, $.datepicker._getFormatConfig(inst));
+			}
+			catch (e) {
+				// Ignore
+			}
+			var date = (offset.toLowerCase().match(/^c/) ?
+				$.datepicker._getDate(inst) : null) || new Date();
+			var year = date.getFullYear();
+			var month = date.getMonth();
+			var day = date.getDate();
+			var pattern = /([+-]?[0-9]+)\s*(d|D|w|W|m|M|y|Y)?/g;
+			var matches = pattern.exec(offset);
+			while (matches) {
+				switch (matches[2] || 'd') {
+					case 'd' : case 'D' :
+						day += parseInt(matches[1],10); break;
+					case 'w' : case 'W' :
+						day += parseInt(matches[1],10) * 7; break;
+					case 'm' : case 'M' :
+						month += parseInt(matches[1],10);
+						day = Math.min(day, $.datepicker._getDaysInMonth(year, month));
+						break;
+					case 'y': case 'Y' :
+						year += parseInt(matches[1],10);
+						day = Math.min(day, $.datepicker._getDaysInMonth(year, month));
+						break;
+				}
+				matches = pattern.exec(offset);
+			}
+			return new Date(year, month, day);
+		};
+		var newDate = (date == null || date === '' ? defaultDate : (typeof date == 'string' ? offsetString(date) :
+			(typeof date == 'number' ? (isNaN(date) ? defaultDate : offsetNumeric(date)) : new Date(date.getTime()))));
+		newDate = (newDate && newDate.toString() == 'Invalid Date' ? defaultDate : newDate);
+		if (newDate) {
+			newDate.setHours(0);
+			newDate.setMinutes(0);
+			newDate.setSeconds(0);
+			newDate.setMilliseconds(0);
+		}
+		return this._daylightSavingAdjust(newDate);
+	},
+
+	/* Handle switch to/from daylight saving.
+	   Hours may be non-zero on daylight saving cut-over:
+	   > 12 when midnight changeover, but then cannot generate
+	   midnight datetime, so jump to 1AM, otherwise reset.
+	   @param  date  (Date) the date to check
+	   @return  (Date) the corrected date */
+	_daylightSavingAdjust: function(date) {
+		if (!date) return null;
+		date.setHours(date.getHours() > 12 ? date.getHours() + 2 : 0);
+		return date;
+	},
+
+	/* Set the date(s) directly. */
+	_setDate: function(inst, date, noChange) {
+		var clear = !date;
+		var origMonth = inst.selectedMonth;
+		var origYear = inst.selectedYear;
+		var newDate = this._restrictMinMax(inst, this._determineDate(inst, date, new Date()));
+		inst.selectedDay = inst.currentDay = newDate.getDate();
+		inst.drawMonth = inst.selectedMonth = inst.currentMonth = newDate.getMonth();
+		inst.drawYear = inst.selectedYear = inst.currentYear = newDate.getFullYear();
+		if ((origMonth != inst.selectedMonth || origYear != inst.selectedYear) && !noChange)
+			this._notifyChange(inst);
+		this._adjustInstDate(inst);
+		if (inst.input) {
+			inst.input.val(clear ? '' : this._formatDate(inst));
+		}
+	},
+
+	/* Retrieve the date(s) directly. */
+	_getDate: function(inst) {
+		var startDate = (!inst.currentYear || (inst.input && inst.input.val() == '') ? null :
+			this._daylightSavingAdjust(new Date(
+			inst.currentYear, inst.currentMonth, inst.currentDay)));
+			return startDate;
+	},
+
+	/* Attach the onxxx handlers.  These are declared statically so
+	 * they work with static code transformers like Caja.
+	 */
+	_attachHandlers: function(inst) {
+		var stepMonths = this._get(inst, 'stepMonths');
+		var id = '#' + inst.id.replace( /\\\\/g, "\\" );
+		inst.dpDiv.find('[data-handler]').map(function () {
+			var handler = {
+				prev: function () {
+					window['DP_jQuery_' + dpuuid].datepicker._adjustDate(id, -stepMonths, 'M');
+				},
+				next: function () {
+					window['DP_jQuery_' + dpuuid].datepicker._adjustDate(id, +stepMonths, 'M');
+				},
+				hide: function () {
+					window['DP_jQuery_' + dpuuid].datepicker._hideDatepicker();
+				},
+				today: function () {
+					window['DP_jQuery_' + dpuuid].datepicker._gotoToday(id);
+				},
+				selectDay: function () {
+					window['DP_jQuery_' + dpuuid].datepicker._selectDay(id, +this.getAttribute('data-month'), +this.getAttribute('data-year'), this);
+					return false;
+				},
+				selectMonth: function () {
+					window['DP_jQuery_' + dpuuid].datepicker._selectMonthYear(id, this, 'M');
+					return false;
+				},
+				selectYear: function () {
+					window['DP_jQuery_' + dpuuid].datepicker._selectMonthYear(id, this, 'Y');
+					return false;
+				}
+			};
+			$(this).bind(this.getAttribute('data-event'), handler[this.getAttribute('data-handler')]);
+		});
+	},
+	
+	/* Generate the HTML for the current state of the date picker. */
+	_generateHTML: function(inst) {
+		var today = new Date();
+		today = this._daylightSavingAdjust(
+			new Date(today.getFullYear(), today.getMonth(), today.getDate())); // clear time
+		var isRTL = this._get(inst, 'isRTL');
+		var showButtonPanel = this._get(inst, 'showButtonPanel');
+		var hideIfNoPrevNext = this._get(inst, 'hideIfNoPrevNext');
+		var navigationAsDateFormat = this._get(inst, 'navigationAsDateFormat');
+		var numMonths = this._getNumberOfMonths(inst);
+		var showCurrentAtPos = this._get(inst, 'showCurrentAtPos');
+		var stepMonths = this._get(inst, 'stepMonths');
+		var isMultiMonth = (numMonths[0] != 1 || numMonths[1] != 1);
+		var currentDate = this._daylightSavingAdjust((!inst.currentDay ? new Date(9999, 9, 9) :
+			new Date(inst.currentYear, inst.currentMonth, inst.currentDay)));
+		var minDate = this._getMinMaxDate(inst, 'min');
+		var maxDate = this._getMinMaxDate(inst, 'max');
+		var drawMonth = inst.drawMonth - showCurrentAtPos;
+		var drawYear = inst.drawYear;
+		if (drawMonth < 0) {
+			drawMonth += 12;
+			drawYear--;
+		}
+		if (maxDate) {
+			var maxDraw = this._daylightSavingAdjust(new Date(maxDate.getFullYear(),
+				maxDate.getMonth() - (numMonths[0] * numMonths[1]) + 1, maxDate.getDate()));
+			maxDraw = (minDate && maxDraw < minDate ? minDate : maxDraw);
+			while (this._daylightSavingAdjust(new Date(drawYear, drawMonth, 1)) > maxDraw) {
+				drawMonth--;
+				if (drawMonth < 0) {
+					drawMonth = 11;
+					drawYear--;
+				}
+			}
+		}
+		inst.drawMonth = drawMonth;
+		inst.drawYear = drawYear;
+		var prevText = this._get(inst, 'prevText');
+		prevText = (!navigationAsDateFormat ? prevText : this.formatDate(prevText,
+			this._daylightSavingAdjust(new Date(drawYear, drawMonth - stepMonths, 1)),
+			this._getFormatConfig(inst)));
+		var prev = (this._canAdjustMonth(inst, -1, drawYear, drawMonth) ?
+			'<a class="ui-datepicker-prev ui-corner-all" data-handler="prev" data-event="click"' +
+			' title="' + prevText + '"><span class="ui-icon ui-icon-circle-triangle-' + ( isRTL ? 'e' : 'w') + '">' + prevText + '</span></a>' :
+			(hideIfNoPrevNext ? '' : '<a class="ui-datepicker-prev ui-corner-all ui-state-disabled" title="'+ prevText +'"><span class="ui-icon ui-icon-circle-triangle-' + ( isRTL ? 'e' : 'w') + '">' + prevText + '</span></a>'));
+		var nextText = this._get(inst, 'nextText');
+		nextText = (!navigationAsDateFormat ? nextText : this.formatDate(nextText,
+			this._daylightSavingAdjust(new Date(drawYear, drawMonth + stepMonths, 1)),
+			this._getFormatConfig(inst)));
+		var next = (this._canAdjustMonth(inst, +1, drawYear, drawMonth) ?
+			'<a class="ui-datepicker-next ui-corner-all" data-handler="next" data-event="click"' +
+			' title="' + nextText + '"><span class="ui-icon ui-icon-circle-triangle-' + ( isRTL ? 'w' : 'e') + '">' + nextText + '</span></a>' :
+			(hideIfNoPrevNext ? '' : '<a class="ui-datepicker-next ui-corner-all ui-state-disabled" title="'+ nextText + '"><span class="ui-icon ui-icon-circle-triangle-' + ( isRTL ? 'w' : 'e') + '">' + nextText + '</span></a>'));
+		var currentText = this._get(inst, 'currentText');
+		var gotoDate = (this._get(inst, 'gotoCurrent') && inst.currentDay ? currentDate : today);
+		currentText = (!navigationAsDateFormat ? currentText :
+			this.formatDate(currentText, gotoDate, this._getFormatConfig(inst)));
+		var controls = (!inst.inline ? '<button type="button" class="ui-datepicker-close ui-state-default ui-priority-primary ui-corner-all" data-handler="hide" data-event="click">' +
