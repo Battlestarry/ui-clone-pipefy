@@ -9847,3 +9847,481 @@ if ( !$.offset.setOffset ) {
 				});
 			}
 			return this.each(function() {
+				$.offset.setOffset( this, options );
+			});
+		}
+		return _offset.call( this );
+	};
+}
+
+// jQuery <1.4.3 uses curCSS, in 1.4.3 - 1.7.2 curCSS = css, 1.8+ only has css
+if ( !$.curCSS ) {
+	$.curCSS = $.css;
+}
+
+// fraction support test (older versions of jQuery don't support fractions)
+(function () {
+	var body = document.getElementsByTagName( "body" )[ 0 ], 
+		div = document.createElement( "div" ),
+		testElement, testElementParent, testElementStyle, offset, offsetTotal;
+
+	//Create a "fake body" for testing based on method used in jQuery.support
+	testElement = document.createElement( body ? "div" : "body" );
+	testElementStyle = {
+		visibility: "hidden",
+		width: 0,
+		height: 0,
+		border: 0,
+		margin: 0,
+		background: "none"
+	};
+	if ( body ) {
+		$.extend( testElementStyle, {
+			position: "absolute",
+			left: "-1000px",
+			top: "-1000px"
+		});
+	}
+	for ( var i in testElementStyle ) {
+		testElement.style[ i ] = testElementStyle[ i ];
+	}
+	testElement.appendChild( div );
+	testElementParent = body || document.documentElement;
+	testElementParent.insertBefore( testElement, testElementParent.firstChild );
+
+	div.style.cssText = "position: absolute; left: 10.7432222px; top: 10.432325px; height: 30px; width: 201px;";
+
+	offset = $( div ).offset( function( _, offset ) {
+		return offset;
+	}).offset();
+
+	testElement.innerHTML = "";
+	testElementParent.removeChild( testElement );
+
+	offsetTotal = offset.top + offset.left + ( body ? 2000 : 0 );
+	support.fractions = offsetTotal > 21 && offsetTotal < 22;
+})();
+
+}( jQuery ));
+
+(function( $, undefined ) {
+
+$.widget( "ui.progressbar", {
+	options: {
+		value: 0,
+		max: 100
+	},
+
+	min: 0,
+
+	_create: function() {
+		this.element
+			.addClass( "ui-progressbar ui-widget ui-widget-content ui-corner-all" )
+			.attr({
+				role: "progressbar",
+				"aria-valuemin": this.min,
+				"aria-valuemax": this.options.max,
+				"aria-valuenow": this._value()
+			});
+
+		this.valueDiv = $( "<div class='ui-progressbar-value ui-widget-header ui-corner-left'></div>" )
+			.appendTo( this.element );
+
+		this.oldValue = this._value();
+		this._refreshValue();
+	},
+
+	destroy: function() {
+		this.element
+			.removeClass( "ui-progressbar ui-widget ui-widget-content ui-corner-all" )
+			.removeAttr( "role" )
+			.removeAttr( "aria-valuemin" )
+			.removeAttr( "aria-valuemax" )
+			.removeAttr( "aria-valuenow" );
+
+		this.valueDiv.remove();
+
+		$.Widget.prototype.destroy.apply( this, arguments );
+	},
+
+	value: function( newValue ) {
+		if ( newValue === undefined ) {
+			return this._value();
+		}
+
+		this._setOption( "value", newValue );
+		return this;
+	},
+
+	_setOption: function( key, value ) {
+		if ( key === "value" ) {
+			this.options.value = value;
+			this._refreshValue();
+			if ( this._value() === this.options.max ) {
+				this._trigger( "complete" );
+			}
+		}
+
+		$.Widget.prototype._setOption.apply( this, arguments );
+	},
+
+	_value: function() {
+		var val = this.options.value;
+		// normalize invalid value
+		if ( typeof val !== "number" ) {
+			val = 0;
+		}
+		return Math.min( this.options.max, Math.max( this.min, val ) );
+	},
+
+	_percentage: function() {
+		return 100 * this._value() / this.options.max;
+	},
+
+	_refreshValue: function() {
+		var value = this.value();
+		var percentage = this._percentage();
+
+		if ( this.oldValue !== value ) {
+			this.oldValue = value;
+			this._trigger( "change" );
+		}
+
+		this.valueDiv
+			.toggle( value > this.min )
+			.toggleClass( "ui-corner-right", value === this.options.max )
+			.width( percentage.toFixed(0) + "%" );
+		this.element.attr( "aria-valuenow", value );
+	}
+});
+
+$.extend( $.ui.progressbar, {
+	version: "1.8.24"
+});
+
+})( jQuery );
+
+(function( $, undefined ) {
+
+// number of pages in a slider
+// (how many times can you page up/down to go through the whole range)
+var numPages = 5;
+
+$.widget( "ui.slider", $.ui.mouse, {
+
+	widgetEventPrefix: "slide",
+
+	options: {
+		animate: false,
+		distance: 0,
+		max: 100,
+		min: 0,
+		orientation: "horizontal",
+		range: false,
+		step: 1,
+		value: 0,
+		values: null
+	},
+
+	_create: function() {
+		var self = this,
+			o = this.options,
+			existingHandles = this.element.find( ".ui-slider-handle" ).addClass( "ui-state-default ui-corner-all" ),
+			handle = "<a class='ui-slider-handle ui-state-default ui-corner-all' href='#'></a>",
+			handleCount = ( o.values && o.values.length ) || 1,
+			handles = [];
+
+		this._keySliding = false;
+		this._mouseSliding = false;
+		this._animateOff = true;
+		this._handleIndex = null;
+		this._detectOrientation();
+		this._mouseInit();
+
+		this.element
+			.addClass( "ui-slider" +
+				" ui-slider-" + this.orientation +
+				" ui-widget" +
+				" ui-widget-content" +
+				" ui-corner-all" +
+				( o.disabled ? " ui-slider-disabled ui-disabled" : "" ) );
+
+		this.range = $([]);
+
+		if ( o.range ) {
+			if ( o.range === true ) {
+				if ( !o.values ) {
+					o.values = [ this._valueMin(), this._valueMin() ];
+				}
+				if ( o.values.length && o.values.length !== 2 ) {
+					o.values = [ o.values[0], o.values[0] ];
+				}
+			}
+
+			this.range = $( "<div></div>" )
+				.appendTo( this.element )
+				.addClass( "ui-slider-range" +
+				// note: this isn't the most fittingly semantic framework class for this element,
+				// but worked best visually with a variety of themes
+				" ui-widget-header" + 
+				( ( o.range === "min" || o.range === "max" ) ? " ui-slider-range-" + o.range : "" ) );
+		}
+
+		for ( var i = existingHandles.length; i < handleCount; i += 1 ) {
+			handles.push( handle );
+		}
+
+		this.handles = existingHandles.add( $( handles.join( "" ) ).appendTo( self.element ) );
+
+		this.handle = this.handles.eq( 0 );
+
+		this.handles.add( this.range ).filter( "a" )
+			.click(function( event ) {
+				event.preventDefault();
+			})
+			.hover(function() {
+				if ( !o.disabled ) {
+					$( this ).addClass( "ui-state-hover" );
+				}
+			}, function() {
+				$( this ).removeClass( "ui-state-hover" );
+			})
+			.focus(function() {
+				if ( !o.disabled ) {
+					$( ".ui-slider .ui-state-focus" ).removeClass( "ui-state-focus" );
+					$( this ).addClass( "ui-state-focus" );
+				} else {
+					$( this ).blur();
+				}
+			})
+			.blur(function() {
+				$( this ).removeClass( "ui-state-focus" );
+			});
+
+		this.handles.each(function( i ) {
+			$( this ).data( "index.ui-slider-handle", i );
+		});
+
+		this.handles
+			.keydown(function( event ) {
+				var index = $( this ).data( "index.ui-slider-handle" ),
+					allowed,
+					curVal,
+					newVal,
+					step;
+	
+				if ( self.options.disabled ) {
+					return;
+				}
+	
+				switch ( event.keyCode ) {
+					case $.ui.keyCode.HOME:
+					case $.ui.keyCode.END:
+					case $.ui.keyCode.PAGE_UP:
+					case $.ui.keyCode.PAGE_DOWN:
+					case $.ui.keyCode.UP:
+					case $.ui.keyCode.RIGHT:
+					case $.ui.keyCode.DOWN:
+					case $.ui.keyCode.LEFT:
+						event.preventDefault();
+						if ( !self._keySliding ) {
+							self._keySliding = true;
+							$( this ).addClass( "ui-state-active" );
+							allowed = self._start( event, index );
+							if ( allowed === false ) {
+								return;
+							}
+						}
+						break;
+				}
+	
+				step = self.options.step;
+				if ( self.options.values && self.options.values.length ) {
+					curVal = newVal = self.values( index );
+				} else {
+					curVal = newVal = self.value();
+				}
+	
+				switch ( event.keyCode ) {
+					case $.ui.keyCode.HOME:
+						newVal = self._valueMin();
+						break;
+					case $.ui.keyCode.END:
+						newVal = self._valueMax();
+						break;
+					case $.ui.keyCode.PAGE_UP:
+						newVal = self._trimAlignValue( curVal + ( (self._valueMax() - self._valueMin()) / numPages ) );
+						break;
+					case $.ui.keyCode.PAGE_DOWN:
+						newVal = self._trimAlignValue( curVal - ( (self._valueMax() - self._valueMin()) / numPages ) );
+						break;
+					case $.ui.keyCode.UP:
+					case $.ui.keyCode.RIGHT:
+						if ( curVal === self._valueMax() ) {
+							return;
+						}
+						newVal = self._trimAlignValue( curVal + step );
+						break;
+					case $.ui.keyCode.DOWN:
+					case $.ui.keyCode.LEFT:
+						if ( curVal === self._valueMin() ) {
+							return;
+						}
+						newVal = self._trimAlignValue( curVal - step );
+						break;
+				}
+	
+				self._slide( event, index, newVal );
+			})
+			.keyup(function( event ) {
+				var index = $( this ).data( "index.ui-slider-handle" );
+	
+				if ( self._keySliding ) {
+					self._keySliding = false;
+					self._stop( event, index );
+					self._change( event, index );
+					$( this ).removeClass( "ui-state-active" );
+				}
+	
+			});
+
+		this._refreshValue();
+
+		this._animateOff = false;
+	},
+
+	destroy: function() {
+		this.handles.remove();
+		this.range.remove();
+
+		this.element
+			.removeClass( "ui-slider" +
+				" ui-slider-horizontal" +
+				" ui-slider-vertical" +
+				" ui-slider-disabled" +
+				" ui-widget" +
+				" ui-widget-content" +
+				" ui-corner-all" )
+			.removeData( "slider" )
+			.unbind( ".slider" );
+
+		this._mouseDestroy();
+
+		return this;
+	},
+
+	_mouseCapture: function( event ) {
+		var o = this.options,
+			position,
+			normValue,
+			distance,
+			closestHandle,
+			self,
+			index,
+			allowed,
+			offset,
+			mouseOverHandle;
+
+		if ( o.disabled ) {
+			return false;
+		}
+
+		this.elementSize = {
+			width: this.element.outerWidth(),
+			height: this.element.outerHeight()
+		};
+		this.elementOffset = this.element.offset();
+
+		position = { x: event.pageX, y: event.pageY };
+		normValue = this._normValueFromMouse( position );
+		distance = this._valueMax() - this._valueMin() + 1;
+		self = this;
+		this.handles.each(function( i ) {
+			var thisDistance = Math.abs( normValue - self.values(i) );
+			if ( distance > thisDistance ) {
+				distance = thisDistance;
+				closestHandle = $( this );
+				index = i;
+			}
+		});
+
+		// workaround for bug #3736 (if both handles of a range are at 0,
+		// the first is always used as the one with least distance,
+		// and moving it is obviously prevented by preventing negative ranges)
+		if( o.range === true && this.values(1) === o.min ) {
+			index += 1;
+			closestHandle = $( this.handles[index] );
+		}
+
+		allowed = this._start( event, index );
+		if ( allowed === false ) {
+			return false;
+		}
+		this._mouseSliding = true;
+
+		self._handleIndex = index;
+
+		closestHandle
+			.addClass( "ui-state-active" )
+			.focus();
+		
+		offset = closestHandle.offset();
+		mouseOverHandle = !$( event.target ).parents().andSelf().is( ".ui-slider-handle" );
+		this._clickOffset = mouseOverHandle ? { left: 0, top: 0 } : {
+			left: event.pageX - offset.left - ( closestHandle.width() / 2 ),
+			top: event.pageY - offset.top -
+				( closestHandle.height() / 2 ) -
+				( parseInt( closestHandle.css("borderTopWidth"), 10 ) || 0 ) -
+				( parseInt( closestHandle.css("borderBottomWidth"), 10 ) || 0) +
+				( parseInt( closestHandle.css("marginTop"), 10 ) || 0)
+		};
+
+		if ( !this.handles.hasClass( "ui-state-hover" ) ) {
+			this._slide( event, index, normValue );
+		}
+		this._animateOff = true;
+		return true;
+	},
+
+	_mouseStart: function( event ) {
+		return true;
+	},
+
+	_mouseDrag: function( event ) {
+		var position = { x: event.pageX, y: event.pageY },
+			normValue = this._normValueFromMouse( position );
+		
+		this._slide( event, this._handleIndex, normValue );
+
+		return false;
+	},
+
+	_mouseStop: function( event ) {
+		this.handles.removeClass( "ui-state-active" );
+		this._mouseSliding = false;
+
+		this._stop( event, this._handleIndex );
+		this._change( event, this._handleIndex );
+
+		this._handleIndex = null;
+		this._clickOffset = null;
+		this._animateOff = false;
+
+		return false;
+	},
+	
+	_detectOrientation: function() {
+		this.orientation = ( this.options.orientation === "vertical" ) ? "vertical" : "horizontal";
+	},
+
+	_normValueFromMouse: function( position ) {
+		var pixelTotal,
+			pixelMouse,
+			percentMouse,
+			valueTotal,
+			valueMouse;
+
+		if ( this.orientation === "horizontal" ) {
+			pixelTotal = this.elementSize.width;
+			pixelMouse = position.x - this.elementOffset.left - ( this._clickOffset ? this._clickOffset.left : 0 );
+		} else {
