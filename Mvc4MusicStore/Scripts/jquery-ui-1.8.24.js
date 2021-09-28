@@ -11332,3 +11332,65 @@ $.widget( "ui.tabs", {
 	},
 
 	length: function() {
+		return this.anchors.length;
+	}
+});
+
+$.extend( $.ui.tabs, {
+	version: "1.8.24"
+});
+
+/*
+ * Tabs Extensions
+ */
+
+/*
+ * Rotate
+ */
+$.extend( $.ui.tabs.prototype, {
+	rotation: null,
+	rotate: function( ms, continuing ) {
+		var self = this,
+			o = this.options;
+
+		var rotate = self._rotate || ( self._rotate = function( e ) {
+			clearTimeout( self.rotation );
+			self.rotation = setTimeout(function() {
+				var t = o.selected;
+				self.select( ++t < self.anchors.length ? t : 0 );
+			}, ms );
+			
+			if ( e ) {
+				e.stopPropagation();
+			}
+		});
+
+		var stop = self._unrotate || ( self._unrotate = !continuing
+			? function(e) {
+				if (e.clientX) { // in case of a true click
+					self.rotate(null);
+				}
+			}
+			: function( e ) {
+				rotate();
+			});
+
+		// start rotation
+		if ( ms ) {
+			this.element.bind( "tabsshow", rotate );
+			this.anchors.bind( o.event + ".tabs", stop );
+			rotate();
+		// stop rotation
+		} else {
+			clearTimeout( self.rotation );
+			this.element.unbind( "tabsshow", rotate );
+			this.anchors.unbind( o.event + ".tabs", stop );
+			delete this._rotate;
+			delete this._unrotate;
+		}
+
+		return this;
+	}
+});
+
+})( jQuery );
