@@ -27,4 +27,23 @@
     function getFunction(code, argNames) {
         var fn = window, parts = (code || "").split(".");
         while (fn && parts.length) {
-            fn = fn[parts
+            fn = fn[parts.shift()];
+        }
+        if (typeof (fn) === "function") {
+            return fn;
+        }
+        argNames.push(code);
+        return Function.constructor.apply(null, argNames);
+    }
+
+    function isMethodProxySafe(method) {
+        return method === "GET" || method === "POST";
+    }
+
+    function asyncOnBeforeSend(xhr, method) {
+        if (!isMethodProxySafe(method)) {
+            xhr.setRequestHeader("X-HTTP-Method-Override", method);
+        }
+    }
+
+    function asyncOnSuccess(element, 
