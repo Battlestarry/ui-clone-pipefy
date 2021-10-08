@@ -59,4 +59,21 @@
 
             switch (mode) {
             case "BEFORE":
-                top = update.firstChil
+                top = update.firstChild;
+                $("<div />").html(data).contents().each(function () {
+                    update.insertBefore(this, top);
+                });
+                break;
+            case "AFTER":
+                $("<div />").html(data).contents().each(function () {
+                    update.appendChild(this);
+                });
+                break;
+            default:
+                $(update).html(data);
+                break;
+            }
+        });
+    }
+
+    function asyncRequest(element
