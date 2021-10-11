@@ -76,4 +76,17 @@
         });
     }
 
-    function asyncRequest(element
+    function asyncRequest(element, options) {
+        var confirm, loading, method, duration;
+
+        confirm = element.getAttribute("data-ajax-confirm");
+        if (confirm && !window.confirm(confirm)) {
+            return;
+        }
+
+        loading = $(element.getAttribute("data-ajax-loading"));
+        duration = element.getAttribute("data-ajax-loading-duration") || 0;
+
+        $.extend(options, {
+            type: element.getAttribute("data-ajax-method") || undefined,
+            url: element.getAttribute("data-ajax-url") || un
