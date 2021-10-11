@@ -89,4 +89,16 @@
 
         $.extend(options, {
             type: element.getAttribute("data-ajax-method") || undefined,
-            url: element.getAttribute("data-ajax-url") || un
+            url: element.getAttribute("data-ajax-url") || undefined,
+            beforeSend: function (xhr) {
+                var result;
+                asyncOnBeforeSend(xhr, method);
+                result = getFunction(element.getAttribute("data-ajax-begin"), ["xhr"]).apply(this, arguments);
+                if (result !== false) {
+                    loading.show(duration);
+                }
+                return result;
+            },
+            complete: function () {
+                loading.hide(duration);
+                getFunction(el
