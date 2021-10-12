@@ -110,4 +110,20 @@
             error: getFunction(element.getAttribute("data-ajax-failure"), ["xhr", "status", "error"])
         });
 
-        options.data.
+        options.data.push({ name: "X-Requested-With", value: "XMLHttpRequest" });
+
+        method = options.type.toUpperCase();
+        if (!isMethodProxySafe(method)) {
+            options.type = "POST";
+            options.data.push({ name: "X-HTTP-Method-Override", value: method });
+        }
+
+        $.ajax(options);
+    }
+
+    function validate(form) {
+        var validationInfo = $(form).data(data_validation);
+        return !validationInfo || !validationInfo.validate || validationInfo.validate();
+    }
+
+    $(document).on("click", 
