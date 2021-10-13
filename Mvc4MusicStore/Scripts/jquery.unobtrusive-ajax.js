@@ -126,4 +126,20 @@
         return !validationInfo || !validationInfo.validate || validationInfo.validate();
     }
 
-    $(document).on("click", 
+    $(document).on("click", "a[data-ajax=true]", function (evt) {
+        evt.preventDefault();
+        asyncRequest(this, {
+            url: this.href,
+            type: "GET",
+            data: []
+        });
+    });
+
+    $(document).on("click", "form[data-ajax=true] input[type=image]", function (evt) {
+        var name = evt.target.name,
+            $target = $(evt.target),
+            form = $target.parents("form")[0],
+            offset = $target.offset();
+
+        $(form).data(data_click, [
+            
