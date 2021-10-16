@@ -155,4 +155,19 @@
         var name = evt.target.name,
             form = $(evt.target).parents("form")[0];
 
-        $(form).data(data_click, name ?
+        $(form).data(data_click, name ? [{ name: name, value: evt.target.value }] : []);
+
+        setTimeout(function () {
+            $(form).removeData(data_click);
+        }, 0);
+    });
+
+    $(document).on("submit", "form[data-ajax=true]", function (evt) {
+        var clickInfo = $(this).data(data_click) || [];
+        evt.preventDefault();
+        if (!validate(this)) {
+            return;
+        }
+        asyncRequest(this, {
+            url: this.action,
+        
