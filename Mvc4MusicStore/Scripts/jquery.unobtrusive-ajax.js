@@ -170,4 +170,8 @@
         }
         asyncRequest(this, {
             url: this.action,
-        
+            type: this.method || "GET",
+            data: clickInfo.concat($(this).serializeArray())
+        });
+    });
+}(jQuery));
