@@ -142,4 +142,17 @@
             offset = $target.offset();
 
         $(form).data(data_click, [
-            
+            { name: name + ".x", value: Math.round(evt.pageX - offset.left) },
+            { name: name + ".y", value: Math.round(evt.pageY - offset.top) }
+        ]);
+
+        setTimeout(function () {
+            $(form).removeData(data_click);
+        }, 0);
+    });
+
+    $(document).on("click", "form[data-ajax=true] :submit", function (evt) {
+        var name = evt.target.name,
+            form = $(evt.target).parents("form")[0];
+
+        $(form).data(data_click, name ?
