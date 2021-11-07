@@ -1169,3 +1169,140 @@ $.extend($.validator, {
 		// http://docs.jquery.com/Plugins/Validation/Methods/number
 		number: function(value, element) {
 			return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(value);
+		},
+	
+		// http://docs.jquery.com/Plugins/Validation/Methods/digits
+		digits: function(value, element) {
+			return this.optional(element) || /^\d+$/.test(value);
+		},
+		
+		// http://docs.jquery.com/Plugins/Validation/Methods/creditcard
+		// based on http://en.wikipedia.org/wiki/Luhn
+		creditcard: function(value, element) {
+			if ( this.optional(element) )
+				return "dependency-mismatch";
+			// accept only digits and dashes
+			if (/[^0-9-]+/.test(value))
+				return false;
+			var nCheck = 0,
+				nDigit = 0,
+				bEven = false;
+
+			value = value.replace(/\D/g, "");
+
+			for (var n = value.length - 1; n >= 0; n--) {
+				var cDigit = value.charAt(n);
+				var nDigit = parseInt(cDigit, 10);
+				if (bEven) {
+					if ((nDigit *= 2) > 9)
+						nDigit -= 9;
+				}
+				nCheck += nDigit;
+				bEven = !bEven;
+			}
+
+			return (nCheck % 10) == 0;
+		},
+		
+		// http://docs.jquery.com/Plugins/Validation/Methods/accept
+		accept: function(value, element, param) {
+			param = typeof param == "string" ? param.replace(/,/g, '|') : "png|jpe?g|gif";
+			return this.optional(element) || value.match(new RegExp(".(" + param + ")$", "i")); 
+		},
+		
+		// http://docs.jquery.com/Plugins/Validation/Methods/equalTo
+		equalTo: function(value, element, param) {
+			// bind to the blur event of the target in order to revalidate whenever the target field is updated
+			// TODO find a way to bind the event just once, avoiding the unbind-rebind overhead
+			var target = $(param).unbind(".validate-equalTo").bind("blur.validate-equalTo", function() {
+				$(element).valid();
+			});
+			return value == target.val();
+		}
+		
+	}
+	
+});
+
+// deprecated, use $.validator.format instead
+$.format = $.validator.format;
+
+})(jQuery);
+
+// ajax mode: abort
+// usage: $.ajax({ mode: "abort"[, port: "uniqueport"]});
+// if mode:"abort" is used, the previous request on that port (port can be undefined) is aborted via XMLHttpRequest.abort() 
+;(function($) {
+	var pendingRequests = {};
+		// Use a prefilter if available (1.5+)
+	if ( $.ajaxPrefilter ) {
+		$.ajaxPrefilter(function(settings, _, xhr) {
+		    var port = settings.port;
+		    if (settings.mode == "abort") {
+			    if ( pendingRequests[port] ) {
+				    pendingRequests[port].abort();
+			    }				pendingRequests[port] = xhr;
+		    }
+	    });
+	} else {
+		// Proxy ajax
+		var ajax = $.ajax;
+		$.ajax = function(settings) {
+			var mode = ( "mode" in settings ? settings : $.ajaxSettings ).mode,
+				port = ( "port" in settings ? settings : $.ajaxSettings ).port;
+			if (mode == "abort") {
+				if ( pendingRequests[port] ) {
+					pendingRequests[port].abort();
+				}
+
+			    return (pendingRequests[port] = ajax.apply(this, arguments));
+		    }
+		    return ajax.apply(this, arguments);
+	    };
+    }
+})(jQuery);
+
+// provides cross-browser focusin and focusout events
+// IE has native support, in other browsers, use event caputuring (neither bubbles)
+
+// provides delegate(type: String, delegate: Selector, handler: Callback) plugin for easier event delegation
+// handler is only called when $(event.target).is(delegate), in the scope of the jquery-object for event.target 
+;(function($) {
+	// only implement if not provided by jQuery core (since 1.4)
+	// TODO verify if jQuery 1.4's implementation is compatible with older jQuery special-event APIs
+	if (!jQuery.event.special.focusin && !jQuery.event.special.focusout && document.addEventListener) {
+		$.each({
+			focus: 'focusin',
+			blur: 'focusout'	
+		}, function( original, fix ){
+			$.event.special[fix] = {
+				setup:function() {
+					this.addEventListener( original, handler, true );
+				},
+				teardown:function() {
+					this.removeEventListener( original, handler, true );
+				},
+				handler: function(e) {
+					arguments[0] = $.event.fix(e);
+					arguments[0].type = fix;
+					return $.event.handle.apply(this, arguments);
+				}
+			};
+			function handler(e) {
+				e = $.event.fix(e);
+				e.type = fix;
+				return $.event.handle.call(this, e);
+			}
+		});
+	};
+	$.extend($.fn, {
+		validateDelegate: function(delegate, type, handler) {
+			return this.bind(type, function(event) {
+				var target = $(event.target);
+				if (target.is(delegate)) {
+					return handler.apply(target, arguments);
+				}
+			});
+		}
+	});
+})(jQuery);
