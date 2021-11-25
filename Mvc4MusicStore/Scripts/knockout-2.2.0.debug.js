@@ -361,3 +361,505 @@ ko.utils = new (function () {
             var value = ko.utils.unwrapObservable(textContent);
             if ((value === null) || (value === undefined))
                 value = "";
+
+            if (element.nodeType === 3) {
+                element.data = value;
+            } else {
+                // We need there to be exactly one child: a text node.
+                // If there are no children, more than one, or if it's not a text node,
+                // we'll clear everything and create a single text node.
+                var innerTextNode = ko.virtualElements.firstChild(element);
+                if (!innerTextNode || innerTextNode.nodeType != 3 || ko.virtualElements.nextSibling(innerTextNode)) {
+                    ko.virtualElements.setDomNodeChildren(element, [document.createTextNode(value)]);
+                } else {
+                    innerTextNode.data = value;
+                }
+
+                ko.utils.forceRefresh(element);
+            }
+        },
+
+        setElementName: function(element, name) {
+            element.name = name;
+
+            // Workaround IE 6/7 issue
+            // - https://github.com/SteveSanderson/knockout/issues/197
+            // - http://www.matts411.com/post/setting_the_name_attribute_in_ie_dom/
+            if (ieVersion <= 7) {
+                try {
+                    element.mergeAttributes(document.createElement("<input name='" + element.name + "'/>"), false);
+                }
+                catch(e) {} // For IE9 with doc mode "IE9 Standards" and browser mode "IE9 Compatibility View"
+            }
+        },
+
+        forceRefresh: function(node) {
+            // Workaround for an IE9 rendering bug - https://github.com/SteveSanderson/knockout/issues/209
+            if (ieVersion >= 9) {
+                // For text nodes and comment nodes (most likely virtual elements), we will have to refresh the container
+                var elem = node.nodeType == 1 ? node : node.parentNode;
+                if (elem.style)
+                    elem.style.zoom = elem.style.zoom;
+            }
+        },
+
+        ensureSelectElementIsRenderedCorrectly: function(selectElement) {
+            // Workaround for IE9 rendering bug - it doesn't reliably display all the text in dynamically-added select boxes unless you force it to re-render by updating the width.
+            // (See https://github.com/SteveSanderson/knockout/issues/312, http://stackoverflow.com/questions/5908494/select-only-shows-first-char-of-selected-option)
+            if (ieVersion >= 9) {
+                var originalWidth = selectElement.style.width;
+                selectElement.style.width = 0;
+                selectElement.style.width = originalWidth;
+            }
+        },
+
+        range: function (min, max) {
+            min = ko.utils.unwrapObservable(min);
+            max = ko.utils.unwrapObservable(max);
+            var result = [];
+            for (var i = min; i <= max; i++)
+                result.push(i);
+            return result;
+        },
+
+        makeArray: function(arrayLikeObject) {
+            var result = [];
+            for (var i = 0, j = arrayLikeObject.length; i < j; i++) {
+                result.push(arrayLikeObject[i]);
+            };
+            return result;
+        },
+
+        isIe6 : isIe6,
+        isIe7 : isIe7,
+        ieVersion : ieVersion,
+
+        getFormFields: function(form, fieldName) {
+            var fields = ko.utils.makeArray(form.getElementsByTagName("input")).concat(ko.utils.makeArray(form.getElementsByTagName("textarea")));
+            var isMatchingField = (typeof fieldName == 'string')
+                ? function(field) { return field.name === fieldName }
+                : function(field) { return fieldName.test(field.name) }; // Treat fieldName as regex or object containing predicate
+            var matches = [];
+            for (var i = fields.length - 1; i >= 0; i--) {
+                if (isMatchingField(fields[i]))
+                    matches.push(fields[i]);
+            };
+            return matches;
+        },
+
+        parseJson: function (jsonString) {
+            if (typeof jsonString == "string") {
+                jsonString = ko.utils.stringTrim(jsonString);
+                if (jsonString) {
+                    if (window.JSON && window.JSON.parse) // Use native parsing where available
+                        return window.JSON.parse(jsonString);
+                    return (new Function("return " + jsonString))(); // Fallback on less safe parsing for older browsers
+                }
+            }
+            return null;
+        },
+
+        stringifyJson: function (data, replacer, space) {   // replacer and space are optional
+            if ((typeof JSON == "undefined") || (typeof JSON.stringify == "undefined"))
+                throw new Error("Cannot find JSON.stringify(). Some browsers (e.g., IE < 8) don't support it natively, but you can overcome this by adding a script reference to json2.js, downloadable from http://www.json.org/json2.js");
+            return JSON.stringify(ko.utils.unwrapObservable(data), replacer, space);
+        },
+
+        postJson: function (urlOrForm, data, options) {
+            options = options || {};
+            var params = options['params'] || {};
+            var includeFields = options['includeFields'] || this.fieldsIncludedWithJsonPost;
+            var url = urlOrForm;
+
+            // If we were given a form, use its 'action' URL and pick out any requested field values
+            if((typeof urlOrForm == 'object') && (ko.utils.tagNameLower(urlOrForm) === "form")) {
+                var originalForm = urlOrForm;
+                url = originalForm.action;
+                for (var i = includeFields.length - 1; i >= 0; i--) {
+                    var fields = ko.utils.getFormFields(originalForm, includeFields[i]);
+                    for (var j = fields.length - 1; j >= 0; j--)
+                        params[fields[j].name] = fields[j].value;
+                }
+            }
+
+            data = ko.utils.unwrapObservable(data);
+            var form = document.createElement("form");
+            form.style.display = "none";
+            form.action = url;
+            form.method = "post";
+            for (var key in data) {
+                var input = document.createElement("input");
+                input.name = key;
+                input.value = ko.utils.stringifyJson(ko.utils.unwrapObservable(data[key]));
+                form.appendChild(input);
+            }
+            for (var key in params) {
+                var input = document.createElement("input");
+                input.name = key;
+                input.value = params[key];
+                form.appendChild(input);
+            }
+            document.body.appendChild(form);
+            options['submitter'] ? options['submitter'](form) : form.submit();
+            setTimeout(function () { form.parentNode.removeChild(form); }, 0);
+        }
+    }
+})();
+
+ko.exportSymbol('utils', ko.utils);
+ko.exportSymbol('utils.arrayForEach', ko.utils.arrayForEach);
+ko.exportSymbol('utils.arrayFirst', ko.utils.arrayFirst);
+ko.exportSymbol('utils.arrayFilter', ko.utils.arrayFilter);
+ko.exportSymbol('utils.arrayGetDistinctValues', ko.utils.arrayGetDistinctValues);
+ko.exportSymbol('utils.arrayIndexOf', ko.utils.arrayIndexOf);
+ko.exportSymbol('utils.arrayMap', ko.utils.arrayMap);
+ko.exportSymbol('utils.arrayPushAll', ko.utils.arrayPushAll);
+ko.exportSymbol('utils.arrayRemoveItem', ko.utils.arrayRemoveItem);
+ko.exportSymbol('utils.extend', ko.utils.extend);
+ko.exportSymbol('utils.fieldsIncludedWithJsonPost', ko.utils.fieldsIncludedWithJsonPost);
+ko.exportSymbol('utils.getFormFields', ko.utils.getFormFields);
+ko.exportSymbol('utils.peekObservable', ko.utils.peekObservable);
+ko.exportSymbol('utils.postJson', ko.utils.postJson);
+ko.exportSymbol('utils.parseJson', ko.utils.parseJson);
+ko.exportSymbol('utils.registerEventHandler', ko.utils.registerEventHandler);
+ko.exportSymbol('utils.stringifyJson', ko.utils.stringifyJson);
+ko.exportSymbol('utils.range', ko.utils.range);
+ko.exportSymbol('utils.toggleDomNodeCssClass', ko.utils.toggleDomNodeCssClass);
+ko.exportSymbol('utils.triggerEvent', ko.utils.triggerEvent);
+ko.exportSymbol('utils.unwrapObservable', ko.utils.unwrapObservable);
+
+if (!Function.prototype['bind']) {
+    // Function.prototype.bind is a standard part of ECMAScript 5th Edition (December 2009, http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-262.pdf)
+    // In case the browser doesn't implement it natively, provide a JavaScript implementation. This implementation is based on the one in prototype.js
+    Function.prototype['bind'] = function (object) {
+        var originalFunction = this, args = Array.prototype.slice.call(arguments), object = args.shift();
+        return function () {
+            return originalFunction.apply(object, args.concat(Array.prototype.slice.call(arguments)));
+        };
+    };
+}
+
+ko.utils.domData = new (function () {
+    var uniqueId = 0;
+    var dataStoreKeyExpandoPropertyName = "__ko__" + (new Date).getTime();
+    var dataStore = {};
+    return {
+        get: function (node, key) {
+            var allDataForNode = ko.utils.domData.getAll(node, false);
+            return allDataForNode === undefined ? undefined : allDataForNode[key];
+        },
+        set: function (node, key, value) {
+            if (value === undefined) {
+                // Make sure we don't actually create a new domData key if we are actually deleting a value
+                if (ko.utils.domData.getAll(node, false) === undefined)
+                    return;
+            }
+            var allDataForNode = ko.utils.domData.getAll(node, true);
+            allDataForNode[key] = value;
+        },
+        getAll: function (node, createIfNotFound) {
+            var dataStoreKey = node[dataStoreKeyExpandoPropertyName];
+            var hasExistingDataStore = dataStoreKey && (dataStoreKey !== "null") && dataStore[dataStoreKey];
+            if (!hasExistingDataStore) {
+                if (!createIfNotFound)
+                    return undefined;
+                dataStoreKey = node[dataStoreKeyExpandoPropertyName] = "ko" + uniqueId++;
+                dataStore[dataStoreKey] = {};
+            }
+            return dataStore[dataStoreKey];
+        },
+        clear: function (node) {
+            var dataStoreKey = node[dataStoreKeyExpandoPropertyName];
+            if (dataStoreKey) {
+                delete dataStore[dataStoreKey];
+                node[dataStoreKeyExpandoPropertyName] = null;
+                return true; // Exposing "did clean" flag purely so specs can infer whether things have been cleaned up as intended
+            }
+            return false;
+        }
+    }
+})();
+
+ko.exportSymbol('utils.domData', ko.utils.domData);
+ko.exportSymbol('utils.domData.clear', ko.utils.domData.clear); // Exporting only so specs can clear up after themselves fully
+
+ko.utils.domNodeDisposal = new (function () {
+    var domDataKey = "__ko_domNodeDisposal__" + (new Date).getTime();
+    var cleanableNodeTypes = { 1: true, 8: true, 9: true };       // Element, Comment, Document
+    var cleanableNodeTypesWithDescendants = { 1: true, 9: true }; // Element, Document
+
+    function getDisposeCallbacksCollection(node, createIfNotFound) {
+        var allDisposeCallbacks = ko.utils.domData.get(node, domDataKey);
+        if ((allDisposeCallbacks === undefined) && createIfNotFound) {
+            allDisposeCallbacks = [];
+            ko.utils.domData.set(node, domDataKey, allDisposeCallbacks);
+        }
+        return allDisposeCallbacks;
+    }
+    function destroyCallbacksCollection(node) {
+        ko.utils.domData.set(node, domDataKey, undefined);
+    }
+
+    function cleanSingleNode(node) {
+        // Run all the dispose callbacks
+        var callbacks = getDisposeCallbacksCollection(node, false);
+        if (callbacks) {
+            callbacks = callbacks.slice(0); // Clone, as the array may be modified during iteration (typically, callbacks will remove themselves)
+            for (var i = 0; i < callbacks.length; i++)
+                callbacks[i](node);
+        }
+
+        // Also erase the DOM data
+        ko.utils.domData.clear(node);
+
+        // Special support for jQuery here because it's so commonly used.
+        // Many jQuery plugins (including jquery.tmpl) store data using jQuery's equivalent of domData
+        // so notify it to tear down any resources associated with the node & descendants here.
+        if ((typeof jQuery == "function") && (typeof jQuery['cleanData'] == "function"))
+            jQuery['cleanData']([node]);
+
+        // Also clear any immediate-child comment nodes, as these wouldn't have been found by
+        // node.getElementsByTagName("*") in cleanNode() (comment nodes aren't elements)
+        if (cleanableNodeTypesWithDescendants[node.nodeType])
+            cleanImmediateCommentTypeChildren(node);
+    }
+
+    function cleanImmediateCommentTypeChildren(nodeWithChildren) {
+        var child, nextChild = nodeWithChildren.firstChild;
+        while (child = nextChild) {
+            nextChild = child.nextSibling;
+            if (child.nodeType === 8)
+                cleanSingleNode(child);
+        }
+    }
+
+    return {
+        addDisposeCallback : function(node, callback) {
+            if (typeof callback != "function")
+                throw new Error("Callback must be a function");
+            getDisposeCallbacksCollection(node, true).push(callback);
+        },
+
+        removeDisposeCallback : function(node, callback) {
+            var callbacksCollection = getDisposeCallbacksCollection(node, false);
+            if (callbacksCollection) {
+                ko.utils.arrayRemoveItem(callbacksCollection, callback);
+                if (callbacksCollection.length == 0)
+                    destroyCallbacksCollection(node);
+            }
+        },
+
+        cleanNode : function(node) {
+            // First clean this node, where applicable
+            if (cleanableNodeTypes[node.nodeType]) {
+                cleanSingleNode(node);
+
+                // ... then its descendants, where applicable
+                if (cleanableNodeTypesWithDescendants[node.nodeType]) {
+                    // Clone the descendants list in case it changes during iteration
+                    var descendants = [];
+                    ko.utils.arrayPushAll(descendants, node.getElementsByTagName("*"));
+                    for (var i = 0, j = descendants.length; i < j; i++)
+                        cleanSingleNode(descendants[i]);
+                }
+            }
+            return node;
+        },
+
+        removeNode : function(node) {
+            ko.cleanNode(node);
+            if (node.parentNode)
+                node.parentNode.removeChild(node);
+        }
+    }
+})();
+ko.cleanNode = ko.utils.domNodeDisposal.cleanNode; // Shorthand name for convenience
+ko.removeNode = ko.utils.domNodeDisposal.removeNode; // Shorthand name for convenience
+ko.exportSymbol('cleanNode', ko.cleanNode);
+ko.exportSymbol('removeNode', ko.removeNode);
+ko.exportSymbol('utils.domNodeDisposal', ko.utils.domNodeDisposal);
+ko.exportSymbol('utils.domNodeDisposal.addDisposeCallback', ko.utils.domNodeDisposal.addDisposeCallback);
+ko.exportSymbol('utils.domNodeDisposal.removeDisposeCallback', ko.utils.domNodeDisposal.removeDisposeCallback);
+(function () {
+    var leadingCommentRegex = /^(\s*)<!--(.*?)-->/;
+
+    function simpleHtmlParse(html) {
+        // Based on jQuery's "clean" function, but only accounting for table-related elements.
+        // If you have referenced jQuery, this won't be used anyway - KO will use jQuery's "clean" function directly
+
+        // Note that there's still an issue in IE < 9 whereby it will discard comment nodes that are the first child of
+        // a descendant node. For example: "<div><!-- mycomment -->abc</div>" will get parsed as "<div>abc</div>"
+        // This won't affect anyone who has referenced jQuery, and there's always the workaround of inserting a dummy node
+        // (possibly a text node) in front of the comment. So, KO does not attempt to workaround this IE issue automatically at present.
+
+        // Trim whitespace, otherwise indexOf won't work as expected
+        var tags = ko.utils.stringTrim(html).toLowerCase(), div = document.createElement("div");
+
+        // Finds the first match from the left column, and returns the corresponding "wrap" data from the right column
+        var wrap = tags.match(/^<(thead|tbody|tfoot)/)              && [1, "<table>", "</table>"] ||
+                   !tags.indexOf("<tr")                             && [2, "<table><tbody>", "</tbody></table>"] ||
+                   (!tags.indexOf("<td") || !tags.indexOf("<th"))   && [3, "<table><tbody><tr>", "</tr></tbody></table>"] ||
+                   /* anything else */                                 [0, "", ""];
+
+        // Go to html and back, then peel off extra wrappers
+        // Note that we always prefix with some dummy text, because otherwise, IE<9 will strip out leading comment nodes in descendants. Total madness.
+        var markup = "ignored<div>" + wrap[1] + html + wrap[2] + "</div>";
+        if (typeof window['innerShiv'] == "function") {
+            div.appendChild(window['innerShiv'](markup));
+        } else {
+            div.innerHTML = markup;
+        }
+
+        // Move to the right depth
+        while (wrap[0]--)
+            div = div.lastChild;
+
+        return ko.utils.makeArray(div.lastChild.childNodes);
+    }
+
+    function jQueryHtmlParse(html) {
+        var elems = jQuery['clean']([html]);
+
+        // As of jQuery 1.7.1, jQuery parses the HTML by appending it to some dummy parent nodes held in an in-memory document fragment.
+        // Unfortunately, it never clears the dummy parent nodes from the document fragment, so it leaks memory over time.
+        // Fix this by finding the top-most dummy parent element, and detaching it from its owner fragment.
+        if (elems && elems[0]) {
+            // Find the top-most parent element that's a direct child of a document fragment
+            var elem = elems[0];
+            while (elem.parentNode && elem.parentNode.nodeType !== 11 /* i.e., DocumentFragment */)
+                elem = elem.parentNode;
+            // ... then detach it
+            if (elem.parentNode)
+                elem.parentNode.removeChild(elem);
+        }
+
+        return elems;
+    }
+
+    ko.utils.parseHtmlFragment = function(html) {
+        return typeof jQuery != 'undefined' ? jQueryHtmlParse(html)   // As below, benefit from jQuery's optimisations where possible
+                                            : simpleHtmlParse(html);  // ... otherwise, this simple logic will do in most common cases.
+    };
+
+    ko.utils.setHtml = function(node, html) {
+        ko.utils.emptyDomNode(node);
+
+        // There's no legitimate reason to display a stringified observable without unwrapping it, so we'll unwrap it
+        html = ko.utils.unwrapObservable(html);
+
+        if ((html !== null) && (html !== undefined)) {
+            if (typeof html != 'string')
+                html = html.toString();
+
+            // jQuery contains a lot of sophisticated code to parse arbitrary HTML fragments,
+            // for example <tr> elements which are not normally allowed to exist on their own.
+            // If you've referenced jQuery we'll use that rather than duplicating its code.
+            if (typeof jQuery != 'undefined') {
+                jQuery(node)['html'](html);
+            } else {
+                // ... otherwise, use KO's own parsing logic.
+                var parsedNodes = ko.utils.parseHtmlFragment(html);
+                for (var i = 0; i < parsedNodes.length; i++)
+                    node.appendChild(parsedNodes[i]);
+            }
+        }
+    };
+})();
+
+ko.exportSymbol('utils.parseHtmlFragment', ko.utils.parseHtmlFragment);
+ko.exportSymbol('utils.setHtml', ko.utils.setHtml);
+
+ko.memoization = (function () {
+    var memos = {};
+
+    function randomMax8HexChars() {
+        return (((1 + Math.random()) * 0x100000000) | 0).toString(16).substring(1);
+    }
+    function generateRandomId() {
+        return randomMax8HexChars() + randomMax8HexChars();
+    }
+    function findMemoNodes(rootNode, appendToArray) {
+        if (!rootNode)
+            return;
+        if (rootNode.nodeType == 8) {
+            var memoId = ko.memoization.parseMemoText(rootNode.nodeValue);
+            if (memoId != null)
+                appendToArray.push({ domNode: rootNode, memoId: memoId });
+        } else if (rootNode.nodeType == 1) {
+            for (var i = 0, childNodes = rootNode.childNodes, j = childNodes.length; i < j; i++)
+                findMemoNodes(childNodes[i], appendToArray);
+        }
+    }
+
+    return {
+        memoize: function (callback) {
+            if (typeof callback != "function")
+                throw new Error("You can only pass a function to ko.memoization.memoize()");
+            var memoId = generateRandomId();
+            memos[memoId] = callback;
+            return "<!--[ko_memo:" + memoId + "]-->";
+        },
+
+        unmemoize: function (memoId, callbackParams) {
+            var callback = memos[memoId];
+            if (callback === undefined)
+                throw new Error("Couldn't find any memo with ID " + memoId + ". Perhaps it's already been unmemoized.");
+            try {
+                callback.apply(null, callbackParams || []);
+                return true;
+            }
+            finally { delete memos[memoId]; }
+        },
+
+        unmemoizeDomNodeAndDescendants: function (domNode, extraCallbackParamsArray) {
+            var memos = [];
+            findMemoNodes(domNode, memos);
+            for (var i = 0, j = memos.length; i < j; i++) {
+                var node = memos[i].domNode;
+                var combinedParams = [node];
+                if (extraCallbackParamsArray)
+                    ko.utils.arrayPushAll(combinedParams, extraCallbackParamsArray);
+                ko.memoization.unmemoize(memos[i].memoId, combinedParams);
+                node.nodeValue = ""; // Neuter this node so we don't try to unmemoize it again
+                if (node.parentNode)
+                    node.parentNode.removeChild(node); // If possible, erase it totally (not always possible - someone else might just hold a reference to it then call unmemoizeDomNodeAndDescendants again)
+            }
+        },
+
+        parseMemoText: function (memoText) {
+            var match = memoText.match(/^\[ko_memo\:(.*?)\]$/);
+            return match ? match[1] : null;
+        }
+    };
+})();
+
+ko.exportSymbol('memoization', ko.memoization);
+ko.exportSymbol('memoization.memoize', ko.memoization.memoize);
+ko.exportSymbol('memoization.unmemoize', ko.memoization.unmemoize);
+ko.exportSymbol('memoization.parseMemoText', ko.memoization.parseMemoText);
+ko.exportSymbol('memoization.unmemoizeDomNodeAndDescendants', ko.memoization.unmemoizeDomNodeAndDescendants);
+ko.extenders = {
+    'throttle': function(target, timeout) {
+        // Throttling means two things:
+
+        // (1) For dependent observables, we throttle *evaluations* so that, no matter how fast its dependencies
+        //     notify updates, the target doesn't re-evaluate (and hence doesn't notify) faster than a certain rate
+        target['throttleEvaluation'] = timeout;
+
+        // (2) For writable targets (observables, or writable dependent observables), we throttle *writes*
+        //     so the target cannot change value synchronously or faster than a certain rate
+        var writeTimeoutInstance = null;
+        return ko.dependentObservable({
+            'read': target,
+            'write': function(value) {
+                clearTimeout(writeTimeoutInstance);
+                writeTimeoutInstance = setTimeout(function() {
+                    target(value);
+                }, timeout);
+            }
+        });
+    },
+
+    'notify': function(target, notifyWhen) {
+        target["equalityComparer"] = notifyWhen == "always"
+            ? function() { return false } // Treat all values as not equal
