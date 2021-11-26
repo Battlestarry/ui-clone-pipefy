@@ -1371,3 +1371,492 @@ ko.exportSymbol('isComputed', ko.isComputed);
             // Loop because an observable's value might in turn be another observable wrapper
             for (var i = 0; ko.isObservable(valueToMap) && (i < maxNestedObservableDepth); i++)
                 valueToMap = valueToMap();
+            return valueToMap;
+        });
+    };
+
+    ko.toJSON = function(rootObject, replacer, space) {     // replacer and space are optional
+        var plainJavaScriptObject = ko.toJS(rootObject);
+        return ko.utils.stringifyJson(plainJavaScriptObject, replacer, space);
+    };
+
+    function mapJsObjectGraph(rootObject, mapInputCallback, visitedObjects) {
+        visitedObjects = visitedObjects || new objectLookup();
+
+        rootObject = mapInputCallback(rootObject);
+        var canHaveProperties = (typeof rootObject == "object") && (rootObject !== null) && (rootObject !== undefined) && (!(rootObject instanceof Date));
+        if (!canHaveProperties)
+            return rootObject;
+
+        var outputProperties = rootObject instanceof Array ? [] : {};
+        visitedObjects.save(rootObject, outputProperties);
+
+        visitPropertiesOrArrayEntries(rootObject, function(indexer) {
+            var propertyValue = mapInputCallback(rootObject[indexer]);
+
+            switch (typeof propertyValue) {
+                case "boolean":
+                case "number":
+                case "string":
+                case "function":
+                    outputProperties[indexer] = propertyValue;
+                    break;
+                case "object":
+                case "undefined":
+                    var previouslyMappedValue = visitedObjects.get(propertyValue);
+                    outputProperties[indexer] = (previouslyMappedValue !== undefined)
+                        ? previouslyMappedValue
+                        : mapJsObjectGraph(propertyValue, mapInputCallback, visitedObjects);
+                    break;
+            }
+        });
+
+        return outputProperties;
+    }
+
+    function visitPropertiesOrArrayEntries(rootObject, visitorCallback) {
+        if (rootObject instanceof Array) {
+            for (var i = 0; i < rootObject.length; i++)
+                visitorCallback(i);
+
+            // For arrays, also respect toJSON property for custom mappings (fixes #278)
+            if (typeof rootObject['toJSON'] == 'function')
+                visitorCallback('toJSON');
+        } else {
+            for (var propertyName in rootObject)
+                visitorCallback(propertyName);
+        }
+    };
+
+    function objectLookup() {
+        var keys = [];
+        var values = [];
+        this.save = function(key, value) {
+            var existingIndex = ko.utils.arrayIndexOf(keys, key);
+            if (existingIndex >= 0)
+                values[existingIndex] = value;
+            else {
+                keys.push(key);
+                values.push(value);
+            }
+        };
+        this.get = function(key) {
+            var existingIndex = ko.utils.arrayIndexOf(keys, key);
+            return (existingIndex >= 0) ? values[existingIndex] : undefined;
+        };
+    };
+})();
+
+ko.exportSymbol('toJS', ko.toJS);
+ko.exportSymbol('toJSON', ko.toJSON);
+(function () {
+    var hasDomDataExpandoProperty = '__ko__hasDomDataOptionValue__';
+
+    // Normally, SELECT elements and their OPTIONs can only take value of type 'string' (because the values
+    // are stored on DOM attributes). ko.selectExtensions provides a way for SELECTs/OPTIONs to have values
+    // that are arbitrary objects. This is very convenient when implementing things like cascading dropdowns.
+    ko.selectExtensions = {
+        readValue : function(element) {
+            switch (ko.utils.tagNameLower(element)) {
+                case 'option':
+                    if (element[hasDomDataExpandoProperty] === true)
+                        return ko.utils.domData.get(element, ko.bindingHandlers.options.optionValueDomDataKey);
+                    return ko.utils.ieVersion <= 7
+                        ? (element.getAttributeNode('value').specified ? element.value : element.text)
+                        : element.value;
+                case 'select':
+                    return element.selectedIndex >= 0 ? ko.selectExtensions.readValue(element.options[element.selectedIndex]) : undefined;
+                default:
+                    return element.value;
+            }
+        },
+
+        writeValue: function(element, value) {
+            switch (ko.utils.tagNameLower(element)) {
+                case 'option':
+                    switch(typeof value) {
+                        case "string":
+                            ko.utils.domData.set(element, ko.bindingHandlers.options.optionValueDomDataKey, undefined);
+                            if (hasDomDataExpandoProperty in element) { // IE <= 8 throws errors if you delete non-existent properties from a DOM node
+                                delete element[hasDomDataExpandoProperty];
+                            }
+                            element.value = value;
+                            break;
+                        default:
+                            // Store arbitrary object using DomData
+                            ko.utils.domData.set(element, ko.bindingHandlers.options.optionValueDomDataKey, value);
+                            element[hasDomDataExpandoProperty] = true;
+
+                            // Special treatment of numbers is just for backward compatibility. KO 1.2.1 wrote numerical values to element.value.
+                            element.value = typeof value === "number" ? value : "";
+                            break;
+                    }
+                    break;
+                case 'select':
+                    for (var i = element.options.length - 1; i >= 0; i--) {
+                        if (ko.selectExtensions.readValue(element.options[i]) == value) {
+                            element.selectedIndex = i;
+                            break;
+                        }
+                    }
+                    break;
+                default:
+                    if ((value === null) || (value === undefined))
+                        value = "";
+                    element.value = value;
+                    break;
+            }
+        }
+    };
+})();
+
+ko.exportSymbol('selectExtensions', ko.selectExtensions);
+ko.exportSymbol('selectExtensions.readValue', ko.selectExtensions.readValue);
+ko.exportSymbol('selectExtensions.writeValue', ko.selectExtensions.writeValue);
+ko.expressionRewriting = (function () {
+    var restoreCapturedTokensRegex = /\@ko_token_(\d+)\@/g;
+    var javaScriptReservedWords = ["true", "false"];
+
+    // Matches something that can be assigned to--either an isolated identifier or something ending with a property accessor
+    // This is designed to be simple and avoid false negatives, but could produce false positives (e.g., a+b.c).
+    var javaScriptAssignmentTarget = /^(?:[$_a-z][$\w]*|(.+)(\.\s*[$_a-z][$\w]*|\[.+\]))$/i;
+
+    function restoreTokens(string, tokens) {
+        var prevValue = null;
+        while (string != prevValue) { // Keep restoring tokens until it no longer makes a difference (they may be nested)
+            prevValue = string;
+            string = string.replace(restoreCapturedTokensRegex, function (match, tokenIndex) {
+                return tokens[tokenIndex];
+            });
+        }
+        return string;
+    }
+
+    function getWriteableValue(expression) {
+        if (ko.utils.arrayIndexOf(javaScriptReservedWords, ko.utils.stringTrim(expression).toLowerCase()) >= 0)
+            return false;
+        var match = expression.match(javaScriptAssignmentTarget);
+        return match === null ? false : match[1] ? ('Object(' + match[1] + ')' + match[2]) : expression;
+    }
+
+    function ensureQuoted(key) {
+        var trimmedKey = ko.utils.stringTrim(key);
+        switch (trimmedKey.length && trimmedKey.charAt(0)) {
+            case "'":
+            case '"':
+                return key;
+            default:
+                return "'" + trimmedKey + "'";
+        }
+    }
+
+    return {
+        bindingRewriteValidators: [],
+
+        parseObjectLiteral: function(objectLiteralString) {
+            // A full tokeniser+lexer would add too much weight to this library, so here's a simple parser
+            // that is sufficient just to split an object literal string into a set of top-level key-value pairs
+
+            var str = ko.utils.stringTrim(objectLiteralString);
+            if (str.length < 3)
+                return [];
+            if (str.charAt(0) === "{")// Ignore any braces surrounding the whole object literal
+                str = str.substring(1, str.length - 1);
+
+            // Pull out any string literals and regex literals
+            var tokens = [];
+            var tokenStart = null, tokenEndChar;
+            for (var position = 0; position < str.length; position++) {
+                var c = str.charAt(position);
+                if (tokenStart === null) {
+                    switch (c) {
+                        case '"':
+                        case "'":
+                        case "/":
+                            tokenStart = position;
+                            tokenEndChar = c;
+                            break;
+                    }
+                } else if ((c == tokenEndChar) && (str.charAt(position - 1) !== "\\")) {
+                    var token = str.substring(tokenStart, position + 1);
+                    tokens.push(token);
+                    var replacement = "@ko_token_" + (tokens.length - 1) + "@";
+                    str = str.substring(0, tokenStart) + replacement + str.substring(position + 1);
+                    position -= (token.length - replacement.length);
+                    tokenStart = null;
+                }
+            }
+
+            // Next pull out balanced paren, brace, and bracket blocks
+            tokenStart = null;
+            tokenEndChar = null;
+            var tokenDepth = 0, tokenStartChar = null;
+            for (var position = 0; position < str.length; position++) {
+                var c = str.charAt(position);
+                if (tokenStart === null) {
+                    switch (c) {
+                        case "{": tokenStart = position; tokenStartChar = c;
+                                  tokenEndChar = "}";
+                                  break;
+                        case "(": tokenStart = position; tokenStartChar = c;
+                                  tokenEndChar = ")";
+                                  break;
+                        case "[": tokenStart = position; tokenStartChar = c;
+                                  tokenEndChar = "]";
+                                  break;
+                    }
+                }
+
+                if (c === tokenStartChar)
+                    tokenDepth++;
+                else if (c === tokenEndChar) {
+                    tokenDepth--;
+                    if (tokenDepth === 0) {
+                        var token = str.substring(tokenStart, position + 1);
+                        tokens.push(token);
+                        var replacement = "@ko_token_" + (tokens.length - 1) + "@";
+                        str = str.substring(0, tokenStart) + replacement + str.substring(position + 1);
+                        position -= (token.length - replacement.length);
+                        tokenStart = null;
+                    }
+                }
+            }
+
+            // Now we can safely split on commas to get the key/value pairs
+            var result = [];
+            var keyValuePairs = str.split(",");
+            for (var i = 0, j = keyValuePairs.length; i < j; i++) {
+                var pair = keyValuePairs[i];
+                var colonPos = pair.indexOf(":");
+                if ((colonPos > 0) && (colonPos < pair.length - 1)) {
+                    var key = pair.substring(0, colonPos);
+                    var value = pair.substring(colonPos + 1);
+                    result.push({ 'key': restoreTokens(key, tokens), 'value': restoreTokens(value, tokens) });
+                } else {
+                    result.push({ 'unknown': restoreTokens(pair, tokens) });
+                }
+            }
+            return result;
+        },
+
+        preProcessBindings: function (objectLiteralStringOrKeyValueArray) {
+            var keyValueArray = typeof objectLiteralStringOrKeyValueArray === "string"
+                ? ko.expressionRewriting.parseObjectLiteral(objectLiteralStringOrKeyValueArray)
+                : objectLiteralStringOrKeyValueArray;
+            var resultStrings = [], propertyAccessorResultStrings = [];
+
+            var keyValueEntry;
+            for (var i = 0; keyValueEntry = keyValueArray[i]; i++) {
+                if (resultStrings.length > 0)
+                    resultStrings.push(",");
+
+                if (keyValueEntry['key']) {
+                    var quotedKey = ensureQuoted(keyValueEntry['key']), val = keyValueEntry['value'];
+                    resultStrings.push(quotedKey);
+                    resultStrings.push(":");
+                    resultStrings.push(val);
+
+                    if (val = getWriteableValue(ko.utils.stringTrim(val))) {
+                        if (propertyAccessorResultStrings.length > 0)
+                            propertyAccessorResultStrings.push(", ");
+                        propertyAccessorResultStrings.push(quotedKey + " : function(__ko_value) { " + val + " = __ko_value; }");
+                    }
+                } else if (keyValueEntry['unknown']) {
+                    resultStrings.push(keyValueEntry['unknown']);
+                }
+            }
+
+            var combinedResult = resultStrings.join("");
+            if (propertyAccessorResultStrings.length > 0) {
+                var allPropertyAccessors = propertyAccessorResultStrings.join("");
+                combinedResult = combinedResult + ", '_ko_property_writers' : { " + allPropertyAccessors + " } ";
+            }
+
+            return combinedResult;
+        },
+
+        keyValueArrayContainsKey: function(keyValueArray, key) {
+            for (var i = 0; i < keyValueArray.length; i++)
+                if (ko.utils.stringTrim(keyValueArray[i]['key']) == key)
+                    return true;
+            return false;
+        },
+
+        // Internal, private KO utility for updating model properties from within bindings
+        // property:            If the property being updated is (or might be) an observable, pass it here
+        //                      If it turns out to be a writable observable, it will be written to directly
+        // allBindingsAccessor: All bindings in the current execution context.
+        //                      This will be searched for a '_ko_property_writers' property in case you're writing to a non-observable
+        // key:                 The key identifying the property to be written. Example: for { hasFocus: myValue }, write to 'myValue' by specifying the key 'hasFocus'
+        // value:               The value to be written
+        // checkIfDifferent:    If true, and if the property being written is a writable observable, the value will only be written if
+        //                      it is !== existing value on that writable observable
+        writeValueToProperty: function(property, allBindingsAccessor, key, value, checkIfDifferent) {
+            if (!property || !ko.isWriteableObservable(property)) {
+                var propWriters = allBindingsAccessor()['_ko_property_writers'];
+                if (propWriters && propWriters[key])
+                    propWriters[key](value);
+            } else if (!checkIfDifferent || property.peek() !== value) {
+                property(value);
+            }
+        }
+    };
+})();
+
+ko.exportSymbol('expressionRewriting', ko.expressionRewriting);
+ko.exportSymbol('expressionRewriting.bindingRewriteValidators', ko.expressionRewriting.bindingRewriteValidators);
+ko.exportSymbol('expressionRewriting.parseObjectLiteral', ko.expressionRewriting.parseObjectLiteral);
+ko.exportSymbol('expressionRewriting.preProcessBindings', ko.expressionRewriting.preProcessBindings);
+
+// For backward compatibility, define the following aliases. (Previously, these function names were misleading because
+// they referred to JSON specifically, even though they actually work with arbitrary JavaScript object literal expressions.)
+ko.exportSymbol('jsonExpressionRewriting', ko.expressionRewriting);
+ko.exportSymbol('jsonExpressionRewriting.insertPropertyAccessorsIntoJson', ko.expressionRewriting.preProcessBindings);(function() {
+    // "Virtual elements" is an abstraction on top of the usual DOM API which understands the notion that comment nodes
+    // may be used to represent hierarchy (in addition to the DOM's natural hierarchy).
+    // If you call the DOM-manipulating functions on ko.virtualElements, you will be able to read and write the state
+    // of that virtual hierarchy
+    //
+    // The point of all this is to support containerless templates (e.g., <!-- ko foreach:someCollection -->blah<!-- /ko -->)
+    // without having to scatter special cases all over the binding and templating code.
+
+    // IE 9 cannot reliably read the "nodeValue" property of a comment node (see https://github.com/SteveSanderson/knockout/issues/186)
+    // but it does give them a nonstandard alternative property called "text" that it can read reliably. Other browsers don't have that property.
+    // So, use node.text where available, and node.nodeValue elsewhere
+    var commentNodesHaveTextProperty = document.createComment("test").text === "<!--test-->";
+
+    var startCommentRegex = commentNodesHaveTextProperty ? /^<!--\s*ko(?:\s+(.+\s*\:[\s\S]*))?\s*-->$/ : /^\s*ko(?:\s+(.+\s*\:[\s\S]*))?\s*$/;
+    var endCommentRegex =   commentNodesHaveTextProperty ? /^<!--\s*\/ko\s*-->$/ : /^\s*\/ko\s*$/;
+    var htmlTagsWithOptionallyClosingChildren = { 'ul': true, 'ol': true };
+
+    function isStartComment(node) {
+        return (node.nodeType == 8) && (commentNodesHaveTextProperty ? node.text : node.nodeValue).match(startCommentRegex);
+    }
+
+    function isEndComment(node) {
+        return (node.nodeType == 8) && (commentNodesHaveTextProperty ? node.text : node.nodeValue).match(endCommentRegex);
+    }
+
+    function getVirtualChildren(startComment, allowUnbalanced) {
+        var currentNode = startComment;
+        var depth = 1;
+        var children = [];
+        while (currentNode = currentNode.nextSibling) {
+            if (isEndComment(currentNode)) {
+                depth--;
+                if (depth === 0)
+                    return children;
+            }
+
+            children.push(currentNode);
+
+            if (isStartComment(currentNode))
+                depth++;
+        }
+        if (!allowUnbalanced)
+            throw new Error("Cannot find closing comment tag to match: " + startComment.nodeValue);
+        return null;
+    }
+
+    function getMatchingEndComment(startComment, allowUnbalanced) {
+        var allVirtualChildren = getVirtualChildren(startComment, allowUnbalanced);
+        if (allVirtualChildren) {
+            if (allVirtualChildren.length > 0)
+                return allVirtualChildren[allVirtualChildren.length - 1].nextSibling;
+            return startComment.nextSibling;
+        } else
+            return null; // Must have no matching end comment, and allowUnbalanced is true
+    }
+
+    function getUnbalancedChildTags(node) {
+        // e.g., from <div>OK</div><!-- ko blah --><span>Another</span>, returns: <!-- ko blah --><span>Another</span>
+        //       from <div>OK</div><!-- /ko --><!-- /ko -->,             returns: <!-- /ko --><!-- /ko -->
+        var childNode = node.firstChild, captureRemaining = null;
+        if (childNode) {
+            do {
+                if (captureRemaining)                   // We already hit an unbalanced node and are now just scooping up all subsequent nodes
+                    captureRemaining.push(childNode);
+                else if (isStartComment(childNode)) {
+                    var matchingEndComment = getMatchingEndComment(childNode, /* allowUnbalanced: */ true);
+                    if (matchingEndComment)             // It's a balanced tag, so skip immediately to the end of this virtual set
+                        childNode = matchingEndComment;
+                    else
+                        captureRemaining = [childNode]; // It's unbalanced, so start capturing from this point
+                } else if (isEndComment(childNode)) {
+                    captureRemaining = [childNode];     // It's unbalanced (if it wasn't, we'd have skipped over it already), so start capturing
+                }
+            } while (childNode = childNode.nextSibling);
+        }
+        return captureRemaining;
+    }
+
+    ko.virtualElements = {
+        allowedBindings: {},
+
+        childNodes: function(node) {
+            return isStartComment(node) ? getVirtualChildren(node) : node.childNodes;
+        },
+
+        emptyNode: function(node) {
+            if (!isStartComment(node))
+                ko.utils.emptyDomNode(node);
+            else {
+                var virtualChildren = ko.virtualElements.childNodes(node);
+                for (var i = 0, j = virtualChildren.length; i < j; i++)
+                    ko.removeNode(virtualChildren[i]);
+            }
+        },
+
+        setDomNodeChildren: function(node, childNodes) {
+            if (!isStartComment(node))
+                ko.utils.setDomNodeChildren(node, childNodes);
+            else {
+                ko.virtualElements.emptyNode(node);
+                var endCommentNode = node.nextSibling; // Must be the next sibling, as we just emptied the children
+                for (var i = 0, j = childNodes.length; i < j; i++)
+                    endCommentNode.parentNode.insertBefore(childNodes[i], endCommentNode);
+            }
+        },
+
+        prepend: function(containerNode, nodeToPrepend) {
+            if (!isStartComment(containerNode)) {
+                if (containerNode.firstChild)
+                    containerNode.insertBefore(nodeToPrepend, containerNode.firstChild);
+                else
+                    containerNode.appendChild(nodeToPrepend);
+            } else {
+                // Start comments must always have a parent and at least one following sibling (the end comment)
+                containerNode.parentNode.insertBefore(nodeToPrepend, containerNode.nextSibling);
+            }
+        },
+
+        insertAfter: function(containerNode, nodeToInsert, insertAfterNode) {
+            if (!insertAfterNode) {
+                ko.virtualElements.prepend(containerNode, nodeToInsert);
+            } else if (!isStartComment(containerNode)) {
+                // Insert after insertion point
+                if (insertAfterNode.nextSibling)
+                    containerNode.insertBefore(nodeToInsert, insertAfterNode.nextSibling);
+                else
+                    containerNode.appendChild(nodeToInsert);
+            } else {
+                // Children of start comments must always have a parent and at least one following sibling (the end comment)
+                containerNode.parentNode.insertBefore(nodeToInsert, insertAfterNode.nextSibling);
+            }
+        },
+
+        firstChild: function(node) {
+            if (!isStartComment(node))
+                return node.firstChild;
+            if (!node.nextSibling || isEndComment(node.nextSibling))
+                return null;
+            return node.nextSibling;
+        },
+
+        nextSibling: function(node) {
+            if (isStartComment(node))
+                node = getMatchingEndComment(node);
+            if (node.nextSibling && isEndComment(node.nextSibling))
+                return null;
+            return node.nextSibling;
+        },
