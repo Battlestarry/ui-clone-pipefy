@@ -128,4 +128,14 @@ window.Modernizr = (function( window, document, undefined ) {
 
       if ( parseInt(nodes, 10) ) {
           // In order not to give false positives we create a node for each test
-          // This also allows the metho
+          // This also allows the method to scale for unspecified uses
+          while ( nodes-- ) {
+              node = document.createElement('div');
+              node.id = testnames ? testnames[nodes] : mod + (nodes + 1);
+              div.appendChild(node);
+          }
+      }
+
+      // <style> elements in IE6-9 are considered 'NoScope' elements and therefore will be removed
+      // when injected with innerHTML. To get around this you need to prepend the 'NoScope' element
+      // with a 'scoped' element, in our case the soft-hyphe
