@@ -163,4 +163,26 @@ window.Modernizr = (function( window, document, undefined ) {
           fakeBody.parentNode.removeChild(fakeBody);
           docElement.style.overflow = docOverflow;
       } else {
-          div.parentNode.remove
+          div.parentNode.removeChild(div);
+      }
+
+      return !!ret;
+
+    },
+    /*>>teststyles*/
+
+    /*>>mq*/
+    // adapted from matchMedia polyfill
+    // by Scott Jehl and Paul Irish
+    // gist.github.com/786768
+    testMediaQuery = function( mq ) {
+
+      var matchMedia = window.matchMedia || window.msMatchMedia;
+      if ( matchMedia ) {
+        return matchMedia(mq).matches;
+      }
+
+      var bool;
+
+      injectElementWithStyles('@media ' + mq + ' { #' + mod + ' { position: absolute; } }', function( node ) {
+        bool
