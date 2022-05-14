@@ -216,4 +216,14 @@ window.Modernizr = (function( window, document, undefined ) {
       function isEventSupported( eventName, element ) {
 
         element = element || document.createElement(TAGNAMES[eventName] || 'div');
-        eventNam
+        eventName = 'on' + eventName;
+
+        // When using `setAttribute`, IE skips "unload", WebKit skips "unload" and "resize", whereas `in` "catches" those
+        var isSupported = eventName in element;
+
+        if ( !isSupported ) {
+          // If it has no `setAttribute` (i.e. doesn't implement Node interface), try generic element
+          if ( !element.setAttribute ) {
+            element = document.createElement('div');
+          }
+          if ( element.setAttribute && elemen
