@@ -226,4 +226,20 @@ window.Modernizr = (function( window, document, undefined ) {
           if ( !element.setAttribute ) {
             element = document.createElement('div');
           }
-          if ( element.setAttribute && elemen
+          if ( element.setAttribute && element.removeAttribute ) {
+            element.setAttribute(eventName, '');
+            isSupported = is(element[eventName], 'function');
+
+            // If property was created, "remove it" (by setting value to `undefined`)
+            if ( !is(element[eventName], 'undefined') ) {
+              element[eventName] = undefined;
+            }
+            element.removeAttribute(eventName);
+          }
+        }
+
+        element = null;
+        return isSupported;
+      }
+      return isEventSupported;
+    })(),
