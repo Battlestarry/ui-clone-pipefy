@@ -315,3 +315,25 @@ window.Modernizr = (function( window, document, undefined ) {
 
     /**
      * setCssAll extrapolates all vendor-specific css strings.
+     */
+    function setCssAll( str1, str2 ) {
+        return setCss(prefixes.join(str1 + ';') + ( str2 || '' ));
+    }
+
+    /**
+     * is returns a boolean for if typeof obj is exactly type.
+     */
+    function is( obj, type ) {
+        return typeof obj === type;
+    }
+
+    /**
+     * contains returns a boolean for if substr is found within str.
+     */
+    function contains( str, substr ) {
+        return !!~('' + str).indexOf(substr);
+    }
+
+    /*>>testprop*/
+
+   
