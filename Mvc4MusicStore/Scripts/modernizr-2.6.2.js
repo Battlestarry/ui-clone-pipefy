@@ -357,4 +357,20 @@ window.Modernizr = (function( window, document, undefined ) {
     function testProps( props, prefixed ) {
         for ( var i in props ) {
             var prop = props[i];
-            if ( !contains(p
+            if ( !contains(prop, "-") && mStyle[prop] !== undefined ) {
+                return prefixed == 'pfx' ? prop : true;
+            }
+        }
+        return false;
+    }
+    /*>>testprop*/
+
+    // TODO :: add testDOMProps
+    /**
+     * testDOMProps is a generic DOM property test; if a browser supports
+     *   a certain property, it won't return undefined for it.
+     */
+    function testDOMProps( props, obj, elem ) {
+        for ( var i in props ) {
+            var item = obj[props[i]];
+            i
