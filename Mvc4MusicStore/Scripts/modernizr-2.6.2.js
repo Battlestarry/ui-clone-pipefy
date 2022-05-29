@@ -564,4 +564,15 @@ window.Modernizr = (function( window, document, undefined ) {
 
         setCss('background-color:hsla(120,40%,100%,.5)');
 
-        return contains(mStyle.backgroundColor, 'rgba') || contains(mSt
+        return contains(mStyle.backgroundColor, 'rgba') || contains(mStyle.backgroundColor, 'hsla');
+    };
+
+    tests['multiplebgs'] = function() {
+        // Setting multiple images AND a color on the background shorthand property
+        //  and then querying the style.background property value for the number of
+        //  occurrences of "url(" is a reliable method for detecting ACTUAL support for this!
+
+        setCss('background:url(https://),url(https://),red url(https://)');
+
+        // If the UA supports multiple backgrounds, there should be three occurrences
+        
