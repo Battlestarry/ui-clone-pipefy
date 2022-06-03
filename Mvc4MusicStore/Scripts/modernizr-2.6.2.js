@@ -575,4 +575,23 @@ window.Modernizr = (function( window, document, undefined ) {
         setCss('background:url(https://),url(https://),red url(https://)');
 
         // If the UA supports multiple backgrounds, there should be three occurrences
-        
+        //   of the string "url(" in the return value for elemStyle.background
+
+        return (/(url\s*\(.*?){3}/).test(mStyle.background);
+    };
+
+
+
+    // this will false positive in Opera Mini
+    //   github.com/Modernizr/Modernizr/issues/396
+
+    tests['backgroundsize'] = function() {
+        return testPropsAll('backgroundSize');
+    };
+
+    tests['borderimage'] = function() {
+        return testPropsAll('borderImage');
+    };
+
+
+    // Super comprehensive table 
