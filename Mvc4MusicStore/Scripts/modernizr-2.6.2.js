@@ -608,4 +608,16 @@ window.Modernizr = (function( window, document, undefined ) {
 
     // FF3.0 will false positive on this test
     tests['textshadow'] = function() {
-   
+        return document.createElement('div').style.textShadow === '';
+    };
+
+
+    tests['opacity'] = function() {
+        // Browsers that actually have CSS Opacity implemented have done so
+        //  according to spec, which means their return values are within the
+        //  range of [0.0,1.0] - including the leading zero.
+
+        setCssAll('opacity:.55');
+
+        // The non-literal . in this regex is intentional:
+        //   German Chrome returns this value as 
