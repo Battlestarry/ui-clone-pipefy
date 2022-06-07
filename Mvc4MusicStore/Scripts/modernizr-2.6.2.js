@@ -620,4 +620,19 @@ window.Modernizr = (function( window, document, undefined ) {
         setCssAll('opacity:.55');
 
         // The non-literal . in this regex is intentional:
-        //   German Chrome returns this value as 
+        //   German Chrome returns this value as 0,55
+        // github.com/Modernizr/Modernizr/issues/#issue/59/comment/516632
+        return (/^0.55$/).test(mStyle.opacity);
+    };
+
+
+    // Note, Android < 4 will pass this test, but can only animate
+    //   a single property at a time
+    //   daneden.me/2011/12/putting-up-with-androids-bullshit/
+    tests['cssanimations'] = function() {
+        return testPropsAll('animationName');
+    };
+
+
+    tests['csscolumns'] = function() {
+        return testPropsAll('c
