@@ -802,4 +802,20 @@ window.Modernizr = (function( window, document, undefined ) {
     //   QUOTA_EXCEEDED_ERRROR DOM Exception 22.
     // Peculiarly, getItem and removeItem calls do not throw.
 
-    // Because we are forced to try/catch
+    // Because we are forced to try/catch this, we'll go aggressive.
+
+    // Just FWIW: IE8 Compat mode supports these features completely:
+    //   www.quirksmode.org/dom/html5.html
+    // But IE8 doesn't support either with local files
+
+    tests['localstorage'] = function() {
+        try {
+            localStorage.setItem(mod, mod);
+            localStorage.removeItem(mod);
+            return true;
+        } catch(e) {
+            return false;
+        }
+    };
+
+    tests['sessionstorage'] 
