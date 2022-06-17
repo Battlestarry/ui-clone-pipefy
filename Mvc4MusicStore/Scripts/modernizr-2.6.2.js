@@ -863,4 +863,14 @@ window.Modernizr = (function( window, document, undefined ) {
     // However read the comments to dig into applying SVG clippaths to HTML content here:
     //   github.com/Modernizr/Modernizr/issues/213#issuecomment-1149491
     tests['svgclippaths'] = function() {
-        return !!document.createE
+        return !!document.createElementNS && /SVGClipPath/.test(toString.call(document.createElementNS(ns.svg, 'clipPath')));
+    };
+
+    /*>>webforms*/
+    // input features and input types go directly onto the ret object, bypassing the tests loop.
+    // Hold this guy to execute in a moment.
+    function webforms() {
+        /*>>input*/
+        // Run through HTML5's new input attributes to see if the UA understands any.
+        // We're using f which is the <input> element created early on
+   
