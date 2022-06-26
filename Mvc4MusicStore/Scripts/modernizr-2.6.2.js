@@ -924,4 +924,14 @@ window.Modernizr = (function( window, document, undefined ) {
                       // Safari 2-4 allows the smiley as a value, despite making a slider
                       bool =  defaultView.getComputedStyle &&
                               defaultView.getComputedStyle(inputElem, null).WebkitAppearance !== 'textfield' &&
-                              // Mobile android web browser ha
+                              // Mobile android web browser has false positive, so must
+                              // check the height to see if the widget is actually there.
+                              (inputElem.offsetHeight !== 0);
+
+                      docElement.removeChild(inputElem);
+
+                    } else if ( /^(search|tel)$/.test(inputElemType) ){
+                      // Spec doesn't define any special parsing or detectable UI
+                      //   behaviors so we pass these through as true
+
+                    
