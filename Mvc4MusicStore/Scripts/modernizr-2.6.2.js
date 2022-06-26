@@ -943,4 +943,23 @@ window.Modernizr = (function( window, document, undefined ) {
 
                     } else {
                       // If the upgraded input compontent rejects the :) text, we got a winner
-                   
+                      bool = inputElem.value != smile;
+                    }
+                }
+
+                inputs[ props[i] ] = !!bool;
+            }
+            return inputs;
+        })('search tel url email datetime date month week time datetime-local number range color'.split(' '));
+        /*>>inputtypes*/
+    }
+    /*>>webforms*/
+
+
+    // End of test definitions
+    // -----------------------
+
+
+
+    // Run through all tests and detect their support in the current UA.
+    /
