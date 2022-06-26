@@ -934,4 +934,13 @@ window.Modernizr = (function( window, document, undefined ) {
                       // Spec doesn't define any special parsing or detectable UI
                       //   behaviors so we pass these through as true
 
-                    
+                      // Interestingly, opera fails the earlier test, so it doesn't
+                      //  even make it here.
+
+                    } else if ( /^(url|email)$/.test(inputElemType) ) {
+                      // Real url and email support comes with prebaked validation.
+                      bool = inputElem.checkValidity && inputElem.checkValidity() === false;
+
+                    } else {
+                      // If the upgraded input compontent rejects the :) text, we got a winner
+                   
