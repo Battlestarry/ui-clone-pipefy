@@ -969,4 +969,21 @@ window.Modernizr = (function( window, document, undefined ) {
             //   then based on that boolean, define an appropriate className
             //   and push it into an array of classes we'll join later.
             featureName  = feature.toLowerCase();
-            Moderni
+            Modernizr[featureName] = tests[feature]();
+
+            classes.push((Modernizr[featureName] ? '' : 'no-') + featureName);
+        }
+    }
+
+    /*>>webforms*/
+    // input tests need to run.
+    Modernizr.input || webforms();
+    /*>>webforms*/
+
+
+    /**
+     * addTest allows the user to define their own feature tests
+     * the result will be added onto the Modernizr object,
+     * as well as an appropriate className set on the html element
+     *
+     * @param feature - String naming the fe
