@@ -986,4 +986,18 @@ window.Modernizr = (function( window, document, undefined ) {
      * the result will be added onto the Modernizr object,
      * as well as an appropriate className set on the html element
      *
-     * @param feature - String naming the fe
+     * @param feature - String naming the feature
+     * @param test - Function returning true if feature is supported, false if not
+     */
+     Modernizr.addTest = function ( feature, test ) {
+       if ( typeof feature == 'object' ) {
+         for ( var key in feature ) {
+           if ( hasOwnProp( feature, key ) ) {
+             Modernizr.addTest( key, feature[ key ] );
+           }
+         }
+       } else {
+
+         feature = feature.toLowerCase();
+
+         if ( Modernizr
