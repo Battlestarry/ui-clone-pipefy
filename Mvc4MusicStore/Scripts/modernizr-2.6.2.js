@@ -1042,4 +1042,20 @@ window.Modernizr = (function( window, document, undefined ) {
       /** Detect whether the browser supports default html5 styles */
       var supportsHtml5Styles;
 
-      /** Name of the expando, to work wit
+      /** Name of the expando, to work with multiple documents or to re-shiv one document */
+      var expando = '_html5shiv';
+
+      /** The id for the the documents expando */
+      var expanID = 0;
+
+      /** Cached data for each document */
+      var expandoData = {};
+
+      /** Detect whether the browser supports unknown elements */
+      var supportsUnknownElements;
+
+      (function() {
+        try {
+            var a = document.createElement('a');
+            a.innerHTML = '<xyz></xyz>';
+            //if the hidden property is implemented we can assume, that the b
