@@ -1058,4 +1058,14 @@ window.Modernizr = (function( window, document, undefined ) {
         try {
             var a = document.createElement('a');
             a.innerHTML = '<xyz></xyz>';
-            //if the hidden property is implemented we can assume, that the b
+            //if the hidden property is implemented we can assume, that the browser supports basic HTML5 Styles
+            supportsHtml5Styles = ('hidden' in a);
+
+            supportsUnknownElements = a.childNodes.length == 1 || (function() {
+              // assign a false positive if unable to shiv
+              (document.createElement)('a');
+              var frag = document.createDocumentFragment();
+              return (
+                typeof frag.cloneNode == 'undefined' ||
+                typeof frag.createDocumentFragment == 'undefined' ||
+          
