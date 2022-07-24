@@ -1095,4 +1095,18 @@ window.Modernizr = (function( window, document, undefined ) {
         return parent.insertBefore(p.lastChild, parent.firstChild);
       }
 
-      /*
+      /**
+       * Returns the value of `html5.elements` as an array.
+       * @private
+       * @returns {Array} An array of shived element node names.
+       */
+      function getElements() {
+        var elements = html5.elements;
+        return typeof elements == 'string' ? elements.split(' ') : elements;
+      }
+
+        /**
+       * Returns the data associated to the given document
+       * @private
+       * @param {Document} ownerDocument The document.
+   
