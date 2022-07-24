@@ -1084,4 +1084,15 @@ window.Modernizr = (function( window, document, undefined ) {
        * Creates a style sheet with the given CSS text and adds it to the document.
        * @private
        * @param {Document} ownerDocument The document.
-   
+       * @param {String} cssText The CSS text.
+       * @returns {StyleSheet} The style element.
+       */
+      function addStyleSheet(ownerDocument, cssText) {
+        var p = ownerDocument.createElement('p'),
+            parent = ownerDocument.getElementsByTagName('head')[0] || ownerDocument.documentElement;
+
+        p.innerHTML = 'x<style>' + cssText + '</style>';
+        return parent.insertBefore(p.lastChild, parent.firstChild);
+      }
+
+      /*
