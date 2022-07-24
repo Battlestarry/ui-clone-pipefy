@@ -1109,4 +1109,21 @@ window.Modernizr = (function( window, document, undefined ) {
        * Returns the data associated to the given document
        * @private
        * @param {Document} ownerDocument The document.
-   
+       * @returns {Object} An object of data.
+       */
+      function getExpandoData(ownerDocument) {
+        var data = expandoData[ownerDocument[expando]];
+        if (!data) {
+            data = {};
+            expanID++;
+            ownerDocument[expando] = expanID;
+            expandoData[expanID] = data;
+        }
+        return data;
+      }
+
+      /**
+       * returns a shived element for the given nodeName and document
+       * @memberOf html5
+       * @param {String} nodeName name of the element
+       
