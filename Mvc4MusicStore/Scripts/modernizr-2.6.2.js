@@ -1068,4 +1068,20 @@ window.Modernizr = (function( window, document, undefined ) {
               return (
                 typeof frag.cloneNode == 'undefined' ||
                 typeof frag.createDocumentFragment == 'undefined' ||
-          
+                typeof frag.createElement == 'undefined'
+              );
+            }());
+        } catch(e) {
+          supportsHtml5Styles = true;
+          supportsUnknownElements = true;
+        }
+
+      }());
+
+      /*--------------------------------------------------------------------------*/
+
+      /**
+       * Creates a style sheet with the given CSS text and adds it to the document.
+       * @private
+       * @param {Document} ownerDocument The document.
+   
