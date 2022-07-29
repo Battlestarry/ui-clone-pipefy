@@ -1126,4 +1126,19 @@ window.Modernizr = (function( window, document, undefined ) {
        * returns a shived element for the given nodeName and document
        * @memberOf html5
        * @param {String} nodeName name of the element
-       
+       * @param {Document} ownerDocument The context document.
+       * @returns {Object} The shived element.
+       */
+      function createElement(nodeName, ownerDocument, data){
+        if (!ownerDocument) {
+            ownerDocument = document;
+        }
+        if(supportsUnknownElements){
+            return ownerDocument.createElement(nodeName);
+        }
+        if (!data) {
+            data = getExpandoData(ownerDocument);
+        }
+        var node;
+
+  
