@@ -1203,4 +1203,15 @@ window.Modernizr = (function( window, document, undefined ) {
           if (!html5.shivMethods) {
               return data.createElem(nodeName);
           }
-          return createElement(nodeName, 
+          return createElement(nodeName, ownerDocument, data);
+        };
+
+        ownerDocument.createDocumentFragment = Function('h,f', 'return function(){' +
+          'var n=f.cloneNode(),c=n.createElement;' +
+          'h.shivMethods&&(' +
+            // unroll the `createElement` calls
+            getElements().join().replace(/\w+/g, function(nodeName) {
+              data.createElem(nodeName);
+              data.frag.createElement(nodeName);
+              return 'c("' + nodeName + '")';
+           
