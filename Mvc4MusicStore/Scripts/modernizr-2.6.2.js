@@ -1162,4 +1162,16 @@ window.Modernizr = (function( window, document, undefined ) {
       /**
        * returns a shived DocumentFragment for the given document
        * @memberOf html5
-       * @pa
+       * @param {Document} ownerDocument The context document.
+       * @returns {Object} The shived DocumentFragment.
+       */
+      function createDocumentFragment(ownerDocument, data){
+        if (!ownerDocument) {
+            ownerDocument = document;
+        }
+        if(supportsUnknownElements){
+            return ownerDocument.createDocumentFragment();
+        }
+        data = data || getExpandoData(ownerDocument);
+        var clone = data.frag.cloneNode(),
+            i
