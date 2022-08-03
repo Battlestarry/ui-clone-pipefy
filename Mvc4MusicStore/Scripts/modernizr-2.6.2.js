@@ -1190,4 +1190,17 @@ window.Modernizr = (function( window, document, undefined ) {
        * @param {Object} data of the document.
        */
       function shivMethods(ownerDocument, data) {
-        
+        if (!data.cache) {
+            data.cache = {};
+            data.createElem = ownerDocument.createElement;
+            data.createFrag = ownerDocument.createDocumentFragment;
+            data.frag = data.createFrag();
+        }
+
+
+        ownerDocument.createElement = function(nodeName) {
+          //abort shiv
+          if (!html5.shivMethods) {
+              return data.createElem(nodeName);
+          }
+          return createElement(nodeName, 
