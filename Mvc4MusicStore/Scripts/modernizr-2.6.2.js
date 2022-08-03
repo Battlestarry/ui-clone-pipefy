@@ -1174,4 +1174,20 @@ window.Modernizr = (function( window, document, undefined ) {
         }
         data = data || getExpandoData(ownerDocument);
         var clone = data.frag.cloneNode(),
-            i
+            i = 0,
+            elems = getElements(),
+            l = elems.length;
+        for(;i<l;i++){
+            clone.createElement(elems[i]);
+        }
+        return clone;
+      }
+
+      /**
+       * Shivs the `createElement` and `createDocumentFragment` methods of the document.
+       * @private
+       * @param {Document|DocumentFragment} ownerDocument The document.
+       * @param {Object} data of the document.
+       */
+      function shivMethods(ownerDocument, data) {
+        
