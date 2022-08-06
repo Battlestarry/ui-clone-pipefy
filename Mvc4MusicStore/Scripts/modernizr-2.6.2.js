@@ -1214,4 +1214,20 @@ window.Modernizr = (function( window, document, undefined ) {
               data.createElem(nodeName);
               data.frag.createElement(nodeName);
               return 'c("' + nodeName + '")';
-           
+            }) +
+          ');return n}'
+        )(html5, data.frag);
+      }
+
+      /*--------------------------------------------------------------------------*/
+
+      /**
+       * Shivs the given document.
+       * @memberOf html5
+       * @param {Document} ownerDocument The document to shiv.
+       * @returns {Document} The shived document.
+       */
+      function shivDocument(ownerDocument) {
+        if (!ownerDocument) {
+            ownerDocument = document;
+        }
