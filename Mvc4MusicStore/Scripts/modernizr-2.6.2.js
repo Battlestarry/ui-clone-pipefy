@@ -1241,4 +1241,19 @@ window.Modernizr = (function( window, document, undefined ) {
             'mark{background:#FF0;color:#000}'
           );
         }
-        if (!supports
+        if (!supportsUnknownElements) {
+          shivMethods(ownerDocument, data);
+        }
+        return ownerDocument;
+      }
+
+      /*--------------------------------------------------------------------------*/
+
+      /**
+       * The `html5` object is exposed so that more elements can be shived and
+       * existing shiving can be detected on iframes.
+       * @type Object
+       * @example
+       *
+       * // options can be changed before the script is included
+       * html5 = { 'eleme
