@@ -1256,4 +1256,15 @@ window.Modernizr = (function( window, document, undefined ) {
        * @example
        *
        * // options can be changed before the script is included
-       * html5 = { 'eleme
+       * html5 = { 'elements': 'mark section', 'shivCSS': false, 'shivMethods': false };
+       */
+      var html5 = {
+
+        /**
+         * An array or space separated string of node names of the elements to shiv.
+         * @memberOf html5
+         * @type Array|String
+         */
+        'elements': options.elements || 'abbr article aside audio bdi canvas data datalist details figcaption figure footer header hgroup mark meter nav output progress section summary time video',
+
+        
