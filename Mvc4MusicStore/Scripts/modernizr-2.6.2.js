@@ -1283,4 +1283,20 @@ window.Modernizr = (function( window, document, undefined ) {
 
         /**
          * A flag to indicate that the document's `createElement` and `createDocumentFragment`
-         * 
+         * methods should be overwritten.
+         * @memberOf html5
+         * @type Boolean
+         */
+        'shivMethods': (options.shivMethods !== false),
+
+        /**
+         * A string to describe the type of `html5` object ("default" or "default print").
+         * @memberOf html5
+         * @type String
+         */
+        'type': 'default',
+
+        // shivs the document according to the specified `html5` object options
+        'shivDocument': shivDocument,
+
+        //creat
