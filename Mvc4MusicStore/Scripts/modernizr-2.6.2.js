@@ -1299,4 +1299,23 @@ window.Modernizr = (function( window, document, undefined ) {
         // shivs the document according to the specified `html5` object options
         'shivDocument': shivDocument,
 
-        //creat
+        //creates a shived element
+        createElement: createElement,
+
+        //creates a shived documentFragment
+        createDocumentFragment: createDocumentFragment
+      };
+
+      /*--------------------------------------------------------------------------*/
+
+      // expose html5
+      window.html5 = html5;
+
+      // shiv the document
+      shivDocument(document);
+
+    }(this, document));
+    /*>>shiv*/
+
+    // Assign private properties to the return object with prefix
+    Modernizr._version      = version;
