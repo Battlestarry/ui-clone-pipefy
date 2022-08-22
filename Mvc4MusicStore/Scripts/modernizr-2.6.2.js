@@ -1352,4 +1352,18 @@ window.Modernizr = (function( window, document, undefined ) {
     // Note that the property names must be provided in the camelCase variant.
     // Modernizr.testProp('pointerEvents')
     Modernizr.testProp      = function(prop){
-        return testPr
+        return testProps([prop]);
+    };
+    /*>>testprop*/
+
+    /*>>testallprops*/
+    // Modernizr.testAllProps() investigates whether a given style property,
+    //   or any of its vendor-prefixed variants, is recognized
+    // Note that the property names must be provided in the camelCase variant.
+    // Modernizr.testAllProps('boxSizing')
+    Modernizr.testAllProps  = testPropsAll;
+    /*>>testallprops*/
+
+
+    /*>>teststyles*/
+    // Modernizr.testStyles() allows you to add custom styles to the document
