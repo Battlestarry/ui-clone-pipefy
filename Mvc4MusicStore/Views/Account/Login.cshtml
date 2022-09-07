@@ -35,4 +35,11 @@
         <input type="submit" value="Log in" />
     </fieldset>
     <p>
-        @Html.Action
+        @Html.ActionLink("Register", "Register") if you don't have an account.
+    </p>
+}
+</section>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
