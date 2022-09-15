@@ -5,4 +5,16 @@
     <h3>Registered external logins</h3>
     <table>
         <tbody>
-        @foreach (Mvc4MusicStore.Models.ExternalLogin externalLogin in Mode
+        @foreach (Mvc4MusicStore.Models.ExternalLogin externalLogin in Model)
+        {
+            <tr>
+                <td>@externalLogin.ProviderDisplayName</td>
+                <td>
+                    @if (ViewBag.ShowRemoveButton)
+                    {
+                        using (Html.BeginForm("Disassociate", "Account"))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div>
+                                @Html.Hidden("provider", externalLogin.Provider)
+                        
