@@ -1,0 +1,32 @@
+
+﻿@model string[]
+@{
+    ViewBag.Title = "Members";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div>
+    @Html.ActionLink("Cancel", "Index")
+</div>
+
+<fieldset>
+    <legend>Users that are members of @ViewBag.GroupName</legend>
+    @if (Model.Length > 0)
+    {
+        <ul>
+            @foreach (var groupName in Model)
+            {
+                <li>
+                    @groupName
+                </li>
+            }
+        </ul>
+        <br />
+    }
+    else
+    {
+        <p>None.</p>
+    }
+</fieldset>
+@Html.ActionLink("Manage users", "Index", "UserManager")
