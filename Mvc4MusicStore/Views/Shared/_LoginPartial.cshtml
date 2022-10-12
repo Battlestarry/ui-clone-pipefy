@@ -6,4 +6,14 @@
     {
         <li>@Html.ActionLink("Manage Store", "Index", "StoreManager")</li>
         <li>@Html.ActionLink("Manage Users", "Index", "UserManager")</li>
-        <li>@Html.
+        <li>@Html.ActionLink("Manage Groups", "Index", "GroupManager")</li>
+    }
+    foreach (OktaProviders.OktaAppLink app in ((OktaProviders.OktaIdentity)User.Identity).Apps)
+    {
+        <li><a href="@(app.linkUrl)">@(app.label)</a></li>
+    }
+    <li>
+    @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <a href="javascript:document.getElementById('logoutForm').submit()">Log 
