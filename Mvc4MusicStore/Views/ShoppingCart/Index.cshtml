@@ -1,3 +1,15 @@
 ﻿@model Mvc4MusicStore.ViewModels.ShoppingCartViewModel
 @{
-    ViewBag.Title = "Shopp
+    ViewBag.Title = "Shopping Cart";
+}
+<script src="~/Scripts/jquery-1.8.2.min.js"
+        type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        // Document.ready -> link up remove event handler
+        $(".RemoveLink").click(function () {
+            // Get the id from the link
+            var recordToDelete = $(this).attr("data-id");
+            if (recordToDelete != '') {
+                // Perform the ajax post
+                $.post("/Sh
