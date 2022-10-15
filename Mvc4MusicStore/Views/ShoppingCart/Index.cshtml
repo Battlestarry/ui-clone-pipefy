@@ -21,4 +21,26 @@
                         } else {
                             $('#item-count-' + data.DeleteId).text(data.ItemCount);
                         }
-                        $('#cart-tota
+                        $('#cart-total').text(data.CartTotal);
+                        $('#update-message').text(data.Message);
+                        $('#cart-status').text('Cart (' + data.CartCount + ')');
+                    });
+            }
+        });
+    });
+</script>
+<h3>
+    <em>Review</em> your cart:
+</h3>
+<p class="button">
+    @Html.ActionLink("Checkout >>", "AddressAndPayment", "Checkout")
+</p>
+<div id="update-message">
+</div>
+<table>
+    <tr>
+        <th>
+            Album Name
+        </th>
+        <th>
+            Price 
