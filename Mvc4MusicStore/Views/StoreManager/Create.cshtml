@@ -43,3 +43,24 @@
         <div class="editor-field">
             @Html.EditorFor(model => model.Price)
             @Html.ValidationMessageFor(model => model.Price)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.AlbumArtUrl)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.AlbumArtUrl)
+            @Html.ValidationMessageFor(model => model.AlbumArtUrl)
+        </div>
+
+        <p>
+            <input type="submit" value="Create" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scrip
