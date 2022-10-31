@@ -36,4 +36,19 @@
         </div>
         <div class="editor-field">
             @Html.EditorFor(model => model.Title)
-            @Html.Validation
+            @Html.ValidationMessageFor(model => model.Title)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Price)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Price)
+            @Html.ValidationMessageFor(model => model.Price)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.AlbumArtUrl)
+        </div>
+        <div class="editor-field">
+            @Html.
