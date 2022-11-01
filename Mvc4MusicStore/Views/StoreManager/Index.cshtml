@@ -1,0 +1,7 @@
+﻿@model IEnumerable<Mvc4MusicStore.Models.Album>
+@helper Truncate(string input, int length)
+ {
+    if (input.Length <= length) {
+        @input
+    } else {
+        @in

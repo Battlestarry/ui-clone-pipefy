@@ -51,4 +51,20 @@
             @Html.LabelFor(model => model.AlbumArtUrl)
         </div>
         <div class="editor-field">
-            @Html.
+            @Html.EditorFor(model => model.AlbumArtUrl)
+            @Html.ValidationMessageFor(model => model.AlbumArtUrl)
+        </div>
+
+        <p>
+            <input type="submit" value="Save" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
