@@ -1,0 +1,17 @@
+﻿@model Mvc4MusicStore.Models.StoreUser
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div>
+    @Html.ActionLink("Cancel", "Index")
+</div>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <fieldset>
+        <legend>@Html.DisplayFor(model => model.userName
