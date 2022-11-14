@@ -28,4 +28,10 @@
             @Html.DropDownList("RecordLabel", String.Empty) 
         </div>
         <input type="submit" value="Update" />
-    
+    </fieldset>
+}
+@Html.ActionLink("Delete User", "Delete", new { username = @Model.userName })
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
