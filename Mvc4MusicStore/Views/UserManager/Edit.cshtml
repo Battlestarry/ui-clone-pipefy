@@ -14,4 +14,18 @@
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
     <fieldset>
-        <legend>@Html.DisplayFor(model => model.userName
+        <legend>@Html.DisplayFor(model => model.userName)</legend>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.isManager)
+        </div>
+        <div class="editor-field">
+            @Html.CheckBoxFor(model => model.isManager)
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.recordLabel)
+        </div>
+        <div class="editor-field">
+            @Html.DropDownList("RecordLabel", String.Empty) 
+        </div>
+        <input type="submit" value="Update" />
+    
