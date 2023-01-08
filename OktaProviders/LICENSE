@@ -11,4 +11,13 @@ _______________________
 The Okta software accompanied by this notice has build dependencies on certain third party software licensed under separate terms ("Third Party Components"). The Third Party Components are:
 
 Json.NET 6.0.6
-http://www.nuget.org/packa
+http://www.nuget.org/packages/Newtonsoft.Json/
+https://raw.githubusercontent.com/JamesNK/Newtonsoft.Json/master/LICENSE.md
+
+Microsoft HTTP Client Libraries 2.2.28
+http://www.nuget.org/packages/Microsoft.Net.Http/
+http://www.microsoft.com/net/dotnet_library_license.htm
+
+Okta makes the following disclaimers regarding the Third Party Components on behalf of itself, the copyright holders, contributors, and licensors of such Third Party Components:
+
+TO THE FULLEST EXTENT PERMITTED UNDER 
