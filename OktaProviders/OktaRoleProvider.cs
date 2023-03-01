@@ -14,4 +14,17 @@ using WebMatrix.WebData;
 namespace OktaProviders
 {
     /// <summary>
-    /// Exten
+    /// Extends SimpleRoleProvider and redirects all calls into OktaIndependentRoleProvider
+    /// </summary>
+    public class OktaRoleProvider : SimpleRoleProvider
+    {
+        private OktaIndependentRoleProvider redirect;
+        public OktaRoleProvider()
+        {
+            redirect = new OktaIndependentRoleProvider();
+        }
+        public override string[] GetRolesForUser(string username)
+        {
+            return redirect.GetRolesForUser(username);
+        }
+        public override void CreateRole
