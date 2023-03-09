@@ -41,4 +41,16 @@ namespace OktaProviders
         }
         public override void AddUsersToRoles(string[] usernames, string[] roleNames)
         {
-   
+            redirect.AddUsersToRoles(usernames, roleNames);
+        }
+        public override void RemoveUsersFromRoles(string[] usernames, string[] roleNames)
+        {
+            redirect.RemoveUsersFromRoles(usernames, roleNames);
+        }
+        public override string[] GetAllRoles()
+        {
+            return redirect.GetAllRoles();
+        }
+        public override bool IsUserInRole(string username, string roleName)
+        {
+            ret
