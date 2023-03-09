@@ -53,4 +53,18 @@ namespace OktaProviders
         }
         public override bool IsUserInRole(string username, string roleName)
         {
-            ret
+            return redirect.IsUserInRole(username, roleName);
+        }
+        public override string[] FindUsersInRole(string roleName, string usernameToMatch)
+        {
+            return redirect.FindUsersInRole(roleName, usernameToMatch);
+        }
+        public override bool RoleExists(string roleName)
+        {
+            return redirect.RoleExists(roleName);
+        }
+    }
+
+    public class OktaIndependentRoleProvider
+    {
+        private OktaProviderC
