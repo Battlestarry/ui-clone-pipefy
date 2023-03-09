@@ -27,4 +27,18 @@ namespace OktaProviders
         {
             return redirect.GetRolesForUser(username);
         }
-        public override void CreateRole
+        public override void CreateRole(string roleName)
+        {
+            redirect.CreateRole(roleName);
+        }
+        public override bool DeleteRole(string roleName, bool throwOnPopulatedRole)
+        {
+            return redirect.DeleteRole(roleName, throwOnPopulatedRole);
+        }
+        public override string[] GetUsersInRole(string roleName)
+        {
+            return redirect.GetUsersInRole(roleName);
+        }
+        public override void AddUsersToRoles(string[] usernames, string[] roleNames)
+        {
+   
