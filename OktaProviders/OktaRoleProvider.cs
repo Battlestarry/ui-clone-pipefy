@@ -67,4 +67,19 @@ namespace OktaProviders
 
     public class OktaIndependentRoleProvider
     {
-        private OktaProviderC
+        private OktaProviderClient okta;
+        public OktaIndependentRoleProvider()
+        {
+            okta = new OktaProviderClient();
+        }
+        /// <summary>
+        /// Get all Okta groups
+        /// </summary>
+        /// <returns>A list of Okta Group objects</returns>
+        public List<Group> GetAllOktaGroups()
+        {
+            List<Group> results = new List<Group>();
+            PagedResults<Group> groups = okta.groups.GetList();
+            foreach (Group oktaGroup in groups.Results)
+            {
+     
