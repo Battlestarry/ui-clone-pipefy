@@ -82,4 +82,16 @@ namespace OktaProviders
             PagedResults<Group> groups = okta.groups.GetList();
             foreach (Group oktaGroup in groups.Results)
             {
-     
+                results.Add(oktaGroup);
+            }
+            return results;
+        }
+        /// <summary>
+        /// Turns a string containing a Role Name into a native Okta Group object
+        /// </summary>
+        /// <param name="groupName">The name of a "role" or group</param>
+        /// <returns>Okta Group object</returns>
+        public Group GetOktaGroupByRoleName(string groupName)
+        {
+            Group group = new Group();
+            PagedResults<Group> gro
