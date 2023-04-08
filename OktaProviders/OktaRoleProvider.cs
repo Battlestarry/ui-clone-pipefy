@@ -94,4 +94,18 @@ namespace OktaProviders
         public Group GetOktaGroupByRoleName(string groupName)
         {
             Group group = new Group();
-            PagedResults<Group> gro
+            PagedResults<Group> groups = okta.groups.GetList();
+            foreach (Group oktaGroup in groups.Results)
+            {
+                if (oktaGroup.Profile.Name == groupName)
+                {
+                    group = oktaGroup;
+                    break;
+                }
+                var id = oktaGroup.Id;
+            }
+            return group;
+        }
+        public MembershipUser GetUser(string username, bool userIsOnline)
+        {
+            OktaMembershipU
