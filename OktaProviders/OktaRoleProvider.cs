@@ -108,4 +108,16 @@ namespace OktaProviders
         }
         public MembershipUser GetUser(string username, bool userIsOnline)
         {
-            OktaMembershipU
+            OktaMembershipUser user = okta.GetOktaMembershipUser(username);
+            return user;
+        }
+        public string[] GetRolesForUser(string username)
+        {
+            var oktaUser = okta.users.Get(username);
+            var groups = from grp in okta.users.GetUserGroupsClient(oktaUser) select grp.Profile.Name.ToString();
+            return groups.ToArray<string>();
+        }
+        public void CreateRole(string roleName)
+        {
+            Group oktaGroup = new Group();
+            oktaGroup.Pr
