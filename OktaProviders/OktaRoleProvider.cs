@@ -120,4 +120,17 @@ namespace OktaProviders
         public void CreateRole(string roleName)
         {
             Group oktaGroup = new Group();
-            oktaGroup.Pr
+            oktaGroup.Profile.Name = roleName;
+            okta.groups.Add(oktaGroup);
+        }
+        public bool DeleteRole(string roleName, bool throwOnPopulatedRole)
+        {
+            if (throwOnPopulatedRole)
+            {
+                var usersInGroup = GetUsersInRole(roleName);
+                if (usersInGroup.Length != 0)
+                {
+                    var msg = String.Format("OktaIndependentRoleProvider: Role '{0}' is not empty", roleName);
+                    throw new ProviderException(msg);
+                }
+          
