@@ -133,4 +133,19 @@ namespace OktaProviders
                     var msg = String.Format("OktaIndependentRoleProvider: Role '{0}' is not empty", roleName);
                     throw new ProviderException(msg);
                 }
-          
+            }
+            try
+            {
+                var group = GetOktaGroupByRoleName(roleName);
+                okta.groups.Remove(group);
+                return true;
+            }
+            catch (OktaException e)
+            {
+                var reason = e.ErrorSummary;
+            }
+            return false;
+        }
+        public string[] GetUsersInRole(string roleName)
+        {
+            var groupUsersClient = new GroupUsersClient(GetOktaGroupByRoleName(r
