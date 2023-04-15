@@ -148,4 +148,14 @@ namespace OktaProviders
         }
         public string[] GetUsersInRole(string roleName)
         {
-            var groupUsersClient = new GroupUsersClient(GetOktaGroupByRoleName(r
+            var groupUsersClient = new GroupUsersClient(GetOktaGroupByRoleName(roleName), okta.settings);
+            var results = from user in groupUsersClient select user.Profile.Login;
+            return results.ToArray<string>();
+        }
+        public void AddUsersToRoles(string[] usernames, string[] roleNames)
+        {
+            foreach (var roleName in roleNames)
+            {
+                var oktaGroup = GetOktaGroupByRoleName(roleName);
+                var groupUsersClient = new GroupUsersClient(oktaGroup, okta.settings);
+                foreach 
