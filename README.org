@@ -557,3 +557,467 @@
   [Required]
   [Display(Name = "Last Name")]
   public string LastName { get; set; }
+  
+  [Required]
+  [Display(Name = "Phone Number")]
+  public string PhoneNumber { get; set; }
+  
+  ```
+  #+END_HTML
+  
+  It should look like this:
+
+  [[./Documentation/Images/RegisterModel-updated.png]]
+
+  Lastly, to update the Register view, open the
+  "Views/Account/Register.cshtml" file and add the following just
+  after the closing "<li>" tag for the UserName:
+  ```xml
+  <li>
+      @Html.LabelFor(m => m.FirstName)
+      @Html.TextBoxFor(m => m.FirstName)
+  </li>
+  <li>
+      @Html.LabelFor(m => m.LastName)
+      @Html.TextBoxFor(m => m.LastName)
+  </li>
+  <li>
+      @Html.LabelFor(m => m.PhoneNumber)
+      @Html.TextBoxFor(m => m.PhoneNumber)
+  </li>
+  ```
+
+  It should look like this:
+
+  [[./Documentation/Images/Register-updated.png]]
+
+  *Try it out: Register for a user with extra user profile data*
+
+  1. Start the Music Store from Visual Studio using the "Play" button
+     or by selecting the "DEBUG" menu and selecting "Start Debugging".
+  2. Add "/Account/Register" to the end of the "localhost" URL in
+     Internet Explorer. You should see a "Registration" page similar to
+     the one depicted below.
+     [[./Documentation/Images/Registration-form.png]]
+
+* Managing your users and groups from inside the Music Store
+  While it is always possible to do user and group management
+  from the administrator interface of your Okta organization, most of
+  the time you will want to do those tasks directly from your
+  application. 
+
+  In this section you will learn how to manage users and groups via
+  the Music Store.
+
+  For this section, imagine that you are working on "[[https://en.wikipedia.org/wiki/White-label_product][whitelabeling]]"
+  the Music Store and that you'll want to be able to change the way
+  that the Music Store looks depending on the user. An easy way to do
+  this would be to add users to groups and change the look and feel of
+  the Music Store based on what group the user is part of.
+
+  To manage which user is part of which group, you'll need to add
+  basic group management functionality to the Music Store. Thanks to
+  the design of the Membership and Role providers, this will be pretty
+  easy to do. The Membership and Role providers that you got
+  working in the previous section  already have support for managing users and groups (which
+  are called "Roles" in ASP.NET), all that we need to do is add some
+  UI on top of these providers.
+
+  Following the same techniques and principles that are taught in the
+  MVC Music Store instructions, I wrote some basic User and Group management
+  code for the [[https://github.com/okta/okta-music-store][Okta Music Store]]. Since I expect that you've already learned
+  how to build this sort of UI, let's just copy over the code so you
+  can see how it works.
+
+  *Copying over the files*
+
+  In the Windows File Explorer, open folder for the Okta Music Store, navigate to
+  the "Controllers" folder and copy the following two files into the
+  "Controllers" folder for your project:
+
+  1. "UserManagerController.cs"
+  2. "GroupManagerController.cs"
+
+  Next, navigate to the "Models" folder and copy the following two
+  files into the "Models" folder for your project:
+
+  1. "StoreUser.cs"
+  2. "UserGroup.cs"
+
+  Lastly, navigate to the "Views" folder and copy the following two
+  folders into the "Views" folder for your project:
+
+  1. "GroupManager"
+  2. "UserManager"
+
+  *Try it out: Open the User Manager from the Music Store*
+
+  1. Start the Music Store from Visual Studio using the "Play" button
+     or by selecting the "DEBUG" menu and selecting "Start Debugging".
+  2. Add "/UserManager" to the end of the "localhost" URL in
+     Internet Explorer. You should see a "Log in" page.
+  3. Log in as the administrator user for your Okta account
+  4. You should see a page that looks like this:
+
+     [[./Documentation/Images/Manage-Users.png]]
+  
+  If you have trouble logging in to the UserManager page, check in
+  your Okta organization and make sure that the user you are logging
+  in with is part of the "Administrator" group.
+
+
+  *How it works*
+
+
+  Adding custom user and group management to the Music Store was
+  fairly easy to do thanks to scaffolding in MVC and code that was
+  already written in the Membership and Role providers.
+
+  Most of the code is pretty simple. For example, here is the code
+  from the Index method in the UserManager controller:
+
+  #+BEGIN_HTML
+  ```csharp
+  // GET: /UserManager/
+  public ActionResult Index()
+  {
+      var membershipUsers = Membership.GetAllUsers();
+      var userList = from MembershipUser user in membershipUsers select user.Email.ToString();
+      return View(userList);
+  }
+  ```
+  #+END_HTML
+
+  As you can see, this code is pretty simple. The first line of the
+  method users the [[http://msdn.microsoft.com/en-us/library/dy8swhya%28v=vs.110%29.aspx][GetAllUsers()]] method of the Membership provider to
+  get all of the users. The next line uses a basic [[http://msdn.microsoft.com/en-us/library/bb397897.aspx][LINQ]] query to
+  select the user's email address from the results of the
+  GetAllUsers() method. The last line returns the list of email
+  addresses to the Index view.
+
+  Here is the code for the Index view:
+
+  #+BEGIN_HTML
+  ```html
+  @model IEnumerable<string>
+  @{
+      ViewBag.Title = "Manage Users";
+  }
+  <h2>@ViewBag.Title</h2>
+  <table>
+      <tr><th>User Name</th><th></th></tr>
+      @foreach (var userName in Model)
+      {
+          <tr>
+              <td>@userName</td>
+              <td>
+                  @Html.ActionLink("Edit", "Edit", new { userName=userName })
+                  |
+                  @Html.ActionLink("Delete", "Delete", new { userName=userName })
+              </td>
+          </tr>
+      }
+  </table>
+  ```
+  #+END_HTML
+
+  This view is also pretty simple. It just takes series of usernames
+  as strings, iterates over the usernames and creates a table with one
+  username per row, adding "Edit" and "Delete" links for each
+  username.
+
+  Note: If you decide to read through the code in more detail, you
+  will notice that the groups that this code uses are all prepended
+  with the text "brand:" - this is done to distinguish the groups that
+  are used by the Music Store from other groups in the Okta organization.
+
+* Set up contextual navigation links to the Music Store
+  At this point in the guide, we've added a lot of new features to the
+  Music Store but none of those features are available through the
+  site navigation. 
+
+  This is an easy thing to fix, we just need to change two files in
+  the "/Views/Shared" folder: "_Layout.cshtml" and
+  "_LoginPartial.cshtml":
+
+
+  *Changes needed in "_LoginPartial.cshtml"*
+
+  
+  Replace the entire contents of the file with the code below:
+
+  #+BEGIN_HTML
+  ```html
+  @if (Request.IsAuthenticated) {
+      <li>
+          @Html.ActionLink(User.Identity.Name, "Manage", "Account", routeValues: null, htmlAttributes: new { @class = "username", title = "Manage" })
+      </li>
+      if (Roles.IsUserInRole("StoreManager"))
+      {
+          <li>@Html.ActionLink("Manage Store", "Index", "StoreManager")</li>
+          <li>@Html.ActionLink("Manage Users", "Index", "UserManager")</li>
+          <li>@Html.ActionLink("Manage Groups", "Index", "GroupManager")</li>
+      }
+      foreach (OktaProviders.OktaAppLink app in ((OktaProviders.OktaIdentity)User.Identity).Apps)
+      {
+          <li><a href="@(app.linkUrl)">@(app.label)</a></li>
+      }
+      <li>
+      @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+      {
+          @Html.AntiForgeryToken()
+          <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+      }
+      </li>
+  }
+  else
+  {
+      <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+      <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+  }
+  ```
+  #+END_HTML
+
+
+  *Changes needed in "_Layout.cshtml"*
+
+  Replace this text:
+
+  #+BEGIN_HTML
+  ```html
+  <li>
+      <a href="@Url.Content("~/StoreManager/")">
+          Admin
+      </a>
+  </li>
+  ```
+  #+END_HTML
+
+  With this this line:
+  #+BEGIN_HTML
+  ```html
+  @Html.Partial("_LoginPartial");
+  ```
+  #+END_HTML
+
+
+  *Try it out: Open the User Manager from the Music Store*
+
+  1. Start the Music Store from Visual Studio using the "Play" button
+     or by selecting the "DEBUG" menu and selecting "Start Debugging".
+  2. You should see the familiar home page, but with new navigation
+     links, like below:
+
+     [[./Documentation/Images/Home-updated-navlinks.png]]
+
+  You'll notice that the link to the store manager is no longer
+  visible. That is because the updated code will only show that link
+  of the user is in the "Administrator" group.
+
+* /Optional:/ Adding Single-sign on to your Music Store
+  At this point your Music Store will have all of the basics of user
+  authentication and authorization working: Users can register, log in
+  and log out, and change their passwords. Administrators get access
+  to special sections of the website, can assign group membership and
+  administration rights to other users.
+
+  There are still quite a few features in the Okta API that we haven't
+  covered, external directory integration, using [[http://developer.okta.com/docs/getting_started/enabling_cors.html][CORS]], and the 
+  [[http://developer.okta.com/docs/api/rest/events.html][Events API]] are a few examples. 
+
+  What I do want to cover is how to do Single sign-on from the Music
+  Store. 
+
+  In this section, I will show you how to seamlessly integrate Zendesk
+  into your application, this integration will allow Music Store users that are
+  logged in to the Music Store to click on a "Support" link and be
+  automatically logged in to a Zendesk application. Even though
+  Zendesk is a completely seperate application, the Music Store users
+  might not even notice. They will not need to enter a user name or
+  password to log in to Zendesk, they will not even need to register a
+  new account.
+
+  Here is a high level overview of the steps required to enable your
+  Music Store users to use Single sign-on to connect to Zendesk:
+
+  - Add Zendesk to your Okta organization 
+  - Update the Music Store to support Okta Single sign-on
+
+
+  *Adding Zendesk to your Okta organization*
+
+  Before you get started, you'll need a Zendesk, if you
+  don't have one already, sign up for a [[https://www.zendesk.com/register][30 day free trial of
+  Zendesk]].
+
+  Once you've done that you'll need to configure your Okta
+  organization to connect to your Zendesk. 
+
+  To configure Okta and Zendesk, you can either follow these
+  [[https://support.zendesk.com/hc/en-us/articles/203663696-Setting-up-SAML-single-sign-on-with-Okta-Plus-and-Enterprise-][instructions from Zendesk]] or this [[http://www.youtube.com/watch?v=TUkYkKJeR1k][video from Okta]]
+
+  Make sure you do the following when you set up Zendesk:
+
+  From Okta:
+
+  - Configure Zendesk to use the "SAML 2.0" sign on method
+  - Enable provisioning features for Zendesk
+  - Enable the "Create Users" provisioning feature
+  - Assign Zendesk to the "Everyone" group
+
+  From Zendesk:
+
+  - Enable SAML SSO for End-users. This option is found in the "End
+    User" tab on the "Security" page for Zendesk.
+
+  *Updating your Music Store to support Okta Single sign-on*
+
+  Once you've configured your Okta organization to single sign-on to
+  Zendesk, all that you have left to do is update the Music Store for
+  single sign-on.
+
+  To enable single sign-on, we need to update the Music Store to not
+  only authenticate the users with the Music Store, but with our 
+  Okta organization as well. In other words, instead of giving the
+  Music Store an authentication cookies for just the Music Store
+  domain, we need to have them get authentication cookies from Okta as
+  well. 
+
+  To do this, we will make use of a "cookieToken" that we get from
+  Okta when we use the Okta API to authenticate users. After
+  successfully authenticting a Music Store user, we will redirect the
+  user to Okta with their cookieToken to get them authenticated with
+  Okta as well.
+
+  Why do we need to do this? It's so that Okta can handle the single
+  sign-on flow on our behalf, which is much preferrable to writing our
+  own SAML implementation.
+
+  Here is what you need to do to enable single sign-on in your Music
+  Store:
+
+  In the "Login" method of the AccountController, replace this line:
+
+  #+BEGIN_HTML
+  ```csharp
+  return RedirectToLocal(returnUrl);
+  ```
+  #+END_HTML
+
+  With this code:
+
+  #+BEGIN_HTML
+  ```csharp
+  if (HttpContext.Items.Contains(model.UserName))
+  {
+      // If we have a cookieToken, redirect the user to Okta so that they get a cookie from Okta too.
+      var cookieToken = HttpContext.Items[model.UserName] as String;
+      var oktaApiUrl = new Uri(ConfigurationManager.AppSettings["okta:ApiUrl"]);
+      var redirectUrl = this.Url.Action("Index", "Home", null, this.Request.Url.Scheme);
+
+      var cookieTokenUrl = String.Format("{0}login/sessionCookieRedirect?token={1}&redirectUrl={2}",
+          oktaApiUrl.AbsoluteUri,
+          cookieToken,
+          redirectUrl);
+      return Redirect(cookieTokenUrl);
+  }
+  else
+  {
+      return RedirectToLocal(returnUrl);
+  }
+  ```
+  #+END_HTML
+
+  Here is what it should look like:
+
+  [[./Documentation/Images/Account-Controller_cookieToken.png]]
+
+  *Try it out: Single Sign-on to Zendesk*
+
+  1. Start the Music Store from Visual Studio using the "Play" button
+     or by selecting the "DEBUG" menu and selecting "Start Debugging".
+  2. When Internet Explorer opens, register for a new user by clicking
+     on the "Register" link
+  3. After being signed in to the Music Store as the new user, sign
+     out, then log back in. Your browser should now have
+     authentication cookies from both the Music Store and from your
+     Okta organization.
+  4. Click on the "Zendesk" link.
+  5. You should be automatically logged in to Zendesk
+* [Write later] How the Okta Providers work 			   :noexport:
+  *OktaProviderClient*
+  - OktaIdentity
+    Used to pass extra properties into MVC 4
+  - OktaMembershipUser
+    Used to pass extra properties into MVC 4
+  - OktaProviderClient
+    Syntactic sugar
+  - GetOktaMembershipUser
+    Convert a MembershipUser into an OktaMembershipUser
+
+  *OktaMembershipProvider*
+  - CreateUserAndAccount
+    Probably the most complicated
+  - DeleteAccount
+    The most simple
+
+  *OktaRoleProvider*
+  - OktaRoleProvider class is trampoline into
+    OktaIndependentRoleProvider for testability
+  - CreateRole
+    Most simple
+    
+* [Write later] If it doesn't work 				   :noexport:
+  Sanity check page to verify Okta configuration
+* [When available] Online version of the Okta Music Store 	   :noexport:
+  Coming soon
+* Closing
+  In this document, you learned how to build the "MVC Music Store"
+  project in ASP.NET MVC 4, and how to use Okta as an identity provider in
+  an MVC 4 project.
+
+  In particular, this document demonstrated how to do the following:
+
+  - Use Okta to store, manage, and authenticate users.
+  - Store and display extended user profile attributes in Okta.
+  - Federate an Okta powered website with another website that
+    supports SAML and automatic account provisioning.
+
+  While this document does cover quite a bit of ground, it does not
+  cover all the features of the Okta Developer API. A few examples of
+  features that this document does not cover are:
+
+  - External directory federation.
+  - Enabling [[http://developer.okta.com/docs/getting_started/enabling_cors.html][CORS]].
+  - The [[http://developer.okta.com/docs/api/rest/sessions.html][Sessions]] API and [[http://developer.okta.com/docs/api/rest/events.html][Events]] API.
+  
+  *Learn more*
+
+  You can learn more about the Okta API by doing one or more of the
+  following:
+
+  - Read the source code for the Membership and Role providers in this
+    project. The files for those providers are in the "OktaProviders"
+    folder of this project.
+  - Read the [[http://developer.okta.com/docs/getting_started/design_principles.html][developer documentation for the Okta API]].
+
+  Lastly, if you're curious about how Membership and Role providers are
+  implemented, here are the links that I found useful:
+
+  - [[http://msdn.microsoft.com/en-us/library/f1kyba5e%28v=vs.100%29.aspx][Implementing a Membership Provider]].
+  - [[http://www.asp.net/web-pages/overview/security/16-adding-security-and-membership][Adding Security and Membership to an ASP.NET Web Pages (Razor)
+    Site]].
+  - [[http://msdn.microsoft.com/en-us/library/44w5aswa%28v=vs.100%29.aspx][Sample Membership Provider Implementation]].
+  - [[http://msdn.microsoft.com/en-us/library/webmatrix.webdata.simplemembershipprovider%28v=vs.111%29.aspx][SimpleMembershipProvider Class]].
+  - [[http://weblogs.asp.net/jongalloway/simplemembership-membership-providers-universal-providers-and-the-new-asp-net-4-5-web-forms-and-asp-net-mvc-4-templates][SimpleMembership, Membership Providers, Universal Providers and the new ASP.NET 4.5 Web Forms and ASP.NET MVC 4 templates]].
+
+
+  *Contact*
+  
+
+  Updates or corrections to this document are very welcome. Feel free
+  to send me [[https://help.github.com/articles/using-pull-requests/][pull requests]] with suggestions.
+
+  # In a (perhaps fruitless) effort to avoid getting more spam, I've
+  # encoded my email address using HTML entities.
+  Additionally, please send me comments or questions via email: &#106;&#111;&#101;&#108;&#046;&#102;&#114;&#097;&#110;&#117;&#115;&#105;&#099;&#064;&#111;&#107;&#116;&#097;&#046;&#099;&#111;&#109;
