@@ -194,4 +194,18 @@ namespace OktaProviders
             var users = GetUsersInRole(roleName);
             foreach (var user in users)
             {
-                // FIXME: Note that this will not work when usernam
+                // FIXME: Note that this will not work when usernameToMatch conatins '%' or '_'!
+                if (user.Contains(usernameToMatch))
+                {
+                    usersFound.Add(user);
+                }
+            }
+            return usersFound.ToArray<string>();
+        }
+        public bool RoleExists(string roleName)
+        {
+            var group = GetOktaGroupByRoleName(roleName);
+            return (group.ObjectClass != null);
+        }
+    }
+}
