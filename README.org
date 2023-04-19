@@ -1,0 +1,68 @@
+
+# This is a file written in Emacs and authored using org-mode (http://orgmode.org/)
+# The "README.md" file is generated from this file by running the
+# "M-x org-md-export-to-markdown" command from inside of Emacs.
+#
+# Only render the Table of Contents to one level
+#+OPTIONS: toc:1
+# Only create headings three levels deep, levels beyond that become lists
+#+OPTIONS: H:3
+# Turn of subscript parsing: http://super-user.org/wordpress/2012/02/02/how-to-get-rid-of-subscript-annoyance-in-org-mode/comment-page-1/
+#+OPTIONS: ^:{}
+* Introduction
+  This project is a demonstration of how to add Okta as an identity
+  provider for an existing application. 
+
+  Rather than concoct an example, I wanted to use an
+  existing sample application that more accurately represents what a
+  real-world application would look like. To that end, the sample
+  application that I selected is the [[https://mvcmusicstore.codeplex.com/][MVC Music Store]], which you're
+  probably familiar with if you're a .NET developer.
+
+  The MVC Music Store is a sample application that is also an
+  introduction to the [[https://www.asp.net/open-source][open source]] [[https://www.asp.net/][ASP.NET web application framework]]. 
+
+  In this document, I will show you how to modify a completed
+  MVC Music Store application to use Okta for login, registration,
+  Single Sign-on, as well as user and group management.
+  
+  I suggest following this document from beginning to end, as each
+  section builds upon the last. 
+** Pre-built version 						   :noexport:
+   If you're in a hurry, you can skip to
+   the Online version of the Okta Music Store section to see a "pre
+   built" version of the MVC Music Store that has been modified to use
+   Okta.
+
+* Setup and Configuration
+  Before you get started, you'll need to install or set up the
+  software and services below:
+
+  1. Download and install [[http://www.visualstudio.com/en-us/products/visual-studio-express-vs.aspx][Visual Studio Express 2013 for Web]].
+
+     At the time that I write this (November 2014), this is the most
+     recent version of Visual Studio available.
+  2. Sign up for [[http://developer.okta.com/][Okta Developer Edition]].
+
+     You'll need an Okta "organization" of your own to use as you follow
+     this gude.
+  3. /Optional:/ Sign up for a [[https://www.zendesk.com/register][30 day free trial of Zendesk]].
+
+     This isn't strictly required. If you want to see how Okta enables you
+     to seamlessly integrate 3rd party applications, then I
+     suggest signing up for Zendesk, which is the application I use to
+     demonstrate seamless single sign-on in this guide.
+  4. /Optional:/ Sign up for a [[http://azure.microsoft.com/en-us/pricing/free-trial/][free trial of Microsoft Azure]].
+
+     This isn't required either. This guide assumes that you'll be
+     following along using Visual Studio on your personal
+     computer. However, if you want to host your code somewhere
+     public-facing, then Azure is the easiest place to do that.
+* MVC 4 Music Store
+   This project builds upon the excellent MVC Music Store
+   application. /However/ this in this example I use "Visual Studio
+   Express 2013 for Web" and ASP.NET MVC 4, /not/ "Visual Web Developer 2010
+   Express SP1" and ASP.NET MVC 3 as is used in the MVC Music Store
+   example. At the time that I write this (November 2014), Visual
+   Studio Express 2013 for Web is the most recent freely available
+   version of Visual Studio Express.
