@@ -183,4 +183,15 @@ namespace OktaProviders
             var results = from oktaGroup in GetAllOktaGroups() select oktaGroup.Profile.Name;
             return results.ToArray<string>();
         }
-        public bool IsUserInRole(str
+        public bool IsUserInRole(string username, string roleName)
+        {
+            var usersInRole = GetUsersInRole(roleName);
+            return usersInRole.Contains(username);
+        }
+        public string[] FindUsersInRole(string roleName, string usernameToMatch)
+        {
+            var usersFound = new List<string>();
+            var users = GetUsersInRole(roleName);
+            foreach (var user in users)
+            {
+                // FIXME: Note that this will not work when usernam
